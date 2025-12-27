@@ -13,12 +13,11 @@ import type { Spot } from "@/components/map-view"
 import type { AirbearLocation } from "@/lib/supabase/realtime"
 
 export default function MapPage() {
-  const { user, loading: authLoading } = useAuthContext()
+  const { loading: authLoading } = useAuthContext()
   const { toast } = useToast()
   const [spots, setSpots] = useState<Spot[]>([])
   const [airbears, setAirbears] = useState<AirbearLocation[]>([])
   const [loading, setLoading] = useState(true)
-  const [selectedSpot, setSelectedSpot] = useState<Spot | null>(null)
 
   // Load initial data
   useEffect(() => {
@@ -34,6 +33,7 @@ export default function MapPage() {
           .order("name")
 
         if (spotsError) {
+          console.error("Error loading spots:", spotsError)
           throw spotsError
         }
 
@@ -47,7 +47,8 @@ export default function MapPage() {
         }
 
         setAirbears(airbearsData || [])
-      } catch (error) {
+      } catch (err) {
+        console.error("Error loading map data:", err)
         toast({
           title: "Error loading map",
           description: "Unable to load map data. Please try refreshing.",
@@ -153,7 +154,7 @@ export default function MapPage() {
 
         {/* Map */}
         <Card className="p-6">
-          <MapComponent spots={spots} airbears={airbears} onSpotSelect={setSelectedSpot} />
+          <MapComponent spots={spots} airbears={airbears} />
         </Card>
 
         {/* Legend */}

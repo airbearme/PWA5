@@ -5,7 +5,13 @@ import { Analytics } from "@vercel/analytics/react";
 import { ThemeProvider } from "@/components/theme-provider";
 import { AuthProvider } from "@/components/auth-provider";
 import { Toaster } from "@/components/ui/toaster";
+import { validateRuntimeEnv } from "@/lib/auto-load-env";
 import "./globals.css";
+
+// Validate environment variables on app load
+if (typeof window === 'undefined') {
+  validateRuntimeEnv();
+}
 
 const inter = Inter({
   subsets: ["latin"],
@@ -95,6 +101,8 @@ export const metadata: Metadata = {
     { media: "(prefers-color-scheme: dark)", color: "#1a1a1a" },
   ],
 };
+
+export const dynamic = 'force-dynamic'
 
 export default function RootLayout({
   children,

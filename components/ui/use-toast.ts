@@ -15,6 +15,8 @@ type ToasterToast = ToastProps & {
   action?: ToastActionElement
 }
 
+// Action types for reducer (used as type only)
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 const actionTypes = {
   ADD_TOAST: 'ADD_TOAST',
   UPDATE_TOAST: 'UPDATE_TOAST',
@@ -30,6 +32,9 @@ function genId() {
 }
 
 type ActionType = typeof actionTypes
+
+// Export for type usage
+export type { ActionType }
 
 type Action =
   | {

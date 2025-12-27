@@ -12,7 +12,7 @@ export async function GET() {
   // Check Supabase connection
   try {
     const supabase = await getSupabaseServer()
-    const { data, error } = await supabase.from("spots").select("count").limit(1).single()
+    const { error } = await supabase.from("spots").select("count").limit(1).single()
     checks.checks.supabase = error
       ? { status: "unhealthy", message: error.message }
       : { status: "healthy" }

@@ -24,7 +24,7 @@ export async function POST(req: NextRequest) {
     })
 
     return NextResponse.json({ sessionId: session.id })
-  } catch (error) {
+  } catch {
     return NextResponse.json({ error: "Payment failed" }, { status: 500 })
   }
 }
