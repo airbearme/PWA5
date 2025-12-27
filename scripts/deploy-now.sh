@@ -1,79 +1,91 @@
 #!/bin/bash
 
-# Quick deployment script - Deploys everything automatically
-# Assumes tokens are in environment or .env.local
+# Ultimate One-Click Deploy Script
+# Creates repo, pushes code, provides Vercel instructions
 
 set -e
 
-echo "🚀 Deploying AirBear PWA to Production"
-echo "======================================="
+REPO_OWNER="airbearme"
+REPO_NAME="pwapro"
+GITHUB_URL="https://github.com/new?org=${REPO_OWNER}&name=${REPO_NAME}&description=AirBear+PWA+-+Solar-Powered+Rideshare+%26+Mobile+Bodega"
+
+echo "🚀 AirBear PWA - One-Click Deployment"
+echo "======================================"
 echo ""
 
-# Load .env.local if exists
-if [ -f ".env.local" ]; then
-    echo "📋 Loading environment variables..."
-    set -a
-    source .env.local
-    set +a
+# Step 1: Open GitHub repo creation page
+echo "📦 Step 1: Creating GitHub Repository"
+echo ""
+echo "Opening GitHub in your browser..."
+echo "URL: ${GITHUB_URL}"
+echo ""
+
+# Try to open browser (works on most systems)
+if command -v xdg-open &> /dev/null; then
+    xdg-open "${GITHUB_URL}" 2>/dev/null &
+elif command -v open &> /dev/null; then
+    open "${GITHUB_URL}" 2>/dev/null &
+elif command -v start &> /dev/null; then
+    start "${GITHUB_URL}" 2>/dev/null &
+else
+    echo "Please open this URL in your browser:"
+    echo "${GITHUB_URL}"
 fi
 
-# Validate environment
-echo "✅ Validating environment..."
-npm run validate:env || {
-    echo "⚠️  Environment validation had warnings (continuing...)"
-}
-
-# Type check
-echo "✅ Type checking..."
-npm run type-check || {
-    echo "❌ Type check failed"
-    exit 1
-}
-
-# Build
-echo "✅ Building..."
-npm run build || {
-    echo "❌ Build failed"
-    exit 1
-}
-
-# Try to push to GitHub
 echo ""
-echo "📤 Pushing to GitHub..."
+echo "📋 Instructions:"
+echo "1. Make sure it's set to PUBLIC"
+echo "2. DO NOT check: README, .gitignore, or license"
+echo "3. Click 'Create repository'"
+echo ""
+read -p "Press Enter AFTER you've created the repository..."
+
+# Step 2: Push code
+echo ""
+echo "📤 Step 2: Pushing code to GitHub..."
+
+# Set remote
+git remote remove origin 2>/dev/null || true
+git remote add origin "git@github.com:${REPO_OWNER}/${REPO_NAME}.git" 2>/dev/null || \
+git remote set-url origin "git@github.com:${REPO_OWNER}/${REPO_NAME}.git"
+
+# Try SSH first
 if git push -u origin main 2>&1; then
-    echo "✅ Code pushed to GitHub"
+    echo "✅ Code pushed successfully!"
 else
-    echo "⚠️  GitHub push failed or repo doesn't exist"
-    echo "   Run: bash scripts/setup-github-api.sh first"
-fi
-
-# Try Vercel deployment if token available
-if [ -n "$VERCEL_TOKEN" ]; then
-    echo ""
-    echo "☁️  Deploying to Vercel..."
-    if command -v vercel &> /dev/null; then
-        vercel --prod --token="$VERCEL_TOKEN" || {
-            echo "⚠️  Vercel deployment failed"
-        }
+    echo "⚠️  SSH failed, trying HTTPS..."
+    git remote set-url origin "https://github.com/${REPO_OWNER}/${REPO_NAME}.git"
+    if git push -u origin main 2>&1; then
+        echo "✅ Code pushed successfully via HTTPS!"
     else
-        echo "⚠️  Vercel CLI not installed. Installing..."
-        npm install -g vercel@latest
-        vercel --prod --token="$VERCEL_TOKEN" || {
-            echo "⚠️  Vercel deployment failed"
-        }
+        echo "❌ Push failed. You may need to authenticate."
+        echo "Try: gh auth login (if GitHub CLI installed)"
+        exit 1
     fi
-else
-    echo ""
-    echo "⚠️  VERCEL_TOKEN not set. Skipping Vercel deployment"
-    echo "   Set VERCEL_TOKEN and run: vercel --prod"
 fi
 
 echo ""
-echo "✨ Deployment complete!"
+echo "✅ Repository created and code pushed!"
 echo ""
-echo "📋 Next steps:"
-echo "   1. Verify deployment in Vercel dashboard"
-echo "   2. Configure DNS in IONOS (if not done)"
-echo "   3. Test the live site"
+echo "🔗 Repository: https://github.com/${REPO_OWNER}/${REPO_NAME}"
 echo ""
-
+echo "📋 Next: Deploy to Vercel"
+echo "=========================="
+echo ""
+echo "1. Go to: https://vercel.com/dashboard"
+echo "2. Click 'Add New' → 'Project'"
+echo "3. Import: ${REPO_OWNER}/${REPO_NAME}"
+echo "4. Add these environment variables:"
+echo ""
+echo "   NEXT_PUBLIC_SUPABASE_PWA4_URL"
+echo "   NEXT_PUBLIC_SUPABASE_PWA4_ANON_KEY"
+echo "   SUPABASE_PWA4_SERVICE_ROLE_KEY"
+echo "   NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY"
+echo "   STRIPE_SECRET_KEY"
+echo "   STRIPE_WEBHOOK_SECRET"
+echo "   NEXT_PUBLIC_SITE_URL=https://airbear.me"
+echo ""
+echo "5. Click 'Deploy'"
+echo ""
+echo "✨ Your beautiful UI will be live at airbear.me!"
+echo ""
