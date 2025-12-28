@@ -115,10 +115,49 @@ npm run validate:env    # Validate environment variables
 npm run type-check       # TypeScript type checking
 npm run lint             # ESLint
 
+# Testing (Comprehensive Suite)
+npm run test             # Run all Jest tests
+npm run test:unit        # Run unit tests only
+npm run test:integration # Run integration tests
+npm run test:e2e         # Run Playwright E2E tests
+npm run test:performance # Run Lighthouse performance audit
+npm run test:security    # Check security headers
+npm run test:accessibility # Run accessibility audit
+npm run test:database    # Test database connectivity
+npm run test:stripe      # Validate Stripe configuration
+npm run test:pwa         # Test PWA features
+npm run test:all         # Run all automated tests
+npm run test:validate    # 🚀 Ultimate validation (runs everything)
+
+# Setup
+npm run setup:testing    # Install all testing dependencies
+
 # Deployment
 npm run deploy           # Deploy to Vercel
 npm run deploy:production  # Production deployment
 ```
+
+## Testing
+
+This project includes a **comprehensive testing suite** covering all aspects:
+
+- ✅ **Unit Tests** - Components, utilities, hooks (Jest)
+- ✅ **Integration Tests** - API routes, database operations
+- ✅ **E2E Tests** - User flows (Playwright)
+- ✅ **Performance Tests** - Lighthouse audits
+- ✅ **Security Tests** - Headers, vulnerabilities
+- ✅ **Accessibility Tests** - WCAG compliance
+- ✅ **Database Tests** - Connectivity, schema
+- ✅ **Payment Tests** - Stripe validation
+- ✅ **PWA Tests** - Manifest, service worker
+- ✅ **Real-time Tests** - Supabase subscriptions
+
+**Run ultimate validation:**
+```bash
+npm run test:validate
+```
+
+See `TESTING_COMPREHENSIVE.md` for complete testing documentation.
 
 ## Project Structure
 

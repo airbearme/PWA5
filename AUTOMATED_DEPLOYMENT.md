@@ -176,3 +176,4 @@ If automation fails, see `PUSH_AND_DEPLOY.md` for manual steps.
 
 **Status:** 🚀 **Fully Automated** (except DNS and Supabase redirect URLs which require dashboard access)
 
+

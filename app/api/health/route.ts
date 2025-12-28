@@ -1,42 +1,38 @@
-import { NextResponse } from "next/server"
-import { getSupabaseServer } from "@/lib/supabase/server"
-import { stripe } from "@/lib/stripe/server"
+import { NextResponse } from "next/server";
+import { createClient } from "@/lib/supabase/server";
 
 export async function GET() {
-  const checks = {
-    timestamp: new Date().toISOString(),
-    status: "healthy",
-    checks: {} as Record<string, { status: string; message?: string }>,
-  }
-
-  // Check Supabase connection
   try {
-    const supabase = await getSupabaseServer()
-    const { error } = await supabase.from("spots").select("count").limit(1).single()
-    checks.checks.supabase = error
-      ? { status: "unhealthy", message: error.message }
-      : { status: "healthy" }
-  } catch (error) {
-    checks.checks.supabase = {
-      status: "unhealthy",
-      message: error instanceof Error ? error.message : "Unknown error",
-    }
-    checks.status = "unhealthy"
-  }
+    const supabase = await createClient();
+    
+    // Check database connectivity
+    const { error: dbError } = await supabase
+      .from("spots")
+      .select("id")
+      .limit(1);
 
-  // Check Stripe connection
-  try {
-    await stripe.balance.retrieve()
-    checks.checks.stripe = { status: "healthy" }
-  } catch (error) {
-    checks.checks.stripe = {
-      status: "unhealthy",
-      message: error instanceof Error ? error.message : "Unknown error",
-    }
-    checks.status = "unhealthy"
-  }
+    const health = {
+      status: dbError ? "unhealthy" : "healthy",
+      timestamp: new Date().toISOString(),
+      services: {
+        database: dbError ? "unhealthy" : "healthy",
+        api: "healthy",
+      },
+      version: process.env.NEXT_PUBLIC_APP_VERSION || "1.0.0",
+      ...(dbError && { error: dbError.message }),
+    };
 
-  return NextResponse.json(checks, {
-    status: checks.status === "healthy" ? 200 : 503,
-  })
+    const statusCode = dbError ? 503 : 200;
+
+    return NextResponse.json(health, { status: statusCode });
+  } catch (error: any) {
+    return NextResponse.json(
+      {
+        status: "unhealthy",
+        timestamp: new Date().toISOString(),
+        error: error.message,
+      },
+      { status: 503 }
+    );
+  }
 }

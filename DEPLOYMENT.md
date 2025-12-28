@@ -68,3 +68,4 @@ The GitHub Actions workflow (`.github/workflows/ci-cd.yml`) will:
 - Check Vercel project settings
 - Ensure domain is configured in Vercel
 
+

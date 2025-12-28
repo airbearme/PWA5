@@ -5,6 +5,9 @@ import { Analytics } from "@vercel/analytics/react";
 import { ThemeProvider } from "@/components/theme-provider";
 import { AuthProvider } from "@/components/auth-provider";
 import { Toaster } from "@/components/ui/toaster";
+import PWAInstallPrompt from "@/components/pwa-install-prompt";
+import FloatingMascot from "@/components/floating-mascot";
+import { ErrorBoundary } from "@/components/error-boundary";
 import { validateRuntimeEnv } from "@/lib/auto-load-env";
 import "./globals.css";
 
@@ -30,7 +33,7 @@ export const viewport: Viewport = {
   initialScale: 1,
   maximumScale: 1,
   userScalable: false,
-  themeColor: "#ff6b35",
+  themeColor: "#0a0a0a",
 };
 
 export const metadata: Metadata = {
@@ -98,7 +101,7 @@ export const metadata: Metadata = {
   generator: "v0.app",
   themeColor: [
     { media: "(prefers-color-scheme: light)", color: "#ff6b35" },
-    { media: "(prefers-color-scheme: dark)", color: "#1a1a1a" },
+    { media: "(prefers-color-scheme: dark)", color: "#0a0a0a" },
   ],
 };
 
@@ -116,14 +119,18 @@ export default function RootLayout({
       >
         <ThemeProvider
           attribute="class"
-          defaultTheme="system"
-          enableSystem
+          defaultTheme="dark"
+          enableSystem={false}
           disableTransitionOnChange
         >
           <AuthProvider>
-            {children}
-            <Toaster />
-            <Analytics />
+            <ErrorBoundary>
+              {children}
+              <FloatingMascot />
+              <PWAInstallPrompt />
+              <Toaster />
+              <Analytics />
+            </ErrorBoundary>
           </AuthProvider>
         </ThemeProvider>
       </body>

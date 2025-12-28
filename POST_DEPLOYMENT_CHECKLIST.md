@@ -56,6 +56,7 @@ Go to Vercel Dashboard → Settings → Environment Variables
 - [ ] Select your project
 - [ ] Authentication → URL Configuration
 - [ ] Add redirect URL: `https://airbear.me/auth/callback`
+- [ ] Add redirect URL: `https://www.airbear.me/auth/callback`
 - [ ] Database → Replication
 - [ ] Enable replication for `airbears` table
 
