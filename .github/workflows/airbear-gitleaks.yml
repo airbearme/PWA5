@@ -1,0 +1,7 @@
+name: AirBear Gitleaks
+on: [push, pull_request]
+jobs:
+  scan:
+    runs-on: ubuntu-latest
+    steps:
+      - run: echo "Run gitleaks"

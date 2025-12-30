@@ -1,11 +1,11 @@
-import SftpClient from 'ssh2-sftp-client';
-import fs from 'fs';
+import fs from "fs";
+import SftpClient from "ssh2-sftp-client";
 
 const IONOS_CONFIG = {
-    host: 'access-5018328928.webspace-host.com',
-    username: 'a2096159',
-    password: 'Danknugs420420',
-    port: 22,
+	host: "access-5018328928.webspace-host.com",
+	username: "a2096159",
+	password: "Danknugs420420",
+	port: 22,
 };
 
 const SAFEST_HTACCESS = `
@@ -21,25 +21,25 @@ const SAFEST_HTACCESS = `
 `;
 
 async function restore() {
-    const sftp = new SftpClient();
-    try {
-        await sftp.connect(IONOS_CONFIG);
-        console.log('Connected.');
+	const sftp = new SftpClient();
+	try {
+		await sftp.connect(IONOS_CONFIG);
+		console.log("Connected.");
 
-        // Upload safe .htaccess to /
-        await sftp.put(Buffer.from(SAFEST_HTACCESS), '/.htaccess');
-        await sftp.chmod('/.htaccess', 0o644);
+		// Upload safe .htaccess to /
+		await sftp.put(Buffer.from(SAFEST_HTACCESS), "/.htaccess");
+		await sftp.chmod("/.htaccess", 0o644);
 
-        // Create dummy favicon to test 500
-        await sftp.put(Buffer.from(''), '/favicon.ico');
-        await sftp.chmod('/favicon.ico', 0o644);
+		// Create dummy favicon to test 500
+		await sftp.put(Buffer.from(""), "/favicon.ico");
+		await sftp.chmod("/favicon.ico", 0o644);
 
-        console.log('Restored .htaccess in root.');
-    } catch (e) {
-        console.error(e);
-    } finally {
-        sftp.end();
-    }
+		console.log("Restored .htaccess in root.");
+	} catch (e) {
+		console.error(e);
+	} finally {
+		sftp.end();
+	}
 }
 
 restore();

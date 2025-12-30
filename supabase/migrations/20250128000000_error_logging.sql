@@ -153,3 +153,5 @@ CREATE TRIGGER track_error_pattern_trigger
   EXECUTE FUNCTION track_error_pattern();
 
 
+
+

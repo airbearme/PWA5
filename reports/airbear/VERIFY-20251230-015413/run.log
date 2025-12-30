@@ -1,0 +1,6 @@
+
+[01/12] VERIFY → Repo sanity
+[PASS] Repo structure OK
+
+[02/12] VERIFY → Next config hardened
+[FAIL] next.config not hardened

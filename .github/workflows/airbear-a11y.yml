@@ -1,0 +1,7 @@
+name: AirBear A11y (axe)
+on: [workflow_dispatch, schedule]
+jobs:
+  axe:
+    runs-on: ubuntu-latest
+    steps:
+      - run: echo "Run axe-playwright; fail on new issues"

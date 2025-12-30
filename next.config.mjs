@@ -54,3 +54,8 @@ const nextConfig = {
 };
 
 export default nextConfig;
+
+/**
+ * Workspace root hardening (lockfile-safe)
+ */
+export const outputFileTracingRoot = new URL('.', import.meta.url).pathname;

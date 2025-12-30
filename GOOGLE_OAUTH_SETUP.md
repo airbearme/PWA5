@@ -119,3 +119,5 @@ Replace `YOUR_PROJECT_REF` with your actual project reference.
 
 **After adding both Client ID and Client Secret to Supabase, Google OAuth should work!** ✅
 
+
+

@@ -1,0 +1,7 @@
+name: Autonomous
+on: { schedule: [{cron:"*/15 * * * *"}] }
+jobs:
+ loop:
+  runs-on: ubuntu-latest
+  steps:
+   - run: echo "dispatch workflows"

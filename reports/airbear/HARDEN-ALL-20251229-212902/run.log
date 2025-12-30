@@ -1,0 +1,81 @@
+
+[01/22]   4% | elapsed:   0s | eta:   0s
+[21:29:02] STEP 1 → Sanity checks
+::notice::STEP 1/22: Sanity checks
+
+[02/22]   9% | elapsed:   0s | eta:   0s
+[21:29:02] STEP 2 → Security headers + CSP
+::notice::STEP 2/22: Security headers + CSP
+[21:29:02] wrote → lib/security-headers.ts
+
+[03/22]  13% | elapsed:   0s | eta:   0s
+[21:29:02] STEP 3 → Feature flags + kill switch
+::notice::STEP 3/22: Feature flags + kill switch
+[21:29:03] wrote → lib/flags.ts
+
+[04/22]  18% | elapsed:   1s | eta:   4s
+[21:29:03] STEP 4 → Rate limiting + PII scrub
+::notice::STEP 4/22: Rate limiting + PII scrub
+[21:29:03] wrote → lib/rate-limit.ts
+[21:29:03] wrote → lib/pii.ts
+
+[05/22]  22% | elapsed:   1s | eta:   3s
+[21:29:03] STEP 5 → Structured JSON logger
+::notice::STEP 5/22: Structured JSON logger
+[21:29:03] wrote → observability/logger.ts
+
+[06/22]  27% | elapsed:   1s | eta:   2s
+[21:29:03] STEP 6 → Telemetry API endpoints
+::notice::STEP 6/22: Telemetry API endpoints
+[21:29:03] wrote → app/api/client-error/route.ts
+[21:29:03] wrote → app/api/suggestion/route.ts
+
+[07/22]  31% | elapsed:   1s | eta:   2s
+[21:29:03] STEP 7 → Stripe webhook stub (verified later)
+::notice::STEP 7/22: Stripe webhook stub (verified later)
+[21:29:03] wrote → app/api/stripe/webhook/route.ts
+
+[08/22]  36% | elapsed:   1s | eta:   1s
+[21:29:03] STEP 8 → Supabase telemetry migrations
+::notice::STEP 8/22: Supabase telemetry migrations
+[21:29:03] wrote → supabase/migrations/telemetry_hardened.sql
+
+[09/22]  40% | elapsed:   1s | eta:   1s
+[21:29:03] STEP 9 → Budgets (baseline + compare stubs)
+::notice::STEP 9/22: Budgets (baseline + compare stubs)
+[21:29:03] wrote → scripts/budget-baseline.mjs
+[21:29:03] wrote → scripts/budget-compare.mjs
+
+[10/22]  45% | elapsed:   1s | eta:   1s
+[21:29:03] STEP 10 → CI workflows (quality / autofix / preview / deploy / rollback)
+::notice::STEP 10/22: CI workflows (quality / autofix / preview / deploy / rollback)
+[21:29:03] wrote → .github/workflows/quality.yml
+[21:29:03] wrote → .github/workflows/autofix.yml
+[21:29:03] wrote → .github/workflows/preview.yml
+[21:29:03] wrote → .github/workflows/deploy-prod.yml
+[21:29:03] wrote → .github/workflows/rollback.yml
+
+[11/22]  50% | elapsed:   1s | eta:   1s
+[21:29:03] STEP 11 → Super-agent autonomous loop
+::notice::STEP 11/22: Super-agent autonomous loop
+[21:29:03] wrote → .github/workflows/autonomous.yml
+
+[12/22]  54% | elapsed:   1s | eta:   0s
+[21:29:03] STEP 12 → Governance (CODEOWNERS)
+::notice::STEP 12/22: Governance (CODEOWNERS)
+[21:29:03] wrote → .github/CODEOWNERS
+
+[13/22]  59% | elapsed:   1s | eta:   0s
+[21:29:03] STEP 13 → Finalize
+::notice::STEP 13/22: Finalize
+
+[13/22]  59% | elapsed:   1s | eta:   0s
+[21:29:03] Files written: 18
+[21:29:03] Errors logged: reports/airbear/HARDEN-ALL-20251229-212902/errors.log
+[21:29:03] Duration: 1s
+
+======================================================
+[✓] AIRBEAR HARDEN-ALL COMPLETE
+[✓] Write-only • Idempotent • Fully instrumented
+[✓] Progress, spinner, ETA, logs enabled
+======================================================

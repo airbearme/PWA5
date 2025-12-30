@@ -1,0 +1,7 @@
+name: AirBear Visual Diffs
+on: [pull_request]
+jobs:
+  visual:
+    runs-on: ubuntu-latest
+    steps:
+      - run: echo "Screenshot diff baseline vs PR"

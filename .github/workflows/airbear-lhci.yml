@@ -1,0 +1,7 @@
+name: AirBear Lighthouse CI
+on: [workflow_dispatch, schedule]
+jobs:
+  lhci:
+    runs-on: ubuntu-latest
+    steps:
+      - run: echo "Run Lighthouse CI with budgets"

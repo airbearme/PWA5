@@ -6,52 +6,49 @@
  */
 
 const requiredEnvVars = [
-  'NEXT_PUBLIC_SUPABASE_URL',
-  'NEXT_PUBLIC_SUPABASE_ANON_KEY',
-  'STRIPE_SECRET_KEY',
-  'STRIPE_PUBLISHABLE_KEY',
+	"NEXT_PUBLIC_SUPABASE_URL",
+	"NEXT_PUBLIC_SUPABASE_ANON_KEY",
+	"STRIPE_SECRET_KEY",
+	"STRIPE_PUBLISHABLE_KEY",
 ];
 
-const optionalEnvVars = [
-  'STRIPE_WEBHOOK_SECRET',
-  'NEXT_PUBLIC_SITE_URL',
-];
+const optionalEnvVars = ["STRIPE_WEBHOOK_SECRET", "NEXT_PUBLIC_SITE_URL"];
 
 function validateEnv() {
-  console.log('🔍 Validating environment variables...\n');
+	console.log("🔍 Validating environment variables...\n");
 
-  let allValid = true;
-  const missing = [];
-  const present = [];
+	let allValid = true;
+	const missing = [];
+	const present = [];
 
-  requiredEnvVars.forEach((varName) => {
-    if (process.env[varName]) {
-      present.push(varName);
-      console.log(`✅ ${varName}: Set`);
-    } else {
-      missing.push(varName);
-      console.log(`❌ ${varName}: Missing`);
-      allValid = false;
-    }
-  });
+	requiredEnvVars.forEach((varName) => {
+		if (process.env[varName]) {
+			present.push(varName);
+			console.log(`✅ ${varName}: Set`);
+		} else {
+			missing.push(varName);
+			console.log(`❌ ${varName}: Missing`);
+			allValid = false;
+		}
+	});
 
-  console.log('\n📋 Optional variables:');
-  optionalEnvVars.forEach((varName) => {
-    if (process.env[varName]) {
-      console.log(`✅ ${varName}: Set`);
-    } else {
-      console.log(`⚠️  ${varName}: Not set (optional)`);
-    }
-  });
+	console.log("\n📋 Optional variables:");
+	optionalEnvVars.forEach((varName) => {
+		if (process.env[varName]) {
+			console.log(`✅ ${varName}: Set`);
+		} else {
+			console.log(`⚠️  ${varName}: Not set (optional)`);
+		}
+	});
 
-  if (!allValid) {
-    console.log('\n❌ Validation failed. Missing required variables:');
-    missing.forEach((v) => console.log(`  - ${v}`));
-    process.exit(1);
-  } else {
-    console.log('\n✅ All required environment variables are set');
-    process.exit(0);
-  }
+	if (!allValid) {
+		console.log("\n❌ Validation failed. Missing required variables:");
+		missing.forEach((v) => console.log(`  - ${v}`));
+		process.exit(1);
+	} else {
+		console.log("\n✅ All required environment variables are set");
+		process.exit(0);
+	}
 }
 
 validateEnv();
