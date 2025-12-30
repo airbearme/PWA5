@@ -12,7 +12,8 @@
 		"lint": "next lint",
 		"start": "next start",
 		"test:e2e": "playwright test",
-		"type-check": "tsc --noEmit"
+		"type-check": "tsc --noEmit",
+		"validate-env": "node scripts/validate-env.mjs"
 	},
 	"dependencies": {
 		"@emotion/is-prop-valid": "latest",
@@ -113,7 +114,7 @@
 		"@types/react": "^19.0.6",
 		"@types/react-dom": "^19.0.2",
 		"autoprefixer": "^10.4.22",
-		"dotenv": "^16.4.7",
+		"dotenv": "^16.6.1",
 		"drizzle-kit": "^0.31.5",
 		"eslint": "^9.18.0",
 		"eslint-config-next": "^15.1.6",
