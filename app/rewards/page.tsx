@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import { motion } from "framer-motion";
 import { useAuthContext } from "@/components/auth-provider";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -209,7 +210,9 @@ export default function RewardsPage() {
                 When the Binghamton grid reaches{" "}
                 <span className="text-primary font-bold">100,000kg</span> of
                 total CO2 offset, all active agents will receive a{" "}
-                <span className="text-amber-500 font-bold">Founder's Core</span>{" "}
+                <span className="text-amber-500 font-bold">
+                  Found&#39;er Core
+                </span>{" "}
                 badge.
               </p>
               <div className="w-full md:w-[400px] space-y-2">
@@ -226,7 +229,13 @@ export default function RewardsPage() {
                   key={i}
                   className="w-16 h-16 rounded-full border-4 border-background bg-muted flex items-center justify-center overflow-hidden"
                 >
-                  <img src={`https://i.pravatar.cc/150?u=${i}`} alt="user" />
+                  <Image
+                    src={`https://i.pravatar.cc/150?u=${i}`}
+                    alt="user"
+                    width={150}
+                    height={150}
+                    className="object-cover"
+                  />
                 </div>
               ))}
               <div className="w-16 h-16 rounded-full border-4 border-background bg-primary flex items-center justify-center text-white font-black text-xs">

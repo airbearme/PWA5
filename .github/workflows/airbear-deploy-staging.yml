@@ -1,0 +1,19 @@
+name: AirBear Deploy Staging (Guarded)
+on: { workflow_dispatch: {} }
+permissions: { contents: read }
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    environment: staging
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v3
+        with: { version: 9 }
+      - uses: actions/setup-node@v4
+        with: { node-version: 22, cache: "pnpm" }
+      - run: pnpm install
+      - run: pnpm run type-check
+      - run: pnpm run build
+      - run: |
+          npm i -g vercel
+          vercel --token "${{ secrets.VERCEL_TOKEN }}" --confirm --scope "${{ secrets.VERCEL_SCOPE }}"

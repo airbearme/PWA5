@@ -1,0 +1,19 @@
+name: AirBear Error/Suggestion Triage
+on:
+  schedule: [{ cron: "11 * * * *" }]
+  workflow_dispatch:
+permissions:
+  issues: write
+  contents: read
+jobs:
+  triage:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: { node-version: 22 }
+      - run: node scripts/triage-from-supabase.mjs
+        env:
+          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+          SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

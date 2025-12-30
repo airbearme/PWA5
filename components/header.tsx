@@ -50,7 +50,7 @@ export default function Header() {
 
   return (
     <motion.header
-      className="relative z-50 glass-morphism border-b border-primary/10 sticky top-0"
+      className="z-50 glass-morphism border-b border-primary/10 sticky top-0"
       initial={{ y: -100 }}
       animate={{ y: 0 }}
       transition={{ duration: 0.6, type: "spring" }}

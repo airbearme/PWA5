@@ -1,0 +1,30 @@
+
+[01/12] VERIFY → Repo sanity
+[PASS] Repo structure OK
+
+[02/12] VERIFY → Next config hardened
+[PASS] Next config hardened
+
+[03/12] VERIFY → Middleware hardened
+[PASS] Middleware hardened
+
+[04/12] VERIFY → Telemetry API routes
+[PASS] Telemetry APIs present
+
+[05/12] VERIFY → Stripe webhook hardened
+[PASS] Stripe webhook verified
+
+[06/12] VERIFY → Supabase telemetry migration
+[PASS] Supabase telemetry migration present
+
+[07/12] VERIFY → RLS enforcement
+[PASS] RLS enforced
+
+[08/12] VERIFY → CI workflows
+[PASS] All CI workflows present
+
+[09/12] VERIFY → Env contract
+[PASS] Env contract valid
+
+[10/12] VERIFY → Logging integrity
+[FAIL] Error log missing

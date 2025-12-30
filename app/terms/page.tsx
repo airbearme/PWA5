@@ -11,6 +11,7 @@ import {
 } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
+import Image from "next/image";
 
 export default function TermsPage() {
   const sections = [
@@ -75,8 +76,8 @@ export default function TermsPage() {
                   </CardTitle>
                 </CardHeader>
                 <CardContent className="p-8">
-                  <p className="text-muted-foreground font-medium leading-relaxed italic border-l-2 border-primary/20 pl-6">
-                    "{s.content}"
+                  <p className="text-muted-foreground font-medium">
+                    {s.content}
                   </p>
                 </CardContent>
               </Card>

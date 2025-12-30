@@ -1,4 +1,5 @@
 import { cn } from "@/lib/utils";
+import Image from "next/image";
 import AirbearWheel from "./airbear-wheel";
 
 interface AirbearAvatarProps {
@@ -28,10 +29,12 @@ export default function AirbearAvatar({
       aria-hidden="true"
     >
       <div className="absolute inset-0 bg-black/10 mix-blend-overlay" />
-      <img
+      <Image
         src="/airbear-mascot.png"
         alt="AirBear mascot"
-        className="w-full h-full object-cover"
+        className="object-cover"
+        fill
+        sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
       />
 
       <div className="absolute -bottom-3 left-1/2 -translate-x-1/2">

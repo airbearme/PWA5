@@ -169,7 +169,7 @@ export default function MapPage() {
               AirBear Hub
             </span>
           </h1>
-          <p className="text-lg text-muted-foreground font-medium uppercase tracking-widest text-xs">
+          <p className="text-muted-foreground font-medium uppercase tracking-widest text-xs">
             {spots.length} ACTIVE SPOTS • {availableAirbears.length} AVAILABLE
             RIDE-SHARES
           </p>

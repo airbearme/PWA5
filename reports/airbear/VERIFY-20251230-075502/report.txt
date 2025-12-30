@@ -1,0 +1,16 @@
+[PASS] Repo structure OK
+[PASS] Next config hardened
+[PASS] Middleware hardened
+[PASS] Telemetry APIs present
+[PASS] Stripe webhook verified
+[PASS] Telemetry migration present
+[PASS] RLS enforced
+[PASS] All CI workflows present
+[PASS] Env contract valid
+[PASS] Logs present
+[PASS] Idempotency marker created
+==================================================
+AIRBEAR SYSTEM STATUS: ✅ VERIFIED
+Run ID: VERIFY-20251230-075502
+Finished: 2025-12-30T07:55:03-05:00
+==================================================

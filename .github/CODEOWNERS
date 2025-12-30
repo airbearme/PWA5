@@ -1,0 +1,5 @@
+* @airbearme/core
+.github/workflows/ @airbearme/devops
+supabase/ @airbearme/db
+app/api/ @airbearme/backend
+components/ @airbearme/frontend

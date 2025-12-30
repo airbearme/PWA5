@@ -1,0 +1,17 @@
+name: AirBear Rollback (Manual Promote)
+on:
+  workflow_dispatch:
+    inputs:
+      deployment_url:
+        description: "Previous Vercel deployment URL to promote"
+        required: true
+permissions: { contents: read }
+jobs:
+  rollback:
+    runs-on: ubuntu-latest
+    environment: production
+    steps:
+      - run: |
+          npm i -g vercel
+          vercel alias set "${{ inputs.deployment_url }}" "${{ secrets.VERCEL_PROD_ALIAS }}" \
+            --token "${{ secrets.VERCEL_TOKEN }}" --scope "${{ secrets.VERCEL_SCOPE }}"

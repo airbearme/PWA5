@@ -71,10 +71,49 @@ export default function RootLayout({
           <QueryProvider>
             <AuthProvider>
               <div className="relative flex min-h-screen flex-col bg-background">
-                {/* Global Decorative Background */}
-                <div className="fixed inset-0 z-[-1] overflow-hidden pointer-events-none opacity-50 dark:opacity-20">
-                  <div className="absolute top-0 left-0 w-full h-full bg-[radial-gradient(circle_at_50%_0%,rgba(16,185,129,0.1)_0%,transparent_50%)]"></div>
-                  <div className="absolute bottom-0 right-0 w-full h-full bg-[radial-gradient(circle_at_100%_100%,rgba(245,158,11,0.05)_0%,transparent_50%)]"></div>
+                {/* Enhanced Global Special Effects Background */}
+                <div className="fixed inset-0 z-[-1] overflow-hidden pointer-events-none">
+                  {/* Plasma Vortex Background */}
+                  <div className="absolute -top-[30%] -left-[30%] w-[80%] h-[80%] airbear-plasma rounded-full opacity-20 dark:opacity-10"></div>
+
+                  {/* Solar Rays Effect */}
+                  <div className="absolute top-[20%] -right-[20%] w-[50%] h-[50%] airbear-solar-rays rounded-full opacity-30 dark:opacity-15"></div>
+
+                  {/* God Rays */}
+                  <div className="absolute -bottom-[40%] left-[10%] w-[60%] h-[60%] airbear-god-rays rounded-full opacity-25 dark:opacity-10"></div>
+
+                  {/* Eco Breeze Waves */}
+                  <div className="absolute top-[60%] left-[70%] w-[40%] h-[30%] airbear-eco-breeze rounded-full opacity-40 dark:opacity-20"></div>
+
+                  {/* Permanent Particle Systems */}
+                  <div className="absolute top-[15%] left-[15%] w-[20%] h-[20%] particle-system opacity-60 dark:opacity-30"></div>
+                  <div className="absolute bottom-[25%] right-[20%] w-[18%] h-[18%] particle-system opacity-50 dark:opacity-25"></div>
+                  <div className="absolute top-[70%] left-[50%] w-[15%] h-[15%] particle-system opacity-70 dark:opacity-35"></div>
+
+                  {/* Floating Energy Orbs */}
+                  {[...Array(6)].map((_, i) => (
+                    <div
+                      key={i}
+                      className={`absolute rounded-full animate-float opacity-30 dark:opacity-15 ${
+                        i % 3 === 0 ? 'bg-primary/20' :
+                        i % 3 === 1 ? 'bg-amber-500/15' :
+                        'bg-purple-500/20'
+                      }`}
+                      style={{
+                        width: Math.random() * 30 + 20 + "px",
+                        height: Math.random() * 30 + 20 + "px",
+                        left: Math.random() * 90 + 5 + "%",
+                        top: Math.random() * 90 + 5 + "%",
+                        animationDelay: Math.random() * 10 + "s",
+                        animationDuration: (Math.random() * 20 + 15) + "s",
+                      }}
+                    />
+                  ))}
+
+                  {/* Subtle Grid Overlay */}
+                  <div className="absolute inset-0 opacity-[0.02] dark:opacity-[0.05]">
+                    <div className="w-full h-full bg-[linear-gradient(rgba(16,185,129,0.1)_1px,transparent_1px),linear-gradient(90deg,rgba(16,185,129,0.1)_1px,transparent_1px)] bg-[size:50px_50px]"></div>
+                  </div>
                 </div>
 
                 <Header />

@@ -22,35 +22,54 @@ import { HolographicCard } from "@/components/ui/holographic-card";
 export default function HomePage() {
   return (
     <div className="relative min-h-screen overflow-hidden bg-background">
-      {/* Dynamic Background Elements */}
+      {/* Enhanced Dynamic Background Elements */}
       <div className="absolute inset-0 pointer-events-none overflow-hidden">
-        <div className="absolute -top-[10%] -left-[10%] w-[40%] h-[40%] bg-primary/10 blur-[120px] rounded-full animate-pulse"></div>
-        <div className="absolute top-[20%] -right-[5%] w-[30%] h-[30%] bg-amber-500/10 blur-[100px] rounded-full animate-float"></div>
-        <div className="absolute -bottom-[10%] left-[20%] w-[50%] h-[30%] bg-emerald-500/10 blur-[120px] rounded-full"></div>
+        {/* Plasma Vortex Background */}
+        <div className="absolute -top-[20%] -left-[20%] w-[60%] h-[60%] airbear-plasma rounded-full opacity-30"></div>
 
-        {/* Floating Particles */}
-        {[...Array(8)].map((_, i) => (
+        {/* Solar Rays Effect */}
+        <div className="absolute top-[10%] -right-[10%] w-[40%] h-[40%] airbear-solar-rays rounded-full opacity-40"></div>
+
+        {/* God Rays */}
+        <div className="absolute -bottom-[20%] left-[30%] w-[50%] h-[50%] airbear-god-rays rounded-full opacity-50"></div>
+
+        {/* Eco Breeze Waves */}
+        <div className="absolute top-[40%] left-[10%] w-[30%] h-[20%] airbear-eco-breeze rounded-full opacity-60"></div>
+
+        {/* Enhanced Floating Particles */}
+        {[...Array(12)].map((_, i) => (
           <motion.div
             key={i}
-            className="absolute bg-primary/20 rounded-full"
+            className={`absolute rounded-full ${
+              i % 4 === 0 ? 'bg-primary/30' :
+              i % 4 === 1 ? 'bg-amber-500/25' :
+              i % 4 === 2 ? 'bg-emerald-500/25' :
+              'bg-purple-500/20'
+            }`}
             style={{
-              width: Math.random() * 15 + 5 + "px",
-              height: Math.random() * 15 + 5 + "px",
+              width: Math.random() * 20 + 8 + "px",
+              height: Math.random() * 20 + 8 + "px",
               left: Math.random() * 100 + "%",
               top: Math.random() * 100 + "%",
             }}
             animate={{
-              y: [0, -40, 0],
-              opacity: [0.2, 0.5, 0.2],
+              y: [0, -60, 0],
+              x: [0, Math.random() * 40 - 20, 0],
+              opacity: [0.1, 0.6, 0.1],
+              scale: [0.8, 1.2, 0.8],
             }}
             transition={{
-              duration: Math.random() * 5 + 5,
+              duration: Math.random() * 8 + 6,
               repeat: Infinity,
               ease: "easeInOut",
-              delay: Math.random() * 5,
+              delay: Math.random() * 8,
             }}
           />
         ))}
+
+        {/* Particle Systems */}
+        <div className="absolute top-[20%] left-[20%] w-[15%] h-[15%] particle-system opacity-70"></div>
+        <div className="absolute bottom-[30%] right-[25%] w-[12%] h-[12%] particle-system opacity-50"></div>
       </div>
 
       {/* Hero Section */}
@@ -281,6 +300,7 @@ export default function HomePage() {
                   size="xl"
                   glowing
                   animated
+                  effectType="fire"
                   className="w-64 h-64 md:w-80 md:h-80 opacity-90 group-hover:scale-105 transition-transform duration-700"
                 />
               </div>

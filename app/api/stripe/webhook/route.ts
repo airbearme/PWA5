@@ -1,45 +1,25 @@
-import { type NextRequest, NextResponse } from "next/server";
-import { stripe } from "@/lib/stripe/server";
-import { getSupabaseAdmin } from "@/lib/supabase/server";
-import type Stripe from "stripe";
+import Stripe from "stripe";
+import { NextResponse } from "next/server";
+export const runtime = "nodejs";
 
-const webhookSecret = process.env.STRIPE_WEBHOOK_SECRET!;
+const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
+  apiVersion: "2024-06-20",
+});
 
-export const dynamic = "force-dynamic";
+export async function POST(req: Request) {
+  const sig = req.headers.get("stripe-signature");
+  if (!sig) return NextResponse.json({}, { status: 400 });
 
-export async function POST(req: NextRequest) {
   const body = await req.text();
-  const signature = req.headers.get("stripe-signature")!;
-
-  let event: Stripe.Event;
-
   try {
-    event = stripe.webhooks.constructEvent(body, signature, webhookSecret);
-  } catch (err) {
-    return NextResponse.json(
-      { error: "Webhook signature verification failed" },
-      { status: 400 }
+    stripe.webhooks.constructEvent(
+      body,
+      sig,
+      process.env.STRIPE_WEBHOOK_SECRET!
     );
+  } catch {
+    return NextResponse.json({}, { status: 400 });
   }
 
-  const supabase = await getSupabaseAdmin();
-
-  switch (event.type) {
-    case "checkout.session.completed": {
-      const session = event.data.object as Stripe.Checkout.Session;
-      const userId = session.metadata?.userId;
-
-      if (userId) {
-        await supabase.from("orders").insert({
-          user_id: userId,
-          total_amount: session.amount_total! / 100,
-          status: "completed",
-          stripe_payment_id: session.payment_intent as string,
-        });
-      }
-      break;
-    }
-  }
-
-  return NextResponse.json({ received: true });
+  return NextResponse.json({ ok: true });
 }

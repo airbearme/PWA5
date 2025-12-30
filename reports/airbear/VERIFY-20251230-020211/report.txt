@@ -1,0 +1,19 @@
+[PASS] Repo structure OK
+[PASS] Next config hardened
+[PASS] Middleware hardened
+[PASS] Telemetry APIs present
+[PASS] Stripe webhook verified
+[PASS] Telemetry migration present
+[PASS] RLS enforced
+[PASS] All CI workflows present
+[PASS] Env contract valid
+[PASS] Logs present
+FAIL: Not idempotent
+FAIL: Not idempotent
+FAIL: Not idempotent
+FAIL: Not idempotent
+FAIL: Not idempotent
+FAIL: Not idempotent
+FAIL: Not idempotent
+FAIL: Not idempotent
+FAIL: Not idempotent

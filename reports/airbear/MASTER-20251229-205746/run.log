@@ -1,0 +1,24 @@
+[AIRBEAR] MASTER OCS
+[i] Repo: /home/coden809/Projects/PWA5
+[i] APPLY=1 RUN=1 PR_MODE=1 PROD_DEPLOY=0
+
+==> pnpm install
+Lockfile is up to date, resolution step is skipped
+Already up to date
+
+
+> airbear-pwa@2.0.0 postinstall /home/coden809/Projects/PWA5
+> echo 'Skipping type-check for deployment'
+
+Skipping type-check for deployment
+╭ Warning ─────────────────────────────────────────────────────────────────────╮
+│                                                                              │
+│   Ignored build scripts: @parcel/watcher@2.5.1, cpu-features@0.0.10,         │
+│   esbuild@0.14.47, esbuild@0.18.20, esbuild@0.25.12, esbuild@0.27.2,         │
+│   less@4.5.1, sharp@0.33.5, sharp@0.34.5, ssh2@1.17.0,                       │
+│   unrs-resolver@1.11.1.                                                      │
+│   Run "pnpm approve-builds" to pick which dependencies should be allowed     │
+│   to run scripts.                                                            │
+│                                                                              │
+╰──────────────────────────────────────────────────────────────────────────────╯
+Done in 5.6s using pnpm v10.26.1

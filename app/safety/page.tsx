@@ -53,8 +53,8 @@ export default function SafetyPage() {
             Safety <span className="text-emerald-500">Protocols</span>
           </h1>
           <p className="text-muted-foreground font-medium max-w-3xl mx-auto text-xl leading-relaxed">
-            At AirBear, security isn't just a feature—it's the core architecture
-            of our solar-powered revolution.
+            At AirBear, security isn&apos;t just a feature—it&apos;s the core
+            architecture of our solar-powered revolution.
           </p>
         </motion.div>
 
@@ -97,7 +97,6 @@ export default function SafetyPage() {
               Zero Tolerance Policy
             </h2>
             <p className="max-w-2xl mx-auto text-muted-foreground font-medium text-lg">
-              Any breach of safety protocols or harassment between agents will
               result in immediate and permanent grid deactivation. We maintain a
               sanctuary of sustainable movement.
             </p>

@@ -1,0 +1,155 @@
+[32m[23:33:44] AirBear ULTIMATE OCS starting[0m
+[36m[23:33:44] Output → reports/airbear/AIRBEAR-ULTIMATE-20251229-233343[0m
+[36m[23:33:44] Latest → reports/airbear/latest[0m
+[36m[23:33:44] WRITE_ONLY=1 RUN_LOCAL=0[0m
+[2m
+[01/64]   1% | elapsed:   1s | eta:  63s | writes:0
+Progress: [--------------------------------------------------][0m
+[36m[23:33:44] STEP 1 → Sanity checks[0m
+::notice::STEP 1/64: Sanity checks
+[2m
+[02/64]   3% | elapsed:   1s | eta:  31s | writes:0
+Progress: [#-------------------------------------------------][0m
+[36m[23:33:44] STEP 2 → App hardening core libs[0m
+::notice::STEP 2/64: App hardening core libs
+[23:33:44] wrote → lib/security-headers.ts
+[23:33:44] wrote → lib/flags.ts
+[23:33:44] wrote → lib/rate-limit.ts
+[23:33:44] wrote → lib/pii.ts
+[2m
+[03/64]   4% | elapsed:   1s | eta:  20s | writes:4
+Progress: [##------------------------------------------------][0m
+[36m[23:33:44] STEP 3 → Observability logger[0m
+::notice::STEP 3/64: Observability logger
+[23:33:44] wrote → observability/logger.ts
+[2m
+[04/64]   6% | elapsed:   1s | eta:  15s | writes:5
+Progress: [###-----------------------------------------------][0m
+[36m[23:33:44] STEP 4 → Strict env contract + supabase admin client[0m
+::notice::STEP 4/64: Strict env contract + supabase admin client
+[23:33:44] wrote → lib/env.ts
+[23:33:44] wrote → lib/supabase-admin.ts
+[2m
+[05/64]   7% | elapsed:   1s | eta:  11s | writes:7
+Progress: [###-----------------------------------------------][0m
+[36m[23:33:44] STEP 5 → Middleware hardened template (kill switch + matcher)[0m
+::notice::STEP 5/64: Middleware hardened template (kill switch + matcher)
+[23:33:44] wrote → middleware.hardened.ts
+[2m
+[06/64]   9% | elapsed:   1s | eta:   9s | writes:8
+Progress: [####----------------------------------------------][0m
+[36m[23:33:44] STEP 6 → Next config hardened template (headers)[0m
+::notice::STEP 6/64: Next config hardened template (headers)
+[23:33:45] wrote → next.config.hardened.mjs
+[2m
+[07/64]  10% | elapsed:   2s | eta:  16s | writes:9
+Progress: [#####---------------------------------------------][0m
+[36m[23:33:45] STEP 7 → Telemetry APIs (errors + suggestions) hardened[0m
+::notice::STEP 7/64: Telemetry APIs (errors + suggestions) hardened
+[23:33:45] wrote → app/api/client-error/route.ts
+[23:33:45] wrote → app/api/suggestion/route.ts
+[2m
+[08/64]  12% | elapsed:   2s | eta:  14s | writes:11
+Progress: [######--------------------------------------------][0m
+[36m[23:33:45] STEP 8 → Stripe webhook hardened (verify + idempotency hook)[0m
+::notice::STEP 8/64: Stripe webhook hardened (verify + idempotency hook)
+[23:33:45] wrote → app/api/stripe/webhook/route.ts
+[2m
+[09/64]  14% | elapsed:   2s | eta:  12s | writes:12
+Progress: [#######-------------------------------------------][0m
+[36m[23:33:45] STEP 9 → Supabase migration (telemetry tables + strict RLS)[0m
+::notice::STEP 9/64: Supabase migration (telemetry tables + strict RLS)
+[23:33:45] wrote → supabase/migrations/20251229233345_telemetry_hardened.sql
+[2m
+[10/64]  15% | elapsed:   2s | eta:  10s | writes:13
+Progress: [#######-------------------------------------------][0m
+[36m[23:33:45] STEP 10 → Build budgets (baseline + compare)[0m
+::notice::STEP 10/64: Build budgets (baseline + compare)
+[23:33:45] wrote → scripts/budget-baseline.mjs
+[23:33:45] wrote → scripts/budget-compare.mjs
+[2m
+[11/64]  17% | elapsed:   2s | eta:   9s | writes:15
+Progress: [########------------------------------------------][0m
+[36m[23:33:45] STEP 11 → Contract snapshot + visual + flaky quarantine scripts[0m
+::notice::STEP 11/64: Contract snapshot + visual + flaky quarantine scripts
+[23:33:45] wrote → scripts/snapshot-contracts.mjs
+[23:33:45] wrote → scripts/quarantine-flaky.mjs
+[2m
+[12/64]  18% | elapsed:   2s | eta:   8s | writes:17
+Progress: [#########-----------------------------------------][0m
+[36m[23:33:45] STEP 12 → Repo governance (CODEOWNERS/templates/dependabot)[0m
+::notice::STEP 12/64: Repo governance (CODEOWNERS/templates/dependabot)
+[23:33:45] wrote → .github/CODEOWNERS
+[23:33:45] wrote → .github/pull_request_template.md
+[23:33:46] wrote → .github/ISSUE_TEMPLATE/bug.yml
+[23:33:46] wrote → .github/ISSUE_TEMPLATE/feature.yml
+[23:33:46] wrote → .github/dependabot.yml
+[2m
+[13/64]  20% | elapsed:   3s | eta:  11s | writes:22
+Progress: [##########----------------------------------------][0m
+[36m[23:33:46] STEP 13 → CI workflows (quality/security/sbom/lhci/a11y/e2e/preview)[0m
+::notice::STEP 13/64: CI workflows (quality/security/sbom/lhci/a11y/e2e/preview)
+[23:33:46] wrote → .github/workflows/airbear-quality.yml
+[23:33:46] wrote → .github/workflows/airbear-dep-review.yml
+[23:33:46] wrote → .github/workflows/airbear-codeql.yml
+[23:33:46] wrote → .github/workflows/airbear-gitleaks.yml
+[23:33:46] wrote → .github/workflows/airbear-trivy.yml
+[23:33:46] wrote → .github/workflows/airbear-semgrep.yml
+[23:33:46] wrote → .github/workflows/airbear-osv.yml
+[23:33:46] wrote → .github/workflows/airbear-e2e.yml
+[23:33:46] wrote → lighthouserc.json
+[23:33:46] wrote → .github/workflows/airbear-lhci.yml
+[23:33:46] wrote → .github/workflows/airbear-preview.yml
+[2m
+[14/64]  21% | elapsed:   3s | eta:  10s | writes:33
+Progress: [##########----------------------------------------][0m
+[36m[23:33:46] STEP 14 → Deploy workflows (staging + prod guarded + rollback)[0m
+::notice::STEP 14/64: Deploy workflows (staging + prod guarded + rollback)
+[23:33:46] wrote → .github/workflows/airbear-deploy-staging.yml
+[23:33:46] wrote → .github/workflows/airbear-deploy-prod.yml
+[23:33:46] wrote → .github/workflows/airbear-rollback.yml
+[2m
+[15/64]  23% | elapsed:   3s | eta:   9s | writes:36
+Progress: [###########---------------------------------------][0m
+[36m[23:33:46] STEP 15 → Autofix PR + autonomous dispatcher[0m
+::notice::STEP 15/64: Autofix PR + autonomous dispatcher
+[23:33:46] wrote → .github/workflows/airbear-autofix-pr.yml
+[23:33:46] wrote → scripts/triage-from-supabase.mjs
+[23:33:47] wrote → .github/workflows/airbear-triage.yml
+[23:33:47] wrote → .github/workflows/airbear-autonomous.yml
+[2m
+[16/64]  25% | elapsed:   4s | eta:  12s | writes:40
+Progress: [############--------------------------------------][0m
+[36m[23:33:47] STEP 16 → SBOM + license allowlist[0m
+::notice::STEP 16/64: SBOM + license allowlist
+[23:33:47] wrote → .airbear/license-allowlist.txt
+[23:33:48] wrote → .github/workflows/airbear-sbom.yml
+[2m
+[17/64]  26% | elapsed:   5s | eta:  13s | writes:42
+Progress: [#############-------------------------------------][0m
+[36m[23:33:48] STEP 17 → Secrets + env documentation[0m
+::notice::STEP 17/64: Secrets + env documentation
+[23:33:48] wrote → .airbear/SECRETS_REQUIRED.md
+[2m
+[18/64]  28% | elapsed:   5s | eta:  12s | writes:43
+Progress: [##############------------------------------------][0m
+[36m[23:33:48] STEP 18 → Anticipated prompts 1–100 (materialized plan + toggles)[0m
+::notice::STEP 18/64: Anticipated prompts 1–100 (materialized plan + toggles)
+[23:33:48] wrote → .airbear/ANTICIPATE_100.md
+[2m
+[19/64]  29% | elapsed:   5s | eta:  11s | writes:44
+Progress: [##############------------------------------------][0m
+[36m[23:33:48] STEP 19 → Optional local run (non-destructive checks)[0m
+::notice::STEP 19/64: Optional local run (non-destructive checks)
+[36m[23:33:48] Skipped local execution (WRITE_ONLY=1 RUN_LOCAL=0)[0m
+[2m
+[20/64]  31% | elapsed:   5s | eta:  11s | writes:44
+Progress: [###############-----------------------------------][0m
+[36m[23:33:48] STEP 20 → Finalize[0m
+::notice::STEP 20/64: Finalize
+[32m[23:33:48] ULTIMATE OCS complete[0m
+[36m[23:33:48] Files written: 44[0m
+[36m[23:33:48] Run log:  reports/airbear/AIRBEAR-ULTIMATE-20251229-233343/run.log[0m
+[36m[23:33:48] Err log:  reports/airbear/AIRBEAR-ULTIMATE-20251229-233343/errors.log[0m
+[36m[23:33:48] Latest:   reports/airbear/latest[0m
+[33m[23:33:48] Adopt templates as needed: next.config.hardened.mjs, middleware.hardened.ts[0m

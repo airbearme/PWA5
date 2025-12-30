@@ -1,0 +1,10 @@
+[PASS] Repo structure OK
+[PASS] Next config hardened
+[PASS] Middleware hardened
+[PASS] Telemetry APIs present
+[PASS] Stripe webhook verified
+[PASS] Supabase telemetry migration present
+[PASS] RLS enforced
+[PASS] All CI workflows present
+[PASS] Env contract valid
+FAIL: Error log missing

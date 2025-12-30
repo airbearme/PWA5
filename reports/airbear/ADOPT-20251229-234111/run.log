@@ -1,0 +1,21 @@
+
+[01/06]  16%
+[STEP 1] Sanity checks
+
+[02/06]  33%
+[STEP 2] Adopt hardened Next config
+Backup → next.config.old.mjs
+Adopted → next.config.mjs
+
+[03/06]  50%
+[STEP 3] Adopt hardened middleware
+Backup → middleware.old.ts
+Adopted → middleware.ts
+
+[04/06]  66%
+[STEP 4] Apply Supabase telemetry migration
+Using drizzle-kit push
+No config path provided, using default 'drizzle.config.ts'
+Reading config file '/home/coden809/Projects/PWA5/drizzle.config.ts'
+DATABASE_URL, ensure the database is provisioned
+[FATAL] drizzle-kit push failed

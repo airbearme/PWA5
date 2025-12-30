@@ -149,7 +149,7 @@ export default function ProductsPage() {
               Local Goodies
             </span>
           </h1>
-          <p className="text-lg text-muted-foreground font-medium max-w-2xl mx-auto uppercase tracking-tighter text-xs">
+          <p className="text-muted-foreground font-medium max-w-2xl mx-auto uppercase tracking-tighter text-xs">
             Shop farm-fresh essentials during your eco-ride. Pick up upon
             arrival.
           </p>

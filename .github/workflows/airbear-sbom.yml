@@ -1,0 +1,17 @@
+name: AirBear SBOM
+on: [pull_request, workflow_dispatch, schedule]
+permissions: { contents: read }
+jobs:
+  sbom:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v3
+        with: { version: 9 }
+      - uses: actions/setup-node@v4
+        with: { node-version: 22, cache: "pnpm" }
+      - run: pnpm install
+      - run: pnpm add -D @cyclonedx/cyclonedx-npm
+      - run: npx cyclonedx-npm --output-file sbom.json
+      - uses: actions/upload-artifact@v4
+        with: { name: sbom, path: sbom.json }

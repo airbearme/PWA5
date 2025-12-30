@@ -54,7 +54,8 @@ export default function Footer() {
 
             <p className="text-muted-foreground text-sm font-medium leading-relaxed max-w-sm mx-auto md:mx-0">
               <span className="text-emerald-500 font-bold italic">
-                "AirBear flair, ride without a care—solar power in the air!"
+                &quot;AirBear flair, ride without a care—solar power in the
+                air!&quot;
               </span>
               <br />
               <br />

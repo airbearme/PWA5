@@ -1,64 +1,71 @@
-"use client"
+"use client";
 
-import { useState, useEffect } from "react"
-import { getSupabaseClient } from "@/lib/supabase/client"
-import type { User } from "@supabase/supabase-js"
-import type { Database } from "@/lib/types/database"
+import { useState, useEffect, useCallback } from "react";
+import { getSupabaseClient } from "@/lib/supabase/client";
+import type { User } from "@supabase/supabase-js";
+import type { Database } from "@/lib/types/database";
 
-type UserProfile = Database["public"]["Tables"]["users"]["Row"]
+type UserProfile = Database["public"]["Tables"]["users"]["Row"];
 
 export function useAuth() {
-  const [user, setUser] = useState<User | null>(null)
-  const [profile, setProfile] = useState<UserProfile | null>(null)
-  const [loading, setLoading] = useState(true)
-  const supabase = getSupabaseClient()
+  const [user, setUser] = useState<User | null>(null);
+  const [profile, setProfile] = useState<UserProfile | null>(null);
+  const [loading, setLoading] = useState(true);
+  const supabase = getSupabaseClient();
+
+  const loadProfile = useCallback(
+    async (userId: string) => {
+      try {
+        const { data, error } = await supabase
+          .from("users")
+          .select("*")
+          .eq("id", userId)
+          .single();
+
+        if (error) {
+          console.error("[v0] Error loading profile:", error);
+        } else {
+          setProfile(data);
+        }
+      } catch (error) {
+        console.error("[v0] Error loading profile:", error);
+      } finally {
+        setLoading(false);
+      }
+    },
+    [supabase]
+  );
 
   useEffect(() => {
     // Get initial session
     supabase.auth.getSession().then(({ data: { session } }) => {
-      setUser(session?.user ?? null)
+      setUser(session?.user ?? null);
       if (session?.user) {
-        loadProfile(session.user.id)
+        loadProfile(session.user.id);
       } else {
-        setLoading(false)
+        setLoading(false);
       }
-    })
+    });
 
     // Listen for auth changes
     const {
       data: { subscription },
     } = supabase.auth.onAuthStateChange((_event, session) => {
-      setUser(session?.user ?? null)
+      setUser(session?.user ?? null);
       if (session?.user) {
-        loadProfile(session.user.id)
+        loadProfile(session.user.id);
       } else {
-        setProfile(null)
-        setLoading(false)
+        setProfile(null);
+        setLoading(false);
       }
-    })
+    });
 
-    return () => subscription.unsubscribe()
-  }, [supabase])
-
-  const loadProfile = async (userId: string) => {
-    try {
-      const { data, error } = await supabase.from("users").select("*").eq("id", userId).single()
-
-      if (error) {
-        console.error("[v0] Error loading profile:", error)
-      } else {
-        setProfile(data)
-      }
-    } catch (error) {
-      console.error("[v0] Error loading profile:", error)
-    } finally {
-      setLoading(false)
-    }
-  }
+    return () => subscription.unsubscribe();
+  }, [supabase, loadProfile]);
 
   const signOut = async () => {
-    await supabase.auth.signOut()
-  }
+    await supabase.auth.signOut();
+  };
 
   return {
     user,
@@ -66,5 +73,5 @@ export function useAuth() {
     loading,
     signOut,
     isAuthenticated: !!user,
-  }
+  };
 }
