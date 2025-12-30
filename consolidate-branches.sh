@@ -56,7 +56,7 @@ done
 ###############################################################################
 step "Merge all remote branches into main"
 ###############################################################################
-for rb in $(git branch -r | grep -vE '->|/main$'); do
+for rb in $(git branch -r | grep -vE '\->|/main$'); do
   b="${rb#origin/}"
   if git show-ref --verify --quiet "refs/heads/$b"; then
     echo "→ skipping remote $rb (already local)"
