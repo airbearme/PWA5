@@ -77,7 +77,7 @@
 		"react-dom": "^19.0.0",
 		"react-hook-form": "^7.54.2",
 		"react-leaflet": "^4.2.1",
-		"react-resizable-panels": "4.0.15",
+		"react-resizable-panels": "4.1.0",
 		"recharts": "^2.15.2",
 		"sass": "latest",
 		"sass-embedded": "latest",
