@@ -1,10 +1,16 @@
 {
-	"status": "interrupted",
-	"failedTests": [
-		"73dfeb78796e1b68c75b-cca4e894719bf682dbcf",
-		"73dfeb78796e1b68c75b-c46706992b7fc3551f10",
-		"73dfeb78796e1b68c75b-f32ad0a56f8cc127b9df",
-		"73dfeb78796e1b68c75b-a0c75ea780fcd2e66a41",
-		"73dfeb78796e1b68c75b-114b19d43c8201896e94"
-	]
+  "status": "failed",
+  "failedTests": [
+    "8f8f7f41653bf1d58280-f60c822c520c9aebb982",
+    "8f8f7f41653bf1d58280-413fb8a0bb8d7b04a80c",
+    "8f8f7f41653bf1d58280-74c59e48e17b38d08d7e",
+    "8f8f7f41653bf1d58280-250223f8ffceb9a2c2ec",
+    "8f8f7f41653bf1d58280-dcfda6a19759f818295e",
+    "a30a6eba6312f6b87ea5-b06063a3e613764d08f8",
+    "73dfeb78796e1b68c75b-cca4e894719bf682dbcf",
+    "73dfeb78796e1b68c75b-c46706992b7fc3551f10",
+    "73dfeb78796e1b68c75b-f32ad0a56f8cc127b9df",
+    "73dfeb78796e1b68c75b-a0c75ea780fcd2e66a41",
+    "73dfeb78796e1b68c75b-114b19d43c8201896e94"
+  ]
 }
