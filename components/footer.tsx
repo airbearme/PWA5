@@ -1,5 +1,6 @@
 "use client";
 
+import React from "react";
 import { motion } from "framer-motion";
 import Link from "next/link";
 import AirbearWheel from "./airbear-wheel";
@@ -12,7 +13,10 @@ import {
   ArrowRight,
 } from "lucide-react";
 
-export default function Footer() {
+// ⚡ Bolt: Wrapped the Footer component with React.memo to prevent unnecessary re-renders.
+// Since the footer is static, this optimization ensures it only renders once,
+// improving performance on pages where other components cause re-renders.
+const Footer = React.memo(function Footer() {
   const quickLinks = [
     { name: "Book a Ride", href: "/map" },
     { name: "Shop Bodega", href: "/products" },
@@ -173,4 +177,6 @@ export default function Footer() {
       <div className="absolute inset-0 z-0 opacity-5 pointer-events-none bg-[linear-gradient(to_right,#80808012_1px,transparent_1px),linear-gradient(to_bottom,#80808012_1px,transparent_1px)] bg-[size:24px_24px]"></div>
     </footer>
   );
-}
+});
+
+export default Footer;
