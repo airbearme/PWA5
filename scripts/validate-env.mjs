@@ -25,7 +25,7 @@ async function validateSupabase() {
     console.log('Supabase connection successful.');
     return true;
   } catch (error) {
-    console.error('Supabase connection failed:', error.message);
+    console..error('Supabase connection failed:', error.message);
     return false;
   }
 }
