@@ -1,7 +1,10 @@
 import { expect, test } from "@playwright/test";
 
 test.describe("AirBear Critical User Flows", () => {
-	test.beforeEach(async ({ page }) => {
+	test.beforeEach(async ({ page, context }) => {
+		// ⚡ Test Fix: Clear cookies to ensure test isolation.
+		// Prevents authentication state from leaking between tests.
+		await context.clearCookies();
 		// Go to home page
 		await page.goto("/");
 		await page.waitForLoadState("networkidle");

@@ -3,7 +3,10 @@ import { expect, test } from "@playwright/test";
 test.describe("AirBear Ultimate System Validation", () => {
 	const SITE_URL = process.env.SITE_URL || "https://airbear.me";
 
-	test.beforeEach(async ({ page }) => {
+	test.beforeEach(async ({ page, context }) => {
+		// ⚡ Test Fix: Clear cookies to ensure test isolation.
+		// Prevents authentication state from leaking between tests.
+		await context.clearCookies();
 		// Increase navigation timeout for slower dev environments
 		await page.goto(SITE_URL, { timeout: 60000 });
 		await page.waitForLoadState("networkidle", { timeout: 60000 });

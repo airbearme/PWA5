@@ -124,6 +124,20 @@ export default function MapPage() {
     );
   }, [airbears]);
 
+  const availableAirbearsPerSpot = useMemo(() => {
+    // ⚡ Bolt: Performance Optimization
+    // Memoizing the count of available AirBears per spot avoids an O(spots * airbears)
+    // calculation on every render. With real-time updates, this was a major bottleneck.
+    // This map provides a fast O(1) lookup.
+    const counts = new Map<string, number>();
+    airbears.forEach(airbear => {
+      if (airbear.is_available && airbear.current_spot_id) {
+        counts.set(airbear.current_spot_id, (counts.get(airbear.current_spot_id) || 0) + 1);
+      }
+    });
+    return counts;
+  }, [airbears]);
+
   if (loading || authLoading) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-background">
@@ -311,13 +325,7 @@ export default function MapPage() {
                           {spot.name}
                         </span>
                         <Badge className="bg-primary/20 text-primary border-none text-[10px] h-5">
-                          {
-                            airbears.filter(
-                              (a) =>
-                                a.current_spot_id === spot.id && a.is_available
-                            ).length
-                          }{" "}
-                          Ready
+                          {availableAirbearsPerSpot.get(spot.id) || 0} Ready
                         </Badge>
                       </div>
                       <div className="flex items-center text-[10px] text-muted-foreground font-bold">
