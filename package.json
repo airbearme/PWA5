@@ -12,7 +12,8 @@
 		"lint": "next lint",
 		"start": "next start",
 		"test:e2e": "playwright test",
-		"type-check": "tsc --noEmit"
+		"type-check": "tsc --noEmit",
+		"type-check:permissive": "tsc --noEmit --skipLibCheck"
 	},
 	"dependencies": {
 		"@emotion/is-prop-valid": "latest",
