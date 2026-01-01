@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, memo } from "react";
 import type { AirbearLocation } from "@/lib/supabase/realtime";
 import L from "leaflet";
 import "leaflet/dist/leaflet.css";
@@ -28,7 +28,9 @@ L.Icon.Default.mergeOptions({
   shadowUrl: "/leaflet/marker-shadow.png",
 });
 
-export default function MapView({
+// ⚡ Bolt: Memoize MapView to prevent unnecessary re-renders.
+// This is a high-impact optimization as map components are often expensive to render.
+const MapView = memo(function MapView({
   spots,
   airbears,
   onSpotSelect,
@@ -288,4 +290,6 @@ export default function MapView({
       className="w-full h-[600px] rounded-lg overflow-hidden"
     />
   );
-}
+});
+
+export default MapView;
