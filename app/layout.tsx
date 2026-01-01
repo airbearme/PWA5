@@ -8,6 +8,7 @@ import { Toaster } from "@/components/ui/toaster";
 import Header from "@/components/header";
 import Footer from "@/components/footer";
 import QueryProvider from "@/components/query-provider";
+import FloatingOrbs from "@/components/ui/floating-orbs";
 import "./globals.css";
 
 const inter = Inter({
@@ -90,25 +91,8 @@ export default function RootLayout({
                   <div className="absolute bottom-[25%] right-[20%] w-[18%] h-[18%] particle-system opacity-50 dark:opacity-25"></div>
                   <div className="absolute top-[70%] left-[50%] w-[15%] h-[15%] particle-system opacity-70 dark:opacity-35"></div>
 
-                  {/* Floating Energy Orbs */}
-                  {[...Array(6)].map((_, i) => (
-                    <div
-                      key={i}
-                      className={`absolute rounded-full animate-float opacity-30 dark:opacity-15 ${
-                        i % 3 === 0 ? 'bg-primary/20' :
-                        i % 3 === 1 ? 'bg-amber-500/15' :
-                        'bg-purple-500/20'
-                      }`}
-                      style={{
-                        width: Math.random() * 30 + 20 + "px",
-                        height: Math.random() * 30 + 20 + "px",
-                        left: Math.random() * 90 + 5 + "%",
-                        top: Math.random() * 90 + 5 + "%",
-                        animationDelay: Math.random() * 10 + "s",
-                        animationDuration: (Math.random() * 20 + 15) + "s",
-                      }}
-                    />
-                  ))}
+                  {/* Floating Energy Orbs - now optimized in a client component */}
+                  <FloatingOrbs />
 
                   {/* Subtle Grid Overlay */}
                   <div className="absolute inset-0 opacity-[0.02] dark:opacity-[0.05]">
