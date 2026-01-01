@@ -134,13 +134,11 @@ export default function RootLayout({
           disableTransitionOnChange
         >
           <AuthProvider>
-            <ErrorBoundary>
               {children}
               <FloatingMascot />
               <PWAInstallPrompt />
               <Toaster />
               <Analytics />
-            </ErrorBoundary>
           </AuthProvider>
         </ThemeProvider>
       </body>

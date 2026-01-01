@@ -1,8 +1,6 @@
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 
-export const dynamic = "force-dynamic";
-
 export default function NotFound() {
   return (
     <div className="flex flex-col items-center justify-center min-h-screen bg-gradient-to-br from-emerald-950 via-lime-950 to-amber-950 dark:from-emerald-950 dark:via-lime-950 dark:to-amber-950 p-4">
