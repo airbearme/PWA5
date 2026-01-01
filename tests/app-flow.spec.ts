@@ -1,7 +1,9 @@
 import { expect, test } from "@playwright/test";
 
 test.describe("AirBear Critical User Flows", () => {
-	test.beforeEach(async ({ page }) => {
+	test.beforeEach(async ({ page, context }) => {
+		// Clear cookies to ensure a clean session for each test.
+		await context.clearCookies();
 		// Go to home page
 		await page.goto("/");
 		await page.waitForLoadState("networkidle");

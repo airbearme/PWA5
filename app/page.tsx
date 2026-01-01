@@ -17,9 +17,19 @@ import {
 } from "lucide-react";
 import AirbearWheel from "@/components/airbear-wheel";
 import EcoImpact from "@/components/eco-impact";
-import { HolographicCard } from "@/components/ui/holographic-card";
+import { HolographicCard } from "@/components/ui/h holographic-card";
+import { useState } from "react";
 
 export default function HomePage() {
+  const [isShellLoading, setIsShellLoading] = useState(false);
+
+  const handleSecureShellClick = () => {
+    setIsShellLoading(true);
+    setTimeout(() => {
+      setIsShellLoading(false);
+    }, 2000); // Simulate a 2-second API call
+  };
+
   return (
     <div className="relative min-h-screen overflow-hidden bg-background">
       {/* Enhanced Dynamic Background Elements */}
@@ -282,6 +292,8 @@ export default function HomePage() {
                   <Button
                     data-testid="button-ceo-tshirt"
                     className="h-16 px-10 bg-white text-emerald-900 font-black rounded-2xl hover:bg-emerald-50 text-lg uppercase tracking-widest shadow-2xl"
+                    loading={isShellLoading}
+                    onClick={handleSecureShellClick}
                   >
                     Secure Shell $100
                   </Button>
