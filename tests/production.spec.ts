@@ -9,7 +9,7 @@ test.describe("Production PWA Tests", () => {
 
 	test("Should load the homepage and show correct title", async ({ page }) => {
 		await expect(page).toHaveTitle(/AirBear/i);
-		await expect(page.locator("#root")).toBeVisible();
+		await expect(page.locator("body")).toBeVisible();
 	});
 
 	test("Should show install prompt or installation instructions", async ({

@@ -158,7 +158,13 @@ export default function MapView({
 
       const icon = L.divIcon({
         html: `
-          <div style="position: relative; cursor: pointer; filter: drop-shadow(0 4px 8px rgba(0,0,0,0.3));">
+          <div
+            role="button"
+            tabindex="0"
+            aria-label="Select spot: ${spot.name}, ${airbearsAtSpot.length} AirBear${airbearsAtSpot.length !== 1 ? 's' : ''} available"
+            onkeypress="if(event.key === 'Enter' || event.key === ' ') this.click()"
+            style="position: relative; cursor: pointer; filter: drop-shadow(0 4px 8px rgba(0,0,0,0.3));"
+          >
             <div style="
               width: 56px;
               height: 56px;

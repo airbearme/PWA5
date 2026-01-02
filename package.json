@@ -10,7 +10,7 @@
 		"deploy:production": "bash deploy.sh",
 		"deploy:now": "bash scripts/deploy-production-now.sh",
 		"deploy:vercel": "vercel --prod",
-		"dev": "next dev",
+		"dev": "next dev -p 3000",
 		"lint": "next lint",
 		"start": "next start",
 		"sync:github": "bash scripts/sync-github.sh",

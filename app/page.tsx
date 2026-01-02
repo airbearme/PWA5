@@ -88,7 +88,7 @@ export default function HomePage() {
       <div className="container mx-auto px-4 py-16 relative z-10">
         <div className="flex flex-col items-center justify-center text-center space-y-8">
           {/* Mascot with enhanced animations */}
-          <div className="mb-8 animate-float">
+          <div data-testid="img-mascot" className="mb-8 animate-float">
             <img
               src="/airbear-mascot.png"
               alt="Friendly brown bear mascot with pilot goggles representing AirBear"
@@ -146,6 +146,7 @@ export default function HomePage() {
               asChild
               size="lg"
               className="group relative eco-gradient text-white hover-lift ripple-effect px-8 py-4 text-lg font-semibold animate-neon-glow shadow-xl"
+              data-testid="button-book-airbear"
             >
               <Link href="/map">
                 <AirbearWheel size="sm" glowing animated className="mr-2" />
@@ -158,6 +159,7 @@ export default function HomePage() {
               asChild
               size="lg"
               className="bg-gradient-to-r from-amber-500 via-yellow-500 to-amber-500 text-white hover-lift ripple-effect px-8 py-4 text-lg font-semibold animate-pulse-glow shadow-xl"
+              data-testid="button-ceo-tshirt"
             >
               <Link href="/products">
                 <Crown className="mr-2 h-5 w-5" />
@@ -180,7 +182,7 @@ export default function HomePage() {
 
           {/* Stats Section */}
           <div className="grid grid-cols-2 sm:grid-cols-4 gap-6 max-w-2xl mx-auto mt-12">
-            <div className="text-center hover-lift p-4 rounded-lg glass-morphism">
+            <div data-testid="stat-rides" className="text-center hover-lift p-4 rounded-lg glass-morphism">
               <div className="text-3xl sm:text-4xl font-bold text-emerald-600 animate-pulse-glow">
                 5
               </div>
@@ -188,7 +190,7 @@ export default function HomePage() {
                 Active AirBears
               </div>
             </div>
-            <div className="text-center hover-lift p-4 rounded-lg glass-morphism">
+            <div data-testid="stat-co2" className="text-center hover-lift p-4 rounded-lg glass-morphism">
               <div className="text-3xl sm:text-4xl font-bold text-lime-500">
                 582kg
               </div>
@@ -294,6 +296,13 @@ export default function HomePage() {
           </div>
         </div>
       </div>
+      <footer className="relative z-10 mt-auto py-8 text-center text-muted-foreground">
+        <div className="container mx-auto">
+          <Link data-testid="footer-support-privacy-policy" href="/privacy" className="hover:text-foreground">
+            Privacy Policy
+          </Link>
+        </div>
+      </footer>
     </main>
   );
 }
