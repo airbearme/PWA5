@@ -1,5 +1,10 @@
 #!/usr/bin/env node
 
+const dotenv = require("dotenv");
+const path = require("path");
+
+dotenv.config({ path: path.resolve(process.cwd(), ".env.local") });
+
 /**
  * Environment Variable Validation
  * Ensures all required environment variables are set
@@ -15,7 +20,7 @@ const requiredEnvVars = [
 const optionalEnvVars = ["STRIPE_WEBHOOK_SECRET", "NEXT_PUBLIC_SITE_URL"];
 
 function validateEnv() {
-	console.log("🔍 Validating environment variables...\n");
+	console.log("🔍 Validating environment variables...\\n");
 
 	let allValid = true;
 	const missing = [];
@@ -32,7 +37,7 @@ function validateEnv() {
 		}
 	});
 
-	console.log("\n📋 Optional variables:");
+	console.log("\\n📋 Optional variables:");
 	optionalEnvVars.forEach((varName) => {
 		if (process.env[varName]) {
 			console.log(`✅ ${varName}: Set`);
@@ -42,11 +47,11 @@ function validateEnv() {
 	});
 
 	if (!allValid) {
-		console.log("\n❌ Validation failed. Missing required variables:");
+		console.log("\\n❌ Validation failed. Missing required variables:");
 		missing.forEach((v) => console.log(`  - ${v}`));
 		process.exit(1);
 	} else {
-		console.log("\n✅ All required environment variables are set");
+		console.log("\\n✅ All required environment variables are set");
 		process.exit(0);
 	}
 }
