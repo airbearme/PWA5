@@ -57,7 +57,7 @@ async function runPerformanceTests() {
 
 	try {
 		execSync(
-			`lighthouse ${SITE_URL} --only-categories=performance,accessibility,best-practices,seo --output=json --output-path=./lighthouse-report.json --quiet`,
+			`lighthouse ${SITE_URL} --only-categories=performance,accessibility,best-practices,seo --output=json --output-path=./lighthouse-report.json --quiet --chrome-flags="--headless --no-sandbox"`,
 			{ stdio: "inherit" },
 		);
 

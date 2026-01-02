@@ -1,0 +1,5 @@
+## 2024-07-25 - Unstable Test Suite Obscures Verification
+
+**Learning:** The project's automated test suites (`pnpm run type-check`, `pnpm run test:e2e`) are currently unstable and fail due to pre-existing configuration and dependency issues. This prevents them from being a reliable signal for verifying the correctness of isolated changes. Relying solely on these tests would block valid optimizations.
+
+**Action:** For future optimizations, I must not be blocked by pre-existing test failures. I will continue to run the test suites to ensure my changes do not introduce *new* errors, but I will prioritize manual and alternative verification methods (e.g., performance profiling, screenshots, component-level testing) to confirm the impact and safety of my changes. I will note the pre-existing failures in my pull request.
