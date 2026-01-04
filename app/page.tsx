@@ -10,6 +10,7 @@
 "use client";
 
 import Link from "next/link";
+import Image from "next/image";
 import { Button } from "@/components/ui/button";
 import { MapPin, ShoppingBag, Leaf, Zap, Crown } from "lucide-react";
 import AirbearWheel from "@/components/airbear-wheel";
@@ -89,9 +90,12 @@ export default function HomePage() {
         <div className="flex flex-col items-center justify-center text-center space-y-8">
           {/* Mascot with enhanced animations */}
           <div className="mb-8 animate-float">
-            <img
+            <Image
               src="/airbear-mascot.png"
               alt="Friendly brown bear mascot with pilot goggles representing AirBear"
+              width={128}
+              height={128}
+              priority
               className="mx-auto rounded-full w-32 h-32 object-cover border-4 border-emerald-400/30 hover-lift animate-pulse-glow shadow-2xl"
             />
           </div>

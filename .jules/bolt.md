@@ -1,0 +1,3 @@
+## 2024-07-25 - Always use next/image for image optimization
+**Learning:** Using the standard `<img>` tag in a Next.js application bypasses all of the powerful, built-in image optimization features that Next.js provides. This can lead to slower page load times and a worse user experience.
+**Action:** Always use the `next/image` component instead of the standard `<img>` tag. This will ensure that images are automatically optimized, resized, and served in modern formats like WebP or AVIF. For images that are above the fold, use the `priority` prop to ensure they are loaded as quickly as possible.
