@@ -30,6 +30,12 @@ const nextConfig = {
             key: "Permissions-Policy",
             value: "camera=(), microphone=(), geolocation=(self)",
           },
+          {
+            key: "Content-Security-Policy",
+            // unsafe-inline is required for Next.js specific client-side hydration.
+            // A nonce-based approach is a potential future enhancement.
+            value: "default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' data: airbear.me *.supabase.co; frame-ancestors 'none';",
+          },
         ],
       },
     ];
