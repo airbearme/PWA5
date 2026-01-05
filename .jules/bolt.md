@@ -1,0 +1,3 @@
+## 2024-07-23 - Clean Commits Maximize Impact
+**Learning:** My first attempt to submit a performance optimization was rejected not because the optimization was wrong, but because I included temporary build and test artifacts (like `dev.log` and `playwright-report/`). This polluted the pull request and distracted from the actual performance improvement. A "fast" change isn't useful if it introduces noise and bad practices into the repository.
+**Action:** I must always verify staged files before committing. I will ensure `.gitignore` is comprehensive enough to automatically exclude build outputs, logs, and test reports. The quality of the commit is as important as the quality of the code.
