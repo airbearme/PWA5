@@ -140,7 +140,10 @@ export default function MapPage() {
           <Card className="p-4">
             <div className="flex items-center gap-3">
               <div className="w-12 h-12 bg-green-100 rounded-full flex items-center justify-center">
-                <Navigation className="w-6 h-6 text-green-600" />
+                <Navigation
+                  className="w-6 h-6 text-green-600"
+                  aria-hidden="true"
+                />
               </div>
               <div>
                 <p className="text-sm text-muted-foreground">
@@ -156,7 +159,10 @@ export default function MapPage() {
           <Card className="p-4">
             <div className="flex items-center gap-3">
               <div className="w-12 h-12 bg-orange-100 rounded-full flex items-center justify-center">
-                <MapPin className="w-6 h-6 text-orange-600" />
+                <MapPin
+                  className="w-6 h-6 text-orange-600"
+                  aria-hidden="true"
+                />
               </div>
               <div>
                 <p className="text-sm text-muted-foreground">Active Spots</p>
@@ -170,7 +176,10 @@ export default function MapPage() {
           <Card className="p-4">
             <div className="flex items-center gap-3">
               <div className="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center">
-                <Battery className="w-6 h-6 text-blue-600" />
+                <Battery
+                  className="w-6 h-6 text-blue-600"
+                  aria-hidden="true"
+                />
               </div>
               <div>
                 <p className="text-sm text-muted-foreground">Avg Battery</p>
