@@ -1,5 +1,6 @@
 "use client";
 
+import React from "react";
 import { cn } from "@/lib/utils";
 
 interface AirbearWheelProps {
@@ -10,13 +11,13 @@ interface AirbearWheelProps {
   effectType?: "solar" | "eco" | string;
 }
 
-export default function AirbearWheel({
+const AirbearWheelComponent: React.FC<AirbearWheelProps> = ({
   size = "md",
   className = "",
   glowing = false,
   animated = true,
   effectType,
-}: AirbearWheelProps) {
+}) => {
   const sizeClasses = {
     sm: "w-6 h-6",
     md: "w-10 h-10",
@@ -86,7 +87,22 @@ export default function AirbearWheel({
       )}
     </div>
   );
-}
+};
+
+/*
+ * ⚡ Bolt: Memoized AirbearWheel component
+ *
+ * This is a purely presentational component that was re-rendering unnecessarily
+ * on the homepage due to parent state changes.
+ *
+ * By wrapping it in React.memo(), we ensure it only re-renders if its props
+ * (size, className, glowing, etc.) actually change.
+ *
+ * Impact: Reduces the number of re-renders on the homepage, leading to a
+ * smoother user experience and slightly improved rendering performance,
+ * especially on lower-end devices.
+ */
+export default React.memo(AirbearWheelComponent);
 
 
 
