@@ -1,0 +1,3 @@
+## 2024-07-23 - Use aria-hidden for Decorative Icons with Text
+**Learning:** When an icon is purely decorative and is accompanied by descriptive text, adding an `aria-label` is redundant and creates a noisy experience for screen reader users. The screen reader would announce both the label and the text. The correct pattern for such decorative icons is to hide them from the accessibility tree entirely.
+**Action:** For icons that have adjacent, visible text describing their function, I will use the `aria-hidden="true"` attribute to ensure screen readers skip them and provide a more streamlined experience.
