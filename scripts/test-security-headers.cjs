@@ -8,7 +8,7 @@
 const https = require("https");
 const http = require("http");
 
-const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || "https://airbear.me";
+const SITE_URL = "http://localhost:3000";
 
 const requiredHeaders = {
 	"strict-transport-security": "HSTS header should be present",
@@ -16,6 +16,7 @@ const requiredHeaders = {
 	"x-frame-options": "X-Frame-Options should be present",
 	"x-xss-protection": "X-XSS-Protection should be present",
 	"referrer-policy": "Referrer-Policy should be present",
+	"content-security-policy": "Content-Security-Policy should be present",
 };
 
 console.log("🔒 Testing security headers...\n");
