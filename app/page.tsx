@@ -9,6 +9,7 @@
 
 "use client";
 
+import Image from "next/image";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { MapPin, ShoppingBag, Leaf, Zap, Crown } from "lucide-react";
@@ -89,10 +90,18 @@ export default function HomePage() {
         <div className="flex flex-col items-center justify-center text-center space-y-8">
           {/* Mascot with enhanced animations */}
           <div className="mb-8 animate-float">
-            <img
+            {
+              /* ⚡ Bolt: Replaced standard <img> with next/image for automatic optimization,
+                 lazy loading, and modern format delivery (e.g., WebP).
+                 This improves loading performance. Using 128x128 based on w-32/h-32 classes.
+              */
+            }
+            <Image
               src="/airbear-mascot.png"
               alt="Friendly brown bear mascot with pilot goggles representing AirBear"
-              className="mx-auto rounded-full w-32 h-32 object-cover border-4 border-emerald-400/30 hover-lift animate-pulse-glow shadow-2xl"
+              width={128}
+              height={128}
+              className="mx-auto rounded-full object-cover border-4 border-emerald-400/30 hover-lift animate-pulse-glow shadow-2xl"
             />
           </div>
 
