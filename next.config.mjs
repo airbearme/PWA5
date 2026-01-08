@@ -24,8 +24,12 @@ const nextConfig = {
           },
           { key: "X-Frame-Options", value: "SAMEORIGIN" },
           { key: "X-Content-Type-Options", value: "nosniff" },
-          { key: "X-XSS-Protection", value: "1; mode=block" },
           { key: "Referrer-Policy", value: "origin-when-cross-origin" },
+          {
+            key: "Content-Security-Policy",
+            // TODO: Tighten this policy further by removing unsafe-inline and unsafe-eval
+            value: "default-src 'self'; script-src 'self' 'unsafe-eval' 'unsafe-inline' *.stripe.com; style-src 'self' 'unsafe-inline'; img-src 'self' data: *.supabase.co airbear.me; connect-src 'self' *.supabase.co wss://*.supabase.co *.stripe.com; font-src 'self'; object-src 'none'; frame-src *.stripe.com; frame-ancestors 'self'; form-action 'self'; base-uri 'self'; upgrade-insecure-requests;",
+          },
           {
             key: "Permissions-Policy",
             value: "camera=(), microphone=(), geolocation=(self)",
