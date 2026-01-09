@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react";
 import Link from "next/link";
+import Image from "next/image";
 import AirbearWheel from "@/components/airbear-wheel";
 
 export default function FloatingMascot() {
@@ -39,11 +40,13 @@ export default function FloatingMascot() {
             <AirbearWheel size="lg" glowing animated className="opacity-50" />
           </div>
           
-          {/* Mascot image */}
-          <img
+          {/* ⚡ Bolt: Optimized image with next/image */}
+          <Image
             src="/airbear-mascot.png"
             alt="AirBear Mascot"
-            className="w-full h-full object-cover rounded-full animate-float"
+            width={80}
+            height={80}
+            className="object-cover rounded-full animate-float"
             style={{ animationDuration: "4s" }}
           />
           
