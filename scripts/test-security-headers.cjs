@@ -115,5 +115,3 @@ async function runSecurityTests() {
 }
 
 runSecurityTests();
-
-
