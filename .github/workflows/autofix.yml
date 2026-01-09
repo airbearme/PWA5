@@ -1,7 +1,0 @@
-name: Autofix
-on: { schedule: [{cron:"0 8 * * *"}] }
-jobs:
- fix:
-  runs-on: ubuntu-latest
-  steps:
-   - run: echo "autofix"
