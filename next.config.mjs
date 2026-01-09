@@ -30,6 +30,12 @@ const nextConfig = {
             key: "Permissions-Policy",
             value: "camera=(), microphone=(), geolocation=(self)",
           },
+          // TODO: Tighten this CSP. 'unsafe-eval' and 'unsafe-inline' are required for Next.js in dev mode and for some dependencies.
+          // A stricter policy should be implemented, possibly using a nonce-based approach.
+          {
+            key: "Content-Security-Policy",
+            value: "default-src 'self'; script-src 'self' 'unsafe-eval' 'unsafe-inline' *.supabase.co *.stripe.com; style-src 'self' 'unsafe-inline'; img-src 'self' data: *.supabase.co *.stripe.com; font-src 'self'; object-src 'none'; base-uri 'self'; form-action 'self'; frame-ancestors 'none';",
+          }
         ],
       },
     ];
