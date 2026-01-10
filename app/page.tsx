@@ -10,6 +10,7 @@
 "use client";
 
 import Link from "next/link";
+import Image from "next/image"; // ⚡ Bolt: Import Next.js Image component for optimization
 import { Button } from "@/components/ui/button";
 import { MapPin, ShoppingBag, Leaf, Zap, Crown } from "lucide-react";
 import AirbearWheel from "@/components/airbear-wheel";
@@ -88,11 +89,19 @@ export default function HomePage() {
       <div className="container mx-auto px-4 py-16 relative z-10">
         <div className="flex flex-col items-center justify-center text-center space-y-8">
           {/* Mascot with enhanced animations */}
+          {/* ⚡ Bolt: Optimized image loading for LCP
+              - Replaced standard `<img>` with `next/image` for automatic optimization (WebP, resizing).
+              - Added `priority` prop to preload this critical, above-the-fold image.
+              - This improves the Largest Contentful Paint (LCP) score for faster perceived page load.
+           */}
           <div className="mb-8 animate-float">
-            <img
+            <Image
               src="/airbear-mascot.png"
               alt="Friendly brown bear mascot with pilot goggles representing AirBear"
-              className="mx-auto rounded-full w-32 h-32 object-cover border-4 border-emerald-400/30 hover-lift animate-pulse-glow shadow-2xl"
+              width={128} // Corresponds to w-32
+              height={128} // Corresponds to h-32
+              className="mx-auto rounded-full object-cover border-4 border-emerald-400/30 hover-lift animate-pulse-glow shadow-2xl"
+              priority
             />
           </div>
 
