@@ -1,0 +1,3 @@
+## 2024-07-25 - Hiding Decorative Icons
+**Learning:** Icons placed next to descriptive text (e.g., a map pin icon next to the text "Book Your AirBear") are considered "decorative" and should be hidden from screen readers. Announcing them adds unnecessary verbosity and can make the user interface more difficult to navigate for users of assistive technologies.
+**Action:** In the future, I will audit icon usage to ensure that any icon that is purely decorative is explicitly hidden using the `aria-hidden="true"` attribute. This simple change significantly improves the experience for screen reader users.
