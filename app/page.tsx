@@ -149,7 +149,7 @@ export default function HomePage() {
             >
               <Link href="/map">
                 <AirbearWheel size="sm" glowing animated className="mr-2" />
-                <MapPin className="mr-2 h-5 w-5" />
+                <MapPin className="mr-2 h-5 w-5" aria-hidden="true" />
                 Book Your AirBear
               </Link>
             </Button>
@@ -160,7 +160,7 @@ export default function HomePage() {
               className="bg-gradient-to-r from-amber-500 via-yellow-500 to-amber-500 text-white hover-lift ripple-effect px-8 py-4 text-lg font-semibold animate-pulse-glow shadow-xl"
             >
               <Link href="/products">
-                <Crown className="mr-2 h-5 w-5" />
+                <Crown className="mr-2 h-5 w-5" aria-hidden="true" />
                 CEO T-Shirt $100
               </Link>
             </Button>
@@ -172,7 +172,7 @@ export default function HomePage() {
               className="border-2 border-emerald-500 text-emerald-600 hover:bg-emerald-50 px-8 py-4 text-lg font-semibold hover-lift ripple-effect shadow-lg"
             >
               <Link href="/products">
-                <ShoppingBag className="mr-2 h-5 w-5" />
+                <ShoppingBag className="mr-2 h-5 w-5" aria-hidden="true" />
                 Shop Bodega
               </Link>
             </Button>
@@ -212,7 +212,7 @@ export default function HomePage() {
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mt-16 w-full max-w-5xl">
             <div className="flex flex-col items-center space-y-4 p-8 rounded-xl glass-morphism border border-white/50 shadow-2xl hover-lift hover:shadow-3xl transition-all duration-300">
               <div className="p-4 rounded-full bg-gradient-to-br from-emerald-400 to-emerald-600 shadow-xl animate-pulse-glow">
-                <Leaf className="h-12 w-12 text-white" />
+                <Leaf className="h-12 w-12 text-white" aria-hidden="true" />
               </div>
               <h3 className="text-2xl font-bold bg-gradient-to-r from-emerald-600 to-emerald-700 bg-clip-text text-transparent">
                 100% Eco-Friendly
@@ -228,7 +228,7 @@ export default function HomePage() {
                 className="p-4 rounded-full bg-gradient-to-br from-amber-400 to-amber-600 shadow-xl animate-pulse-glow"
                 style={{ animationDelay: "0.5s" }}
               >
-                <ShoppingBag className="h-12 w-12 text-white" />
+                <ShoppingBag className="h-12 w-12 text-white" aria-hidden="true" />
               </div>
               <h3 className="text-2xl font-bold bg-gradient-to-r from-amber-600 to-amber-700 bg-clip-text text-transparent">
                 Mobile Bodega
@@ -244,7 +244,7 @@ export default function HomePage() {
                 className="p-4 rounded-full bg-gradient-to-br from-emerald-400 to-orange-500 shadow-xl animate-pulse-glow"
                 style={{ animationDelay: "1s" }}
               >
-                <Zap className="h-12 w-12 text-white" />
+                <Zap className="h-12 w-12 text-white" aria-hidden="true" />
               </div>
               <h3 className="text-2xl font-bold bg-gradient-to-r from-emerald-600 to-orange-600 bg-clip-text text-transparent">
                 Smart Routing
@@ -284,7 +284,7 @@ export default function HomePage() {
                     className="border-2 border-white text-white hover:bg-white/10 px-8 py-4 text-lg font-semibold hover-lift shadow-xl"
                   >
                     <Link href="/map">
-                      <MapPin className="mr-2 h-5 w-5" />
+                      <MapPin className="mr-2 h-5 w-5" aria-hidden="true" />
                       Explore Map
                     </Link>
                   </Button>
