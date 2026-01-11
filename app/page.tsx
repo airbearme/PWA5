@@ -10,6 +10,7 @@
 "use client";
 
 import Link from "next/link";
+import Image from "next/image";
 import { Button } from "@/components/ui/button";
 import { MapPin, ShoppingBag, Leaf, Zap, Crown } from "lucide-react";
 import AirbearWheel from "@/components/airbear-wheel";
@@ -87,11 +88,15 @@ export default function HomePage() {
 
       <div className="container mx-auto px-4 py-16 relative z-10">
         <div className="flex flex-col items-center justify-center text-center space-y-8">
-          {/* Mascot with enhanced animations */}
+          {/* ⚡ Bolt: Optimized image with next/image for LCP */}
+          {/* The `priority` prop ensures this critical, above-the-fold image is preloaded, improving the Largest Contentful Paint (LCP) score. */}
           <div className="mb-8 animate-float">
-            <img
+            <Image
               src="/airbear-mascot.png"
               alt="Friendly brown bear mascot with pilot goggles representing AirBear"
+              width={389}
+              height={389}
+              priority
               className="mx-auto rounded-full w-32 h-32 object-cover border-4 border-emerald-400/30 hover-lift animate-pulse-glow shadow-2xl"
             />
           </div>
