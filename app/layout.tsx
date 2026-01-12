@@ -4,9 +4,11 @@ import { Inter, Space_Grotesk } from "next/font/google";
 import { Analytics } from "@vercel/analytics/react";
 import { ThemeProvider } from "@/components/theme-provider";
 import { AuthProvider } from "@/components/auth-provider";
+import { AnimationProvider } from "@/contexts/AnimationContext";
 import { Toaster } from "@/components/ui/toaster";
 import PWAInstallPrompt from "@/components/pwa-install-prompt";
 import FloatingMascot from "@/components/floating-mascot";
+import { LayoutWrapper } from "@/components/layout-wrapper";
 import { ErrorBoundary } from "@/components/error-boundary";
 import { validateRuntimeEnv } from "@/lib/auto-load-env";
 import "./globals.css";
@@ -134,11 +136,15 @@ export default function RootLayout({
           disableTransitionOnChange
         >
           <AuthProvider>
-              {children}
-              <FloatingMascot />
-              <PWAInstallPrompt />
-              <Toaster />
-              <Analytics />
+            <AnimationProvider>
+              <LayoutWrapper>
+                {children}
+                <FloatingMascot />
+                <PWAInstallPrompt />
+                <Toaster />
+                <Analytics />
+              </LayoutWrapper>
+            </AnimationProvider>
           </AuthProvider>
         </ThemeProvider>
       </body>
