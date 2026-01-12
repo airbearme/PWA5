@@ -13,21 +13,37 @@ import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { MapPin, ShoppingBag, Leaf, Zap, Crown } from "lucide-react";
 import AirbearWheel from "@/components/airbear-wheel";
+import { useAnimation } from "@/contexts/AnimationContext";
+import { cn } from "@/lib/utils";
 
 export default function HomePage() {
+  const { animationsEnabled } = useAnimation();
   return (
     <main className="min-h-screen bg-gradient-to-br from-emerald-950 via-lime-950 to-amber-950 dark:from-emerald-950 dark:via-lime-950 dark:to-amber-950 relative overflow-hidden">
       {/* Animated Background with Solar Rays & Spinning Wheels */}
       <div className="absolute inset-0 opacity-30 dark:opacity-40 pointer-events-none">
         <div className="absolute bottom-0 w-full h-64 bg-gradient-to-t from-emerald-900/30 dark:from-emerald-800/40 to-transparent"></div>
-        <div className="absolute top-1/2 left-1/4 w-32 h-32 bg-emerald-400/40 dark:bg-emerald-500/30 rounded-full blur-3xl animate-pulse-glow"></div>
         <div
-          className="absolute top-1/3 right-1/4 w-40 h-40 bg-amber-400/30 dark:bg-amber-500/20 rounded-full blur-3xl animate-pulse-glow"
+          className={cn(
+            "absolute top-1/2 left-1/4 w-32 h-32 bg-emerald-400/40 dark:bg-emerald-500/30 rounded-full blur-3xl",
+            animationsEnabled && "animate-pulse-glow"
+          )}
+        ></div>
+        <div
+          className={cn(
+            "absolute top-1/3 right-1/4 w-40 h-40 bg-amber-400/30 dark:bg-amber-500/20 rounded-full blur-3xl",
+            animationsEnabled && "animate-pulse-glow"
+          )}
           style={{ animationDelay: "1s" }}
         ></div>
 
         {/* Spinning AirBear Wheels in Background */}
-        <div className="absolute top-1/4 left-1/6 animate-float">
+        <div
+          className={cn(
+            "absolute top-1/4 left-1/6",
+            animationsEnabled && "animate-float"
+          )}
+        >
           <AirbearWheel
             size="lg"
             glowing
@@ -37,7 +53,10 @@ export default function HomePage() {
           />
         </div>
         <div
-          className="absolute top-1/3 right-1/5 animate-float"
+          className={cn(
+            "absolute top-1/3 right-1/5",
+            animationsEnabled && "animate-float"
+          )}
           style={{ animationDelay: "1.5s" }}
         >
           <AirbearWheel
@@ -49,13 +68,19 @@ export default function HomePage() {
           />
         </div>
         <div
-          className="absolute bottom-1/4 left-1/3 animate-float"
+          className={cn(
+            "absolute bottom-1/4 left-1/3",
+            animationsEnabled && "animate-float"
+          )}
           style={{ animationDelay: "2.5s" }}
         >
           <AirbearWheel size="md" glowing animated className="opacity-25" />
         </div>
         <div
-          className="absolute bottom-1/3 right-1/6 animate-float"
+          className={cn(
+            "absolute bottom-1/3 right-1/6",
+            animationsEnabled && "animate-float"
+          )}
           style={{ animationDelay: "3s" }}
         >
           <AirbearWheel
@@ -73,7 +98,10 @@ export default function HomePage() {
         {Array.from({ length: 12 }, (_, i) => (
           <div
             key={i}
-            className={`absolute w-2 h-2 rounded-full animate-particle opacity-60`}
+            className={cn(
+              "absolute w-2 h-2 rounded-full opacity-60",
+              animationsEnabled && "animate-particle"
+            )}
             style={{
               left: `${(i * 8) % 100}%`,
               top: `${(i * 15) % 100}%`,
@@ -88,21 +116,36 @@ export default function HomePage() {
       <div className="container mx-auto px-4 py-16 relative z-10">
         <div className="flex flex-col items-center justify-center text-center space-y-8">
           {/* Mascot with enhanced animations */}
-          <div className="mb-8 animate-float">
+          <div
+            className={cn("mb-8", animationsEnabled && "animate-float")}
+          >
             <img
               src="/airbear-mascot.png"
               alt="Friendly brown bear mascot with pilot goggles representing AirBear"
-              className="mx-auto rounded-full w-32 h-32 object-cover border-4 border-emerald-400/30 hover-lift animate-pulse-glow shadow-2xl"
+              className={cn(
+                "mx-auto rounded-full w-32 h-32 object-cover border-4 border-emerald-400/30 hover-lift shadow-2xl",
+                animationsEnabled && "animate-pulse-glow"
+              )}
             />
           </div>
 
           <div className="space-y-6">
             <h1 className="text-5xl md:text-7xl lg:text-8xl font-bold text-balance relative">
-              <span className="bg-gradient-to-r from-emerald-600 via-lime-500 to-amber-500 bg-clip-text text-transparent animate-pulse-glow airbear-holographic text-outline-strong">
+              <span
+                className={cn(
+                  "bg-gradient-to-r from-emerald-600 via-lime-500 to-amber-500 bg-clip-text text-transparent text-outline-strong",
+                  animationsEnabled && "animate-pulse-glow airbear-holographic"
+                )}
+              >
                 AirBear Mobile Bodega
               </span>
               <br />
-              <span className="text-foreground airbear-solar-rays text-4xl md:text-5xl lg:text-6xl">
+              <span
+                className={cn(
+                  "text-foreground text-4xl md:text-5xl lg:text-6xl",
+                  animationsEnabled && "airbear-solar-rays"
+                )}
+              >
                 Solar Powered Rideshare
               </span>
 
@@ -111,7 +154,10 @@ export default function HomePage() {
                 {Array.from({ length: 8 }, (_, i) => (
                   <div
                     key={i}
-                    className="absolute w-2 h-2 bg-gradient-to-r from-cyan-400 via-purple-500 to-pink-500 rounded-full opacity-60 animate-pulse-glow"
+                    className={cn(
+                      "absolute w-2 h-2 bg-gradient-to-r from-cyan-400 via-purple-500 to-pink-500 rounded-full opacity-60",
+                      animationsEnabled && "animate-pulse-glow"
+                    )}
                     style={{
                       left: `${20 + i * 10}%`,
                       top: `${30 + Math.sin(i) * 20}%`,
@@ -122,13 +168,28 @@ export default function HomePage() {
               </div>
             </h1>
 
-            <p className="text-xl md:text-2xl text-muted-foreground text-pretty max-w-3xl mx-auto leading-relaxed airbear-eco-breeze">
-              <span className="text-emerald-600 font-bold animate-shimmer">
+            <p
+              className={cn(
+                "text-xl md:text-2xl text-muted-foreground text-pretty max-w-3xl mx-auto leading-relaxed",
+                animationsEnabled && "airbear-eco-breeze"
+              )}
+            >
+              <span
+                className={cn(
+                  "text-emerald-600 font-bold",
+                  animationsEnabled && "animate-shimmer"
+                )}
+              >
                 Experience the future of sustainable transportation!
               </span>
               <br />
               Solar-powered vehicles with onboard shopping experiences,
-              <span className="text-emerald-500 font-semibold airbear-god-rays">
+              <span
+                className={cn(
+                  "text-emerald-500 font-semibold",
+                  animationsEnabled && "airbear-god-rays"
+                )}
+              >
                 {" "}
                 zero emissions
               </span>
@@ -145,10 +206,18 @@ export default function HomePage() {
             <Button
               asChild
               size="lg"
-              className="group relative eco-gradient text-white hover-lift ripple-effect px-8 py-4 text-lg font-semibold animate-neon-glow shadow-xl"
+              className={cn(
+                "group relative eco-gradient text-white hover-lift ripple-effect px-8 py-4 text-lg font-semibold shadow-xl",
+                animationsEnabled && "animate-neon-glow"
+              )}
             >
               <Link href="/map">
-                <AirbearWheel size="sm" glowing animated className="mr-2" />
+                <AirbearWheel
+                  size="sm"
+                  glowing
+                  animated={animationsEnabled}
+                  className="mr-2"
+                />
                 <MapPin className="mr-2 h-5 w-5" />
                 Book Your AirBear
               </Link>
@@ -157,7 +226,10 @@ export default function HomePage() {
             <Button
               asChild
               size="lg"
-              className="bg-gradient-to-r from-amber-500 via-yellow-500 to-amber-500 text-white hover-lift ripple-effect px-8 py-4 text-lg font-semibold animate-pulse-glow shadow-xl"
+              className={cn(
+                "bg-gradient-to-r from-amber-500 via-yellow-500 to-amber-500 text-white hover-lift ripple-effect px-8 py-4 text-lg font-semibold shadow-xl",
+                animationsEnabled && "animate-pulse-glow"
+              )}
             >
               <Link href="/products">
                 <Crown className="mr-2 h-5 w-5" />
@@ -181,7 +253,12 @@ export default function HomePage() {
           {/* Stats Section */}
           <div className="grid grid-cols-2 sm:grid-cols-4 gap-6 max-w-2xl mx-auto mt-12">
             <div className="text-center hover-lift p-4 rounded-lg glass-morphism">
-              <div className="text-3xl sm:text-4xl font-bold text-emerald-600 animate-pulse-glow">
+              <div
+                className={cn(
+                  "text-3xl sm:text-4xl font-bold text-emerald-600",
+                  animationsEnabled && "animate-pulse-glow"
+                )}
+              >
                 5
               </div>
               <div className="text-sm text-muted-foreground">
@@ -211,7 +288,12 @@ export default function HomePage() {
           {/* Enhanced Feature Cards */}
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mt-16 w-full max-w-5xl">
             <div className="flex flex-col items-center space-y-4 p-8 rounded-xl glass-morphism border border-white/50 shadow-2xl hover-lift hover:shadow-3xl transition-all duration-300">
-              <div className="p-4 rounded-full bg-gradient-to-br from-emerald-400 to-emerald-600 shadow-xl animate-pulse-glow">
+              <div
+                className={cn(
+                  "p-4 rounded-full bg-gradient-to-br from-emerald-400 to-emerald-600 shadow-xl",
+                  animationsEnabled && "animate-pulse-glow"
+                )}
+              >
                 <Leaf className="h-12 w-12 text-white" />
               </div>
               <h3 className="text-2xl font-bold bg-gradient-to-r from-emerald-600 to-emerald-700 bg-clip-text text-transparent">
@@ -225,7 +307,10 @@ export default function HomePage() {
 
             <div className="flex flex-col items-center space-y-4 p-8 rounded-xl glass-morphism border border-white/50 shadow-2xl hover-lift hover:shadow-3xl transition-all duration-300">
               <div
-                className="p-4 rounded-full bg-gradient-to-br from-amber-400 to-amber-600 shadow-xl animate-pulse-glow"
+                className={cn(
+                  "p-4 rounded-full bg-gradient-to-br from-amber-400 to-amber-600 shadow-xl",
+                  animationsEnabled && "animate-pulse-glow"
+                )}
                 style={{ animationDelay: "0.5s" }}
               >
                 <ShoppingBag className="h-12 w-12 text-white" />
@@ -241,7 +326,10 @@ export default function HomePage() {
 
             <div className="flex flex-col items-center space-y-4 p-8 rounded-xl glass-morphism border border-white/50 shadow-2xl hover-lift hover:shadow-3xl transition-all duration-300">
               <div
-                className="p-4 rounded-full bg-gradient-to-br from-emerald-400 to-orange-500 shadow-xl animate-pulse-glow"
+                className={cn(
+                  "p-4 rounded-full bg-gradient-to-br from-emerald-400 to-orange-500 shadow-xl",
+                  animationsEnabled && "animate-pulse-glow"
+                )}
                 style={{ animationDelay: "1s" }}
               >
                 <Zap className="h-12 w-12 text-white" />
@@ -261,7 +349,12 @@ export default function HomePage() {
             <div className="relative py-16 px-8 rounded-2xl bg-gradient-to-br from-emerald-500 via-lime-500 to-amber-500 shadow-2xl overflow-hidden">
               <div className="absolute inset-0 bg-black/10"></div>
               <div className="relative z-10 text-center">
-                <h2 className="text-3xl sm:text-4xl font-bold text-white mb-6 animate-pulse-glow">
+                <h2
+                  className={cn(
+                    "text-3xl sm:text-4xl font-bold text-white mb-6",
+                    animationsEnabled && "animate-pulse-glow"
+                  )}
+                >
                   Ready to Start Your Eco Journey?
                 </h2>
                 <p className="text-xl text-white/90 mb-8 max-w-2xl mx-auto">

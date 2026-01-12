@@ -26,3 +26,8 @@ yarn-error.log*
 *.tsbuildinfo
 next-env.d.ts
 .env*.local
+\n# Log files
+dev.log
+\n# Test reports
+playwright-report/
+test-results/
