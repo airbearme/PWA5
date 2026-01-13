@@ -2,6 +2,7 @@ import type React from "react";
 import type { Metadata, Viewport } from "next";
 import { Inter, Space_Grotesk } from "next/font/google";
 import { Analytics } from "@vercel/analytics/react";
+import { AnimationProvider } from "@/components/animation-provider";
 import { ThemeProvider } from "@/components/theme-provider";
 import { AuthProvider } from "@/components/auth-provider";
 import { Toaster } from "@/components/ui/toaster";
@@ -127,20 +128,22 @@ export default function RootLayout({
         className={`${inter.variable} ${spaceGrotesk.variable} font-sans antialiased`}
       >
         {/* 🎨 CORE: Dark mode permanently enabled - DO NOT CHANGE */}
-        <ThemeProvider
-          attribute="class"
-          defaultTheme="dark"
-          enableSystem={false}
-          disableTransitionOnChange
-        >
-          <AuthProvider>
-              {children}
-              <FloatingMascot />
-              <PWAInstallPrompt />
-              <Toaster />
-              <Analytics />
-          </AuthProvider>
-        </ThemeProvider>
+        <AnimationProvider>
+          <ThemeProvider
+            attribute="class"
+            defaultTheme="dark"
+            enableSystem={false}
+            disableTransitionOnChange
+          >
+            <AuthProvider>
+                {children}
+                <FloatingMascot />
+                <PWAInstallPrompt />
+                <Toaster />
+                <Analytics />
+            </AuthProvider>
+          </ThemeProvider>
+        </AnimationProvider>
       </body>
     </html>
   );
