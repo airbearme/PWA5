@@ -6,7 +6,8 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { useToast } from "@/hooks/use-toast";
 import { getSupabaseClient } from "@/lib/supabase/client";
 import { useAuthContext } from "@/components/auth-provider";
-import { MapPin, Zap } from "lucide-react";
+import MapPin from "lucide-react/dist/esm/icons/map-pin";
+import Zap from "lucide-react/dist/esm/icons/zap";
 import { CheckoutButton } from "@/components/checkout-button";
 import errorLogger from "@/lib/error-logger";
 

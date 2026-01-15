@@ -2,7 +2,9 @@
 
 import { useEffect, useState, useRef } from "react";
 import { Button } from "@/components/ui/button";
-import { X, Download, Smartphone } from "lucide-react";
+import X from "lucide-react/dist/esm/icons/x";
+import Download from "lucide-react/dist/esm/icons/download";
+import Smartphone from "lucide-react/dist/esm/icons/smartphone";
 import AirbearWheel from "@/components/airbear-wheel";
 
 interface BeforeInstallPromptEvent extends Event {

@@ -7,7 +7,13 @@ import { getSupabaseClient } from "@/lib/supabase/client";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Calendar, MapPin, Leaf, Award, Navigation, Clock, CheckCircle } from "lucide-react";
+import Calendar from "lucide-react/dist/esm/icons/calendar";
+import MapPin from "lucide-react/dist/esm/icons/map-pin";
+import Leaf from "lucide-react/dist/esm/icons/leaf";
+import Award from "lucide-react/dist/esm/icons/award";
+import Navigation from "lucide-react/dist/esm/icons/navigation";
+import Clock from "lucide-react/dist/esm/icons/clock";
+import CheckCircle from "lucide-react/dist/esm/icons/check-circle";
 import Link from "next/link";
 
 interface Ride {

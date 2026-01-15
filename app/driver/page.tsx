@@ -8,7 +8,13 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { useToast } from "@/hooks/use-toast";
-import { Navigation, Battery, MapPin, Activity, Clock, CheckCircle, X } from "lucide-react";
+import Navigation from "lucide-react/dist/esm/icons/navigation";
+import Battery from "lucide-react/dist/esm/icons/battery";
+import MapPin from "lucide-react/dist/esm/icons/map-pin";
+import Activity from "lucide-react/dist/esm/icons/activity";
+import Clock from "lucide-react/dist/esm/icons/clock";
+import CheckCircle from "lucide-react/dist/esm/icons/check-circle";
+import X from "lucide-react/dist/esm/icons/x";
 import Link from "next/link";
 
 interface Ride {

@@ -14,7 +14,13 @@ import {
   useStripe,
   useElements,
 } from "@stripe/react-stripe-js";
-import { CreditCard, Smartphone, QrCode, CheckCircle, Apple, Wallet, MapPin } from "lucide-react";
+import CreditCard from "lucide-react/dist/esm/icons/credit-card";
+import Smartphone from "lucide-react/dist/esm/icons/smartphone";
+import QrCode from "lucide-react/dist/esm/icons/qr-code";
+import CheckCircle from "lucide-react/dist/esm/icons/check-circle";
+import Apple from "lucide-react/dist/esm/icons/apple";
+import Wallet from "lucide-react/dist/esm/icons/wallet";
+import MapPin from "lucide-react/dist/esm/icons/map-pin";
 import Link from "next/link";
 
 const stripePromise = loadStripe(
