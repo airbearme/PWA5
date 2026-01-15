@@ -11,7 +11,11 @@
 
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
-import { MapPin, ShoppingBag, Leaf, Zap, Crown } from "lucide-react";
+import MapPin from "lucide-react/dist/esm/icons/map-pin";
+import ShoppingBag from "lucide-react/dist/esm/icons/shopping-bag";
+import Leaf from "lucide-react/dist/esm/icons/leaf";
+import Zap from "lucide-react/dist/esm/icons/zap";
+import Crown from "lucide-react/dist/esm/icons/crown";
 import AirbearWheel from "@/components/airbear-wheel";
 
 export default function HomePage() {
