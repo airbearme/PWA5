@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import { useState, useEffect } from "react";
 import Link from "next/link";
 import AirbearWheel from "@/components/airbear-wheel";
@@ -40,9 +41,11 @@ export default function FloatingMascot() {
           </div>
           
           {/* Mascot image */}
-          <img
+          <Image
             src="/airbear-mascot.png"
             alt="AirBear Mascot"
+            width={80}
+            height={80}
             className="w-full h-full object-cover rounded-full animate-float"
             style={{ animationDuration: "4s" }}
           />
