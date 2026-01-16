@@ -148,8 +148,14 @@ export default function HomePage() {
               className="group relative eco-gradient text-white hover-lift ripple-effect px-8 py-4 text-lg font-semibold animate-neon-glow shadow-xl"
             >
               <Link href="/map">
-                <AirbearWheel size="sm" glowing animated className="mr-2" />
-                <MapPin className="mr-2 h-5 w-5" />
+                <AirbearWheel
+                  size="sm"
+                  glowing
+                  animated
+                  className="mr-2"
+                  aria-hidden="true"
+                />
+                <MapPin className="mr-2 h-5 w-5" aria-hidden="true" />
                 Book Your AirBear
               </Link>
             </Button>
@@ -160,7 +166,7 @@ export default function HomePage() {
               className="bg-gradient-to-r from-amber-500 via-yellow-500 to-amber-500 text-white hover-lift ripple-effect px-8 py-4 text-lg font-semibold animate-pulse-glow shadow-xl"
             >
               <Link href="/products">
-                <Crown className="mr-2 h-5 w-5" />
+                <Crown className="mr-2 h-5 w-5" aria-hidden="true" />
                 CEO T-Shirt $100
               </Link>
             </Button>
@@ -172,7 +178,7 @@ export default function HomePage() {
               className="border-2 border-emerald-500 text-emerald-600 hover:bg-emerald-50 px-8 py-4 text-lg font-semibold hover-lift ripple-effect shadow-lg"
             >
               <Link href="/products">
-                <ShoppingBag className="mr-2 h-5 w-5" />
+                <ShoppingBag className="mr-2 h-5 w-5" aria-hidden="true" />
                 Shop Bodega
               </Link>
             </Button>
