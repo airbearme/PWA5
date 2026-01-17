@@ -24,7 +24,17 @@ const nextConfig = {
           },
           { key: "X-Frame-Options", value: "SAMEORIGIN" },
           { key: "X-Content-Type-Options", value: "nosniff" },
-          { key: "X-XSS-Protection", value: "1; mode=block" },
+          {
+            key: "Content-Security-Policy",
+            value:
+              "default-src 'self'; " +
+              "script-src 'self' *.vercel.com; " +
+              "style-src 'self'; " +
+              "img-src 'self' data: *.supabase.co; " +
+              "connect-src 'self' *.supabase.co *.stripe.com; " +
+              "frame-src *.stripe.com; " +
+              "font-src 'self' data:;",
+          },
           { key: "Referrer-Policy", value: "origin-when-cross-origin" },
           {
             key: "Permissions-Policy",
