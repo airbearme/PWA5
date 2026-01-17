@@ -1,10 +1,14 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, memo } from "react";
 import Link from "next/link";
 import AirbearWheel from "@/components/airbear-wheel";
 
-export default function FloatingMascot() {
+// Performance Optimization:
+// Wrapped the component in React.memo to prevent unnecessary re-renders.
+// Since the mascot's animation is self-contained and doesn't depend on props from its parent,
+// this memoization ensures it only renders once, improving overall application performance.
+const FloatingMascot = memo(function FloatingMascot() {
   const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
 
   useEffect(() => {
@@ -59,5 +63,7 @@ export default function FloatingMascot() {
       </div>
     </Link>
   );
-}
+});
+
+export default FloatingMascot;
 
