@@ -145,12 +145,12 @@ export function OneClickBooking({
     >
       {loading ? (
         <>
-          <Zap className="mr-2 h-5 w-5 animate-spin" />
+          <Zap className="mr-2 h-5 w-5 animate-spin" aria-hidden="true" />
           Booking...
         </>
       ) : (
         <>
-          <MapPin className="mr-2 h-5 w-5" />
+          <MapPin className="mr-2 h-5 w-5" aria-hidden="true" />
           Book Now - ${fare.toFixed(2)}
         </>
       )}
