@@ -1,20 +1,55 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import Link from "next/link";
 import AirbearWheel from "@/components/airbear-wheel";
+
+// A simple throttle function to limit how often a function can be called.
+// This is a performance optimization to prevent excessive re-renders from mousemove events.
+const throttle = <F extends (...args: any[]) => any>(
+  func: F,
+  limit: number
+): ((...args: Parameters<F>) => void) => {
+  let inThrottle: boolean;
+  let lastFunc: ReturnType<typeof setTimeout>;
+  let lastRan: number;
+  return function (this: any, ...args: Parameters<F>) {
+    const context = this;
+    if (!inThrottle) {
+      func.apply(context, args);
+      lastRan = Date.now();
+      inThrottle = true;
+    } else {
+      clearTimeout(lastFunc);
+      lastFunc = setTimeout(() => {
+        if (Date.now() - lastRan >= limit) {
+          func.apply(context, args);
+          lastRan = Date.now();
+        }
+      }, limit - (Date.now() - lastRan));
+    }
+  };
+};
 
 export default function FloatingMascot() {
   const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
 
+  const throttledSetMousePosition = useMemo(
+    () =>
+      throttle((x: number, y: number) => {
+        setMousePosition({ x, y });
+      }, 100), // Update position at most every 100ms
+    []
+  );
+
   useEffect(() => {
     const handleMouseMove = (e: MouseEvent) => {
-      setMousePosition({ x: e.clientX, y: e.clientY });
+      throttledSetMousePosition(e.clientX, e.clientY);
     };
 
     window.addEventListener("mousemove", handleMouseMove);
     return () => window.removeEventListener("mousemove", handleMouseMove);
-  }, []);
+  }, [throttledSetMousePosition]);
 
   // Calculate position based on mouse (subtle follow effect)
   const followX = mousePosition.x * 0.01;
