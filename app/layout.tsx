@@ -3,6 +3,7 @@ import type { Metadata, Viewport } from "next";
 import { Inter, Space_Grotesk } from "next/font/google";
 import { Analytics } from "@vercel/analytics/react";
 import { ThemeProvider } from "@/components/theme-provider";
+import { AnimationProvider } from "@/components/animation-provider";
 import { AuthProvider } from "@/components/auth-provider";
 import { Toaster } from "@/components/ui/toaster";
 import PWAInstallPrompt from "@/components/pwa-install-prompt";
@@ -133,13 +134,15 @@ export default function RootLayout({
           enableSystem={false}
           disableTransitionOnChange
         >
-          <AuthProvider>
-              {children}
-              <FloatingMascot />
-              <PWAInstallPrompt />
-              <Toaster />
-              <Analytics />
-          </AuthProvider>
+          <AnimationProvider>
+            <AuthProvider>
+                {children}
+                <FloatingMascot />
+                <PWAInstallPrompt />
+                <Toaster />
+                <Analytics />
+            </AuthProvider>
+          </AnimationProvider>
         </ThemeProvider>
       </body>
     </html>

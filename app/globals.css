@@ -497,6 +497,14 @@
   }
 }
 
+html[data-animations-disabled="true"] *,
+html[data-animations-disabled="true"] *::before,
+html[data-animations-disabled="true"] *::after {
+  animation-duration: 0.01ms !important;
+  animation-iteration-count: 1 !important;
+  transition-duration: 0.01ms !important;
+}
+
 /* Beautiful Leaflet map styles */
 .leaflet-container {
   font-family: var(--font-sans);
