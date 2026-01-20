@@ -9,6 +9,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useToast } from "@/hooks/use-toast";
+import { cn } from "@/lib/utils";
 import { MapPin, Navigation, DollarSign, Clock, ArrowRight, Loader2 } from "lucide-react";
 import Link from "next/link";
 import type { Spot } from "@/components/map-view";
@@ -226,17 +227,18 @@ export default function BookRidePage() {
                     size="sm"
                     className="mt-2"
                     onClick={() => setPickupSpot(null)}
+                    disabled={booking}
                   >
                     Change
                   </Button>
                 </div>
               ) : (
-                <div className="space-y-2 max-h-60 overflow-y-auto">
+                <div className={cn("space-y-2 max-h-60 overflow-y-auto", booking && "opacity-50")}>
                   {spots.map((spot) => (
                     <div
                       key={spot.id}
-                      className="p-3 rounded-lg border hover:bg-muted cursor-pointer transition-colors"
-                      onClick={() => setPickupSpot(spot)}
+                      className={cn("p-3 rounded-lg border hover:bg-muted transition-colors", booking ? "cursor-not-allowed" : "cursor-pointer")}
+                      onClick={() => !booking && setPickupSpot(spot)}
                     >
                       <p className="font-medium">{spot.name}</p>
                       {spot.description && (
@@ -276,19 +278,20 @@ export default function BookRidePage() {
                     size="sm"
                     className="mt-2"
                     onClick={() => setDestinationSpot(null)}
+                    disabled={booking}
                   >
                     Change
                   </Button>
                 </div>
               ) : (
-                <div className="space-y-2 max-h-60 overflow-y-auto">
+                <div className={cn("space-y-2 max-h-60 overflow-y-auto", booking && "opacity-50")}>
                   {spots
                     .filter((s) => s.id !== pickupSpot?.id)
                     .map((spot) => (
                       <div
                         key={spot.id}
-                        className="p-3 rounded-lg border hover:bg-muted cursor-pointer transition-colors"
-                        onClick={() => setDestinationSpot(spot)}
+                        className={cn("p-3 rounded-lg border hover:bg-muted transition-colors", booking ? "cursor-not-allowed" : "cursor-pointer")}
+                        onClick={() => !booking && setDestinationSpot(spot)}
                       >
                         <p className="font-medium">{spot.name}</p>
                         {spot.description && (
