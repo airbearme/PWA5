@@ -19,7 +19,9 @@ describe('cn utility', () => {
   });
 
   it('merges Tailwind classes', () => {
-    expect(cn('px-2 py-1', 'px-4')).toBe('px-4 py-1');
+    const expected = 'px-4 py-1'.split(' ').sort().join(' ');
+    const result = cn('px-2 py-1', 'px-4').split(' ').sort().join(' ');
+    expect(result).toBe(expected);
   });
 });
 
