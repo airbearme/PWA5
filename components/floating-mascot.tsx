@@ -1,33 +1,44 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useEffect } from "react";
 import Link from "next/link";
 import AirbearWheel from "@/components/airbear-wheel";
+import { motion, useMotionValue, useTransform, useSpring } from "framer-motion";
 
 export default function FloatingMascot() {
-  const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
+  const mouseX = useMotionValue(0);
+  const mouseY = useMotionValue(0);
 
   useEffect(() => {
     const handleMouseMove = (e: MouseEvent) => {
-      setMousePosition({ x: e.clientX, y: e.clientY });
+      mouseX.set(e.clientX);
+      mouseY.set(e.clientY);
     };
 
     window.addEventListener("mousemove", handleMouseMove);
     return () => window.removeEventListener("mousemove", handleMouseMove);
-  }, []);
+  }, [mouseX, mouseY]);
 
-  // Calculate position based on mouse (subtle follow effect)
-  const followX = mousePosition.x * 0.01;
-  const followY = mousePosition.y * 0.01;
+  // Performance Optimization:
+  // By using framer-motion's `useMotionValue`, `useTransform`, and `useSpring`,
+  // we animate the mascot's position without triggering React re-renders on every mouse move.
+  // This is significantly more performant than using `useState`.
+  const springConfig = { damping: 20, stiffness: 100, mass: 0.5 };
+  const followX = useSpring(useTransform(mouseX, [0, 1920], [-15, 15]), springConfig);
+  const followY = useSpring(useTransform(mouseY, [0, 1080], [-15, 15]), springConfig);
 
   return (
+    <motion.div
+      style={{
+        translateX: followX,
+        translateY: followY,
+      }}
+      className="fixed bottom-6 right-6 z-50"
+    >
         <Link
           href="/"
-          className="fixed bottom-6 right-6 z-50 transition-all duration-500 opacity-100 translate-y-0"
-      style={{
-        transform: `translate(${followX}px, ${followY}px)`,
-      }}
-    >
+          className="transition-all duration-500 opacity-100 translate-y-0"
+        >
       <div className="group relative">
         {/* Glowing background circle */}
         <div className="absolute inset-0 bg-emerald-500/20 rounded-full blur-2xl animate-pulse-glow group-hover:bg-emerald-500/40 transition-colors"></div>
@@ -57,7 +68,8 @@ export default function FloatingMascot() {
           </div>
         </div>
       </div>
-    </Link>
+        </Link>
+    </motion.div>
   );
 }
 
