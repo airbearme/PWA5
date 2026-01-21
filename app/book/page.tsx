@@ -233,9 +233,10 @@ export default function BookRidePage() {
               ) : (
                 <div className="space-y-2 max-h-60 overflow-y-auto">
                   {spots.map((spot) => (
-                    <div
+                    <Button
                       key={spot.id}
-                      className="p-3 rounded-lg border hover:bg-muted cursor-pointer transition-colors"
+                      variant="unstyled"
+                      className="w-full text-left p-3 rounded-lg border hover:bg-muted cursor-pointer transition-colors"
                       onClick={() => setPickupSpot(spot)}
                     >
                       <p className="font-medium">{spot.name}</p>
@@ -244,7 +245,7 @@ export default function BookRidePage() {
                           {spot.description}
                         </p>
                       )}
-                    </div>
+                    </Button>
                   ))}
                 </div>
               )}
@@ -285,9 +286,10 @@ export default function BookRidePage() {
                   {spots
                     .filter((s) => s.id !== pickupSpot?.id)
                     .map((spot) => (
-                      <div
+                      <Button
                         key={spot.id}
-                        className="p-3 rounded-lg border hover:bg-muted cursor-pointer transition-colors"
+                        variant="unstyled"
+                        className="w-full text-left p-3 rounded-lg border hover:bg-muted cursor-pointer transition-colors"
                         onClick={() => setDestinationSpot(spot)}
                       >
                         <p className="font-medium">{spot.name}</p>
@@ -296,7 +298,7 @@ export default function BookRidePage() {
                             {spot.description}
                           </p>
                         )}
-                      </div>
+                      </Button>
                     ))}
                 </div>
               )}
