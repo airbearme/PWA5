@@ -1,0 +1,4 @@
+## 2024-05-22 - Deprecated X-XSS-Protection Header Replaced with Content-Security-Policy
+**Vulnerability:** The application was using the `X-XSS-Protection` header, which is deprecated and has been superseded by Content Security Policy (CSP). While modern browsers often have built-in XSS protection, relying on this outdated header provides a false sense of security and is not a robust defense mechanism.
+**Learning:** The configuration in `next.config.mjs` was likely written some time ago and hadn't been updated to reflect current security best practices. The accompanying security test was also outdated, reinforcing the use of the deprecated header.
+**Prevention:** Regularly review and update security configurations, especially HTTP headers, to align with current best practices. Security tests should be kept in sync with the implemented security measures to avoid enforcing outdated standards.

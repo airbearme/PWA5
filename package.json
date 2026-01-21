@@ -20,7 +20,7 @@
 		"test:api": "jest --testPathPattern=tests/api",
 		"test:e2e": "playwright test",
 		"test:performance": "node scripts/test-performance.js",
-		"test:security": "node scripts/test-security-headers.js",
+    "test:security": "node scripts/test-security-headers.cjs",
 		"test:accessibility": "node scripts/test-accessibility.js",
 		"test:database": "node scripts/test-database.js",
 		"test:stripe": "node scripts/test-stripe.js",
