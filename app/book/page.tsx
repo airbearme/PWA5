@@ -233,18 +233,21 @@ export default function BookRidePage() {
               ) : (
                 <div className="space-y-2 max-h-60 overflow-y-auto">
                   {spots.map((spot) => (
-                    <div
+                    <Button
                       key={spot.id}
-                      className="p-3 rounded-lg border hover:bg-muted cursor-pointer transition-colors"
+                      variant="ghost"
+                      className="h-auto p-3 text-left justify-start w-full border rounded-lg"
                       onClick={() => setPickupSpot(spot)}
                     >
-                      <p className="font-medium">{spot.name}</p>
-                      {spot.description && (
-                        <p className="text-sm text-muted-foreground">
-                          {spot.description}
-                        </p>
-                      )}
-                    </div>
+                      <div>
+                        <p className="font-medium">{spot.name}</p>
+                        {spot.description && (
+                          <p className="text-sm text-muted-foreground">
+                            {spot.description}
+                          </p>
+                        )}
+                      </div>
+                    </Button>
                   ))}
                 </div>
               )}
@@ -285,18 +288,21 @@ export default function BookRidePage() {
                   {spots
                     .filter((s) => s.id !== pickupSpot?.id)
                     .map((spot) => (
-                      <div
+                      <Button
                         key={spot.id}
-                        className="p-3 rounded-lg border hover:bg-muted cursor-pointer transition-colors"
+                        variant="ghost"
+                        className="h-auto p-3 text-left justify-start w-full border rounded-lg"
                         onClick={() => setDestinationSpot(spot)}
                       >
-                        <p className="font-medium">{spot.name}</p>
-                        {spot.description && (
-                          <p className="text-sm text-muted-foreground">
-                            {spot.description}
-                          </p>
-                        )}
-                      </div>
+                        <div>
+                          <p className="font-medium">{spot.name}</p>
+                          {spot.description && (
+                            <p className="text-sm text-muted-foreground">
+                              {spot.description}
+                            </p>
+                          )}
+                        </div>
+                      </Button>
                     ))}
                 </div>
               )}
