@@ -24,8 +24,14 @@ const nextConfig = {
           },
           { key: "X-Frame-Options", value: "SAMEORIGIN" },
           { key: "X-Content-Type-Options", value: "nosniff" },
-          { key: "X-XSS-Protection", value: "1; mode=block" },
           { key: "Referrer-Policy", value: "origin-when-cross-origin" },
+          {
+            key: "Content-Security-Policy",
+            // 🛡️ Sentinel: CSP added to mitigate XSS.
+            // 'unsafe-eval' and 'unsafe-inline' are required for Next.js and Stripe.js,
+            // representing a calculated security trade-off.
+            value: "default-src 'self'; script-src 'self' 'unsafe-eval' 'unsafe-inline' *.vercel.com *.supabase.co *.stripe.com; style-src 'self' 'unsafe-inline'; img-src 'self' data: *.supabase.co; connect-src 'self' *.supabase.co; font-src 'self'; object-src 'none'; frame-ancestors 'self';",
+          },
           {
             key: "Permissions-Policy",
             value: "camera=(), microphone=(), geolocation=(self)",
