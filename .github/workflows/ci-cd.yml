@@ -33,10 +33,10 @@ jobs:
         run: pnpm install --frozen-lockfile
 
       - name: Run ESLint
-        run: pnpm run lint || true
+        run: pnpm run lint
 
       - name: Run TypeScript check
-        run: pnpm run type-check || true
+        run: pnpm run type-check
 
   # Build
   build:
@@ -101,50 +101,18 @@ jobs:
         run: pnpm install --frozen-lockfile
 
       - name: Run unit tests
-        run: pnpm run test || echo "Tests not configured yet"
+        run: pnpm run test
 
       - name: Check API endpoints
         run: |
           echo "Checking API health..."
           # Add health check script
-          node scripts/health-check.js || echo "Health check script not found"
+          node scripts/health-check.js
 
       - name: Validate environment variables
         run: |
           echo "Validating required env vars..."
-          node scripts/validate-env.js || echo "Env validation script not found"
-
-  # Self-Repair
-  self-repair:
-    name: Self-Repair & Auto-Fix
-    runs-on: ubuntu-latest
-    needs: [build, self-test]
-    if: failure()
-    steps:
-      - uses: actions/checkout@v4
-
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: ${{ env.NODE_VERSION }}
-          cache: "pnpm"
-
-      - name: Setup pnpm
-        uses: pnpm/action-setup@v4
-        with:
-          version: latest
-
-      - name: Install dependencies
-        run: pnpm install --frozen-lockfile
-
-      - name: Run auto-fix
-        run: |
-          echo "Attempting auto-repair..."
-          pnpm run lint -- --fix || true
-          node scripts/auto-repair.js || echo "Auto-repair script not found"
-
-      - name: Re-run build after repair
-        run: pnpm run build || echo "Build still failing after repair"
+          node scripts/validate-env.js
 
   # Deploy to Vercel
   deploy:
@@ -162,18 +130,3 @@ jobs:
           vercel-org-id: ${{ secrets.VERCEL_ORG_ID }}
           vercel-project-id: ${{ secrets.VERCEL_PROJECT_ID }}
           vercel-args: "--prod"
-
-  # Error Reporting
-  error-report:
-    name: Report Errors to Database
-    runs-on: ubuntu-latest
-    needs: [build, self-test]
-    if: always()
-    steps:
-      - uses: actions/checkout@v4
-
-      - name: Report build errors
-        if: failure()
-        run: |
-          echo "Reporting errors to database..."
-          node scripts/report-errors.js || echo "Error reporting script not found"
