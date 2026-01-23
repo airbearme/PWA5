@@ -1,31 +1,49 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useEffect } from "react";
 import Link from "next/link";
+import {
+  motion,
+  useMotionValue,
+  useTransform,
+  useSpring,
+  useReducedMotion,
+} from "framer-motion";
 import AirbearWheel from "@/components/airbear-wheel";
 
+const MotionLink = motion(Link);
+
 export default function FloatingMascot() {
-  const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
+  const mouseX = useMotionValue(0);
+  const mouseY = useMotionValue(0);
 
   useEffect(() => {
     const handleMouseMove = (e: MouseEvent) => {
-      setMousePosition({ x: e.clientX, y: e.clientY });
+      mouseX.set(e.clientX);
+      mouseY.set(e.clientY);
     };
 
     window.addEventListener("mousemove", handleMouseMove);
     return () => window.removeEventListener("mousemove", handleMouseMove);
-  }, []);
+  }, [mouseX, mouseY]);
 
-  // Calculate position based on mouse (subtle follow effect)
-  const followX = mousePosition.x * 0.01;
-  const followY = mousePosition.y * 0.01;
+  // Create a subtle follow effect with transform
+  const transformedX = useTransform(mouseX, (x) => x * 0.01);
+  const transformedY = useTransform(mouseY, (y) => y * 0.01);
+
+  // Add a spring for smooth animation
+  const springConfig = { damping: 20, stiffness: 100, mass: 0.1 };
+  const springX = useSpring(transformedX, springConfig);
+  const springY = useSpring(transformedY, springConfig);
+  const shouldReduceMotion = useReducedMotion();
 
   return (
-        <Link
-          href="/"
-          className="fixed bottom-6 right-6 z-50 transition-all duration-500 opacity-100 translate-y-0"
+    <MotionLink
+      href="/"
+      className="fixed bottom-6 right-6 z-50"
       style={{
-        transform: `translate(${followX}px, ${followY}px)`,
+        x: shouldReduceMotion ? 0 : springX,
+        y: shouldReduceMotion ? 0 : springY,
       }}
     >
       <div className="group relative">
@@ -57,7 +75,7 @@ export default function FloatingMascot() {
           </div>
         </div>
       </div>
-    </Link>
+    </MotionLink>
   );
 }
 
