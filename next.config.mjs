@@ -24,8 +24,14 @@ const nextConfig = {
           },
           { key: "X-Frame-Options", value: "SAMEORIGIN" },
           { key: "X-Content-Type-Options", value: "nosniff" },
-          { key: "X-XSS-Protection", value: "1; mode=block" },
           { key: "Referrer-Policy", value: "origin-when-cross-origin" },
+          {
+            key: "Content-Security-Policy",
+            // Using 'unsafe-eval' and 'unsafe-inline' for now to avoid breaking existing functionality.
+            // A stricter policy using nonces or hashes should be implemented in the future.
+            value:
+              "default-src 'self'; script-src 'self' 'unsafe-eval' 'unsafe-inline' *.supabase.co *.stripe.com *.vercel-insights.com; style-src 'self' 'unsafe-inline'; img-src 'self' *.supabase.co data:; connect-src 'self' *.supabase.co *.stripe.com *.vercel-insights.com; frame-src *.stripe.com; font-src 'self';",
+          },
           {
             key: "Permissions-Policy",
             value: "camera=(), microphone=(), geolocation=(self)",
