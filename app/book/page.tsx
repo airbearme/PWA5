@@ -226,6 +226,7 @@ export default function BookRidePage() {
                     size="sm"
                     className="mt-2"
                     onClick={() => setPickupSpot(null)}
+                    disabled={booking}
                   >
                     Change
                   </Button>
@@ -233,10 +234,11 @@ export default function BookRidePage() {
               ) : (
                 <div className="space-y-2 max-h-60 overflow-y-auto">
                   {spots.map((spot) => (
-                    <div
+                    <button
                       key={spot.id}
-                      className="p-3 rounded-lg border hover:bg-muted cursor-pointer transition-colors"
+                      className="w-full text-left p-3 rounded-lg border hover:bg-muted transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                       onClick={() => setPickupSpot(spot)}
+                      disabled={booking}
                     >
                       <p className="font-medium">{spot.name}</p>
                       {spot.description && (
@@ -244,7 +246,7 @@ export default function BookRidePage() {
                           {spot.description}
                         </p>
                       )}
-                    </div>
+                    </button>
                   ))}
                 </div>
               )}
@@ -276,6 +278,7 @@ export default function BookRidePage() {
                     size="sm"
                     className="mt-2"
                     onClick={() => setDestinationSpot(null)}
+                    disabled={booking}
                   >
                     Change
                   </Button>
@@ -285,10 +288,11 @@ export default function BookRidePage() {
                   {spots
                     .filter((s) => s.id !== pickupSpot?.id)
                     .map((spot) => (
-                      <div
+                      <button
                         key={spot.id}
-                        className="p-3 rounded-lg border hover:bg-muted cursor-pointer transition-colors"
+                        className="w-full text-left p-3 rounded-lg border hover:bg-muted transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                         onClick={() => setDestinationSpot(spot)}
+                        disabled={booking}
                       >
                         <p className="font-medium">{spot.name}</p>
                         {spot.description && (
@@ -296,7 +300,7 @@ export default function BookRidePage() {
                             {spot.description}
                           </p>
                         )}
-                      </div>
+                      </button>
                     ))}
                 </div>
               )}
