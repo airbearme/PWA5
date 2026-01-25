@@ -24,7 +24,11 @@ const nextConfig = {
           },
           { key: "X-Frame-Options", value: "SAMEORIGIN" },
           { key: "X-Content-Type-Options", value: "nosniff" },
-          { key: "X-XSS-Protection", value: "1; mode=block" },
+          {
+            key: "Content-Security-Policy",
+            // TODO: Harden CSP by removing 'unsafe-eval' and 'unsafe-inline' where possible.
+            value: "default-src 'self'; script-src 'self' 'unsafe-eval' 'unsafe-inline' *.supabase.co *.stripe.com *.vercel.com; style-src 'self' 'unsafe-inline'; img-src 'self' data: *.supabase.co; connect-src 'self' *.supabase.co *.stripe.com; frame-src *.stripe.com; font-src 'self';",
+          },
           { key: "Referrer-Policy", value: "origin-when-cross-origin" },
           {
             key: "Permissions-Policy",
