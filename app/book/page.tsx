@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useAuthContext } from "@/components/auth-provider";
 import { getSupabaseClient } from "@/lib/supabase/client";
@@ -152,10 +152,17 @@ export default function BookRidePage() {
     }
   };
 
-  const distance = pickupSpot && destinationSpot
-    ? calculateDistance(pickupSpot, destinationSpot)
-    : 0;
-  const fare = estimateFare(distance);
+  const distance = useMemo(() => {
+    if (!pickupSpot || !destinationSpot) return 0;
+    // This is a noticeable calculation, good candidate for memoization
+    return calculateDistance(pickupSpot, destinationSpot);
+  }, [pickupSpot, destinationSpot]);
+
+  const fare = useMemo(() => {
+    // This is a simple calculation, but we memoize it for consistency
+    // and to prevent re-renders of child components that might depend on it.
+    return estimateFare(distance);
+  }, [distance]);
 
   if (authLoading || loading) {
     return (
