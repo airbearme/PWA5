@@ -22,9 +22,14 @@ const nextConfig = {
             key: "Strict-Transport-Security",
             value: "max-age=63072000; includeSubDomains; preload",
           },
-          { key: "X-Frame-Options", value: "SAMEORIGIN" },
           { key: "X-Content-Type-Options", value: "nosniff" },
-          { key: "X-XSS-Protection", value: "1; mode=block" },
+          // NOTE: 'unsafe-eval' and 'unsafe-inline' are required for Next.js dev mode and some dependencies.
+          // This is a known trade-off. A stricter policy should be implemented in the future, possibly with nonces.
+          {
+            key: "Content-Security-Policy",
+            value:
+              "default-src 'self'; script-src 'self' 'unsafe-eval' 'unsafe-inline' *.vercel-insights.com *.supabase.co *.stripe.com; style-src 'self' 'unsafe-inline'; img-src 'self' data: *.supabase.co *.stripe.com; connect-src 'self' *.supabase.co *.vercel-insights.com *.stripe.com; font-src 'self'; object-src 'none'; frame-src *.stripe.com; frame-ancestors 'none'; form-action 'self'; upgrade-insecure-requests",
+          },
           { key: "Referrer-Policy", value: "origin-when-cross-origin" },
           {
             key: "Permissions-Policy",
