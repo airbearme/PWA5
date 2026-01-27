@@ -1,5 +1,6 @@
 "use client";
 
+import { memo } from "react";
 import { cn } from "@/lib/utils";
 
 interface AirbearWheelProps {
@@ -10,7 +11,9 @@ interface AirbearWheelProps {
   effectType?: "solar" | "eco" | string;
 }
 
-export default function AirbearWheel({
+// ⚡ Bolt: Memoize this component to prevent unnecessary re-renders.
+// This is a presentational component, so its output is always the same for the same props.
+const AirbearWheel = memo(function AirbearWheel({
   size = "md",
   className = "",
   glowing = false,
@@ -86,7 +89,9 @@ export default function AirbearWheel({
       )}
     </div>
   );
-}
+});
+
+export default AirbearWheel;
 
 
 
