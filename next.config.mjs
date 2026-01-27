@@ -22,10 +22,19 @@ const nextConfig = {
             key: "Strict-Transport-Security",
             value: "max-age=63072000; includeSubDomains; preload",
           },
-          { key: "X-Frame-Options", value: "SAMEORIGIN" },
           { key: "X-Content-Type-Options", value: "nosniff" },
-          { key: "X-XSS-Protection", value: "1; mode=block" },
           { key: "Referrer-Policy", value: "origin-when-cross-origin" },
+          {
+            key: "Content-Security-Policy",
+            value:
+              "default-src 'self'; " +
+              "script-src 'self' 'unsafe-eval' 'unsafe-inline' *.vercel-insights.com; " + // unsafe-eval/inline is not ideal, but required for some dependencies
+              "style-src 'self' 'unsafe-inline'; " +
+              "img-src 'self' data: *.supabase.co; " +
+              "connect-src 'self' *.supabase.co *.vercel-insights.com; " +
+              "frame-src 'self' *.stripe.com; " +
+              "frame-ancestors 'self';",
+          },
           {
             key: "Permissions-Policy",
             value: "camera=(), microphone=(), geolocation=(self)",
