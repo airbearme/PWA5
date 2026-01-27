@@ -233,9 +233,10 @@ export default function BookRidePage() {
               ) : (
                 <div className="space-y-2 max-h-60 overflow-y-auto">
                   {spots.map((spot) => (
-                    <div
+                    <button
                       key={spot.id}
-                      className="p-3 rounded-lg border hover:bg-muted cursor-pointer transition-colors"
+                      type="button"
+                      className="w-full text-left p-3 rounded-lg border hover:bg-muted cursor-pointer transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
                       onClick={() => setPickupSpot(spot)}
                     >
                       <p className="font-medium">{spot.name}</p>
@@ -244,7 +245,7 @@ export default function BookRidePage() {
                           {spot.description}
                         </p>
                       )}
-                    </div>
+                    </button>
                   ))}
                 </div>
               )}
@@ -285,9 +286,10 @@ export default function BookRidePage() {
                   {spots
                     .filter((s) => s.id !== pickupSpot?.id)
                     .map((spot) => (
-                      <div
+                      <button
                         key={spot.id}
-                        className="p-3 rounded-lg border hover:bg-muted cursor-pointer transition-colors"
+                        type="button"
+                        className="w-full text-left p-3 rounded-lg border hover:bg-muted cursor-pointer transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
                         onClick={() => setDestinationSpot(spot)}
                       >
                         <p className="font-medium">{spot.name}</p>
@@ -296,7 +298,7 @@ export default function BookRidePage() {
                             {spot.description}
                           </p>
                         )}
-                      </div>
+                      </button>
                     ))}
                 </div>
               )}
