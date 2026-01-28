@@ -22,9 +22,14 @@ const nextConfig = {
             key: "Strict-Transport-Security",
             value: "max-age=63072000; includeSubDomains; preload",
           },
-          { key: "X-Frame-Options", value: "SAMEORIGIN" },
           { key: "X-Content-Type-Options", value: "nosniff" },
-          { key: "X-XSS-Protection", value: "1; mode=block" },
+          // Sentinel: Replaced deprecated X-XSS-Protection and X-Frame-Options with a Content Security Policy.
+          // The 'unsafe-inline' and 'unsafe-eval' for script-src are required for full functionality at this time,
+          // representing a necessary security trade-off.
+          {
+            key: "Content-Security-Policy",
+            value: "default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval' *.supabase.co *.stripe.com *.vercel-insights.com; style-src 'self' 'unsafe-inline'; img-src 'self' data: *.supabase.co; frame-ancestors 'self';",
+          },
           { key: "Referrer-Policy", value: "origin-when-cross-origin" },
           {
             key: "Permissions-Policy",
