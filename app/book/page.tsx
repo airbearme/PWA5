@@ -226,17 +226,18 @@ export default function BookRidePage() {
                     size="sm"
                     className="mt-2"
                     onClick={() => setPickupSpot(null)}
+                    disabled={booking}
                   >
                     Change
                   </Button>
                 </div>
               ) : (
-                <div className="space-y-2 max-h-60 overflow-y-auto">
+                <div className={`space-y-2 max-h-60 overflow-y-auto ${booking ? "opacity-50 cursor-not-allowed" : ""}`}>
                   {spots.map((spot) => (
                     <div
                       key={spot.id}
                       className="p-3 rounded-lg border hover:bg-muted cursor-pointer transition-colors"
-                      onClick={() => setPickupSpot(spot)}
+                      onClick={() => !booking && setPickupSpot(spot)}
                     >
                       <p className="font-medium">{spot.name}</p>
                       {spot.description && (
@@ -276,19 +277,20 @@ export default function BookRidePage() {
                     size="sm"
                     className="mt-2"
                     onClick={() => setDestinationSpot(null)}
+                    disabled={booking}
                   >
                     Change
                   </Button>
                 </div>
               ) : (
-                <div className="space-y-2 max-h-60 overflow-y-auto">
+                <div className={`space-y-2 max-h-60 overflow-y-auto ${booking ? "opacity-50 cursor-not-allowed" : ""}`}>
                   {spots
                     .filter((s) => s.id !== pickupSpot?.id)
                     .map((spot) => (
                       <div
                         key={spot.id}
                         className="p-3 rounded-lg border hover:bg-muted cursor-pointer transition-colors"
-                        onClick={() => setDestinationSpot(spot)}
+                        onClick={() => !booking && setDestinationSpot(spot)}
                       >
                         <p className="font-medium">{spot.name}</p>
                         {spot.description && (
