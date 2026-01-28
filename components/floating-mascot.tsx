@@ -1,32 +1,48 @@
 "use client";
 
-import { useState, useEffect } from "react";
-import Link from "next/link";
+import { useEffect } from "react";
+import {
+  motion,
+  useMotionValue,
+  useTransform,
+  useSpring,
+} from "framer-motion";
 import AirbearWheel from "@/components/airbear-wheel";
 
 export default function FloatingMascot() {
-  const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
+  // Performance Optimization:
+  // Replaced useState with framer-motion's useMotionValue to prevent re-renders on every mouse movement.
+  // This offloads the animation from React's render cycle to a more efficient animation engine,
+  // resulting in a smoother, more performant animation.
+  const mouseX = useMotionValue(0);
+  const mouseY = useMotionValue(0);
 
   useEffect(() => {
     const handleMouseMove = (e: MouseEvent) => {
-      setMousePosition({ x: e.clientX, y: e.clientY });
+      mouseX.set(e.clientX);
+      mouseY.set(e.clientY);
     };
 
     window.addEventListener("mousemove", handleMouseMove);
     return () => window.removeEventListener("mousemove", handleMouseMove);
-  }, []);
+  }, [mouseX, mouseY]);
 
-  // Calculate position based on mouse (subtle follow effect)
-  const followX = mousePosition.x * 0.01;
-  const followY = mousePosition.y * 0.01;
+  // Create a subtle follow effect with a spring animation for smoothness
+  const springConfig = { damping: 15, stiffness: 200, mass: 0.5 };
+  const followX = useSpring(useTransform(mouseX, (x) => x * 0.01), springConfig);
+  const followY = useSpring(useTransform(mouseY, (y) => y * 0.01), springConfig);
 
   return (
-        <Link
-          href="/"
-          className="fixed bottom-6 right-6 z-50 transition-all duration-500 opacity-100 translate-y-0"
+    <motion.a
+      href="/"
+      className="fixed bottom-6 right-6 z-50"
       style={{
-        transform: `translate(${followX}px, ${followY}px)`,
+        translateX: followX,
+        translateY: followY,
       }}
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.5 }}
     >
       <div className="group relative">
         {/* Glowing background circle */}
@@ -57,7 +73,7 @@ export default function FloatingMascot() {
           </div>
         </div>
       </div>
-    </Link>
+    </motion.a>
   );
 }
 
