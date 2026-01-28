@@ -1,5 +1,5 @@
 "use client";
-
+import { memo } from "react";
 import { cn } from "@/lib/utils";
 
 interface AirbearWheelProps {
@@ -10,13 +10,17 @@ interface AirbearWheelProps {
   effectType?: "solar" | "eco" | string;
 }
 
-export default function AirbearWheel({
+// ⚡ Bolt: Memoized AirbearWheel component.
+// This is a purely presentational component, so we can wrap it in React.memo
+// to prevent unnecessary re-renders when its props don't change.
+// This improves performance on pages with many AirbearWheel instances, like the homepage.
+const AirbearWheel = ({
   size = "md",
   className = "",
   glowing = false,
   animated = true,
   effectType,
-}: AirbearWheelProps) {
+}: AirbearWheelProps) => {
   const sizeClasses = {
     sm: "w-6 h-6",
     md: "w-10 h-10",
@@ -86,8 +90,6 @@ export default function AirbearWheel({
       )}
     </div>
   );
-}
+};
 
-
-
-
+export default memo(AirbearWheel);
