@@ -1,7 +1,0 @@
-name: AirBear Rollback
-on: { workflow_dispatch: {} }
-jobs:
-  rollback:
-    runs-on: ubuntu-latest
-    steps:
-      - run: echo "Trigger platform rollback (guarded)"
