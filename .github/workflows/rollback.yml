@@ -1,7 +1,0 @@
-name: Rollback
-on: { workflow_dispatch: {} }
-jobs:
- rb:
-  runs-on: ubuntu-latest
-  steps:
-   - run: echo "rollback"
