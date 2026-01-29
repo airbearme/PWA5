@@ -15,6 +15,13 @@ jobs:
     name: Unit & Integration Tests
     runs-on: ubuntu-latest
     steps:
+      - name: Clear cache
+        uses: actions/cache/main@v3
+        with:
+          path: ~/.pnpm-store
+          key: ${{ runner.os }}-pnpm-${{ hashFiles('**/pnpm-lock.yaml') }}
+          restore-keys: |
+            ${{ runner.os }}-pnpm-
       - uses: actions/checkout@v4
 
       - name: Setup Node.js

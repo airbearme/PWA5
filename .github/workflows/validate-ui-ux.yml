@@ -15,6 +15,13 @@ jobs:
     name: ✅ Validate UI/UX Effects
     runs-on: ubuntu-latest
     steps:
+      - name: Clear cache
+        uses: actions/cache/main@v3
+        with:
+          path: ~/.pnpm-store
+          key: ${{ runner.os }}-pnpm-${{ hashFiles('**/pnpm-lock.yaml') }}
+          restore-keys: |
+            ${{ runner.os }}-pnpm-
       - name: Checkout code
         uses: actions/checkout@v4
 
