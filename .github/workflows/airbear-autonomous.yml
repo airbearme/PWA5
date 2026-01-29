@@ -1,7 +1,0 @@
-name: AirBear Autonomous Loop
-on: { schedule: [{ cron: "*/15 * * * *" }], workflow_dispatch: {} }
-jobs:
-  loop:
-    runs-on: ubuntu-latest
-    steps:
-      - run: echo "Dispatch quality, triage, autofix, monitors"

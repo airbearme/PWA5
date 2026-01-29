@@ -1,7 +1,0 @@
-name: Preview
-on: [pull_request]
-jobs:
- preview:
-  runs-on: ubuntu-latest
-  steps:
-   - run: echo "preview deploy"

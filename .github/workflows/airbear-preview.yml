@@ -1,7 +1,0 @@
-name: AirBear Preview
-on: [pull_request]
-jobs:
-  preview:
-    runs-on: ubuntu-latest
-    steps:
-      - run: echo "Deploy preview and comment URL"
