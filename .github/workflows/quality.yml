@@ -1,7 +1,0 @@
-name: Quality
-on: [pull_request]
-jobs:
- gate:
-  runs-on: ubuntu-latest
-  steps:
-   - run: echo "quality gate"
