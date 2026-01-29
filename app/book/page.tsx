@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useMemo } from "react";
+import { useState, useEffect } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useAuthContext } from "@/components/auth-provider";
 import { getSupabaseClient } from "@/lib/supabase/client";
@@ -152,21 +152,10 @@ export default function BookRidePage() {
     }
   };
 
-  const distance = useMemo(() => {
-    if (!pickupSpot || !destinationSpot) return 0;
-    // Bolt: Memoize distance calculation to prevent re-running on every render.
-    // This is a performance optimization that avoids expensive geographic
-    // calculations unless the pickup or destination spots change.
-    return calculateDistance(pickupSpot, destinationSpot);
-  }, [pickupSpot, destinationSpot]);
-
-  const fare = useMemo(() => {
-    // Bolt: Memoize fare estimation. Although this calculation is currently
-    // simple (a flat rate), memoizing it ensures that if the logic becomes
-    // more complex later, it remains performant. It runs only when the
-    // distance changes.
-    return estimateFare(distance);
-  }, [distance]);
+  const distance = pickupSpot && destinationSpot
+    ? calculateDistance(pickupSpot, destinationSpot)
+    : 0;
+  const fare = estimateFare(distance);
 
   if (authLoading || loading) {
     return (
