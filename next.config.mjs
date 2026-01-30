@@ -30,7 +30,7 @@ const nextConfig = {
             key: "Content-Security-Policy",
             value: "default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval' *.supabase.co *.stripe.com *.vercel-insights.com; style-src 'self' 'unsafe-inline'; img-src 'self' data: *.supabase.co; frame-ancestors 'self';",
           },
-          { key: "Referrer-Policy", value: "strict-origin-when-cross-origin" },
+          { key: "Referrer-Policy", value: "origin-when-cross-origin" },
           {
             key: "Permissions-Policy",
             value: "camera=(), microphone=(), geolocation=(self)",
