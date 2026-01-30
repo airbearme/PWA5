@@ -384,7 +384,7 @@ export default function BookRidePage() {
 
         {/* Back to Map */}
         <div className="mt-6 text-center">
-          <Button asChild variant="outline">
+          <Button asChild variant="outline" disabled={booking}>
             <Link href="/map">Back to Map</Link>
           </Button>
         </div>
