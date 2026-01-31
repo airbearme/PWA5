@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useAuthContext } from "@/components/auth-provider";
 import { getSupabaseClient } from "@/lib/supabase/client";
@@ -152,10 +152,17 @@ export default function BookRidePage() {
     }
   };
 
-  const distance = pickupSpot && destinationSpot
-    ? calculateDistance(pickupSpot, destinationSpot)
-    : 0;
-  const fare = estimateFare(distance);
+  /**
+   * ⚡ Bolt: Memoized distance and fare calculations.
+   * This prevents redundant expensive math operations on every render,
+   * especially when unrelated state changes (like 'loading' or 'booking').
+   */
+  const distance = useMemo(() =>
+    pickupSpot && destinationSpot ? calculateDistance(pickupSpot, destinationSpot) : 0,
+    [pickupSpot, destinationSpot]
+  );
+
+  const fare = useMemo(() => estimateFare(distance), [distance]);
 
   if (authLoading || loading) {
     return (
