@@ -8,6 +8,8 @@ import {
 	insertOrderSchema,
 	insertPaymentSchema,
 	insertRideSchema,
+	registerUserSchema,
+	updateProfileSchema,
 } from "../shared/schema.js";
 import { storage } from "./storage.js";
 
@@ -99,37 +101,39 @@ export async function registerRoutes(app: Express): Promise<Server> {
 	};
 
 	app.post("/api/auth/register", async (req, res) => {
-		if (!rateLimit(req.ip || "unknown", 5)) return res.status(429).json({ message: "Too many requests" });
+		if (!rateLimit(req.ip || "unknown", 5, 600000))
+			return res.status(429).json({ message: "Too many registration attempts" });
 		try {
 			if (!supabaseAdmin) {
-				return res
-					.status(500)
-					.json({
-						message:
-							"Supabase is not configured. Set SUPABASE_URL and SUPABASE_SERVICE_ROLE_KEY.",
-					});
+				return res.status(500).json({
+					message:
+						"Supabase is not configured. Set SUPABASE_URL and SUPABASE_SERVICE_ROLE_KEY.",
+				});
 			}
 
-			const userData = profileSchema
+			// Security: Use registerUserSchema to prevent self-assignment of roles
+			const userData = registerUserSchema
 				.extend({ password: z.string().min(6) })
 				.parse(req.body);
-			const { data, error } = await supabaseAdmin.auth.admin.createUser({
+
+			const { error } = await supabaseAdmin.auth.admin.createUser({
 				email: userData.email || undefined,
 				password: userData.password,
 				email_confirm: true,
 				user_metadata: {
 					username: userData.username,
-						role: "user",
+					role: "user", // Forced server-side
 					fullName: userData.fullName,
 				},
 			});
 
 			if (error) throw error;
+
 			const profile = await ensureUserProfile({
 				email: userData.email,
 				username: userData.username,
 				fullName: userData.fullName,
-					role: "user",
+				role: "user", // Forced server-side
 				avatarUrl: null,
 			});
 
@@ -205,20 +209,22 @@ export async function registerRoutes(app: Express): Promise<Server> {
 	});
 
 	app.post("/api/auth/sync-profile", async (req, res) => {
-		if (!rateLimit(req.ip || "unknown", 20)) return res.status(429).json({ message: "Too many requests" });
+		if (!rateLimit(req.ip || "unknown", 20))
+			return res.status(429).json({ message: "Too many requests" });
 		try {
 			if (!supabaseAdmin) {
-				return res
-					.status(500)
-					.json({
-						message:
-							"Supabase is not configured. Set SUPABASE_URL and SUPABASE_SERVICE_ROLE_KEY.",
-					});
+				return res.status(500).json({
+					message:
+						"Supabase is not configured. Set SUPABASE_URL and SUPABASE_SERVICE_ROLE_KEY.",
+				});
 			}
 
-			const payload = profileSchema.parse(req.body);
-			payload.role = undefined;
-			const profile = await ensureUserProfile(payload);
+			// Security: Use updateProfileSchema to ensure 'role' cannot be modified by the user
+			const payload = updateProfileSchema.parse(req.body);
+			const profile = await ensureUserProfile({
+				...payload,
+				id: req.body.id, // ID is required for ensureUserProfile lookup
+			} as any);
 			res.json({ user: profile });
 		} catch (error: any) {
 			res.status(400).json({ message: error.message });

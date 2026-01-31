@@ -21,7 +21,7 @@ describe('ErrorBoundary', () => {
       </ErrorBoundary>
     );
 
-    expect(screen.getByText('Test Content')).toBeTruthy();
+    expect(screen.getByText('Test Content')).toBeInTheDocument();
   });
 
   it('renders error UI when error occurs', () => {
@@ -35,7 +35,7 @@ describe('ErrorBoundary', () => {
       </ErrorBoundary>
     );
 
-    expect(screen.getByText(/Oops! Something went wrong/i)).toBeTruthy();
+    expect(screen.getByText(/Oops! Something went wrong/i)).toBeInTheDocument();
   });
 });
 
