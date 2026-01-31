@@ -99,9 +99,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
 	};
 
 	app.post("/api/auth/register", async (req, res) => {
-		if (!rateLimit(req.ip || "unknown", 5, 60000)) {
-			return res.status(429).json({ message: "Too many requests" });
-		}
+		if (!rateLimit(req.ip || "unknown", 5)) return res.status(429).json({ message: "Too many requests" });
 		try {
 			if (!supabaseAdmin) {
 				return res
@@ -112,18 +110,16 @@ export async function registerRoutes(app: Express): Promise<Server> {
 					});
 			}
 
-			// Security: Ignore role from body for public registration
 			const userData = profileSchema
 				.extend({ password: z.string().min(6) })
 				.parse(req.body);
-
 			const { data, error } = await supabaseAdmin.auth.admin.createUser({
 				email: userData.email || undefined,
 				password: userData.password,
 				email_confirm: true,
 				user_metadata: {
 					username: userData.username,
-					role: "user", // Default to user for safety
+						role: "user",
 					fullName: userData.fullName,
 				},
 			});
@@ -133,7 +129,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
 				email: userData.email,
 				username: userData.username,
 				fullName: userData.fullName,
-				role: "user", // Default to user for safety
+					role: "user",
 				avatarUrl: null,
 			});
 
@@ -151,9 +147,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
 	});
 
 	app.post("/api/auth/login", async (req, res) => {
-		if (!rateLimit(req.ip || "unknown", 10, 60000)) {
-			return res.status(429).json({ message: "Too many requests" });
-		}
+		if (!rateLimit(req.ip || "unknown", 10)) return res.status(429).json({ message: "Too many requests" });
 		try {
 			if (!supabaseAdmin) {
 				return res
@@ -211,9 +205,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
 	});
 
 	app.post("/api/auth/sync-profile", async (req, res) => {
-		if (!rateLimit(req.ip || "unknown", 20, 60000)) {
-			return res.status(429).json({ message: "Too many requests" });
-		}
+		if (!rateLimit(req.ip || "unknown", 20)) return res.status(429).json({ message: "Too many requests" });
 		try {
 			if (!supabaseAdmin) {
 				return res
@@ -224,7 +216,6 @@ export async function registerRoutes(app: Express): Promise<Server> {
 					});
 			}
 
-			// Security: Prevent privilege escalation by ignoring role from request body
 			const payload = profileSchema.parse(req.body);
 			payload.role = undefined;
 			const profile = await ensureUserProfile(payload);
