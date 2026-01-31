@@ -3,6 +3,7 @@ import type { Express } from "express";
 import { createServer, type Server } from "http";
 import Stripe from "stripe";
 import { z } from "zod";
+import { rateLimit } from "../lib/rate-limit.js";
 import {
 	insertOrderSchema,
 	insertPaymentSchema,
@@ -98,6 +99,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
 	};
 
 	app.post("/api/auth/register", async (req, res) => {
+		if (!rateLimit(req.ip || "unknown", 5, 60000)) {
+			return res.status(429).json({ message: "Too many requests" });
+		}
 		try {
 			if (!supabaseAdmin) {
 				return res
@@ -108,16 +112,18 @@ export async function registerRoutes(app: Express): Promise<Server> {
 					});
 			}
 
+			// Security: Ignore role from body for public registration
 			const userData = profileSchema
 				.extend({ password: z.string().min(6) })
 				.parse(req.body);
+
 			const { data, error } = await supabaseAdmin.auth.admin.createUser({
 				email: userData.email || undefined,
 				password: userData.password,
 				email_confirm: true,
 				user_metadata: {
 					username: userData.username,
-					role: userData.role || "user",
+					role: "user", // Default to user for safety
 					fullName: userData.fullName,
 				},
 			});
@@ -127,10 +133,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
 				email: userData.email,
 				username: userData.username,
 				fullName: userData.fullName,
-				role:
-					(data.user?.user_metadata?.role as "user" | "driver" | "admin") ||
-					userData.role ||
-					"user",
+				role: "user", // Default to user for safety
 				avatarUrl: null,
 			});
 
@@ -148,6 +151,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
 	});
 
 	app.post("/api/auth/login", async (req, res) => {
+		if (!rateLimit(req.ip || "unknown", 10, 60000)) {
+			return res.status(429).json({ message: "Too many requests" });
+		}
 		try {
 			if (!supabaseAdmin) {
 				return res
@@ -205,6 +211,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
 	});
 
 	app.post("/api/auth/sync-profile", async (req, res) => {
+		if (!rateLimit(req.ip || "unknown", 20, 60000)) {
+			return res.status(429).json({ message: "Too many requests" });
+		}
 		try {
 			if (!supabaseAdmin) {
 				return res
@@ -215,7 +224,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
 					});
 			}
 
+			// Security: Prevent privilege escalation by ignoring role from request body
 			const payload = profileSchema.parse(req.body);
+			payload.role = undefined;
 			const profile = await ensureUserProfile(payload);
 			res.json({ user: profile });
 		} catch (error: any) {
