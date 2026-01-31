@@ -15,9 +15,9 @@
 		"start": "next start",
 		"sync:github": "bash scripts/sync-github.sh",
 		"test": "jest",
-		"test:unit": "jest --testPathPattern=__tests__",
-		"test:integration": "jest --testPathPattern=tests/integration",
-		"test:api": "jest --testPathPattern=tests/api",
+		"test:unit": "jest --testPathPatterns=__tests__",
+		"test:integration": "jest --testPathPatterns=tests/integration",
+		"test:api": "jest --testPathPatterns=tests/api",
 		"test:e2e": "playwright test",
 		"test:performance": "node scripts/test-performance.js",
 		"test:security": "node scripts/test-security-headers.js",
@@ -133,6 +133,10 @@
 		"zod": "^3.24.2"
 	},
 	"devDependencies": {
+		"@types/jest": "^29.5.14",
+		"jest-environment-jsdom": "^29.7.0",
+		"@testing-library/jest-dom": "^6.6.3",
+		"@testing-library/react": "^16.1.0",
 		"@playwright/test": "^1.49.1",
 		"@tailwindcss/typography": "^0.5.15",
 		"@types/express": "^5.0.0",

@@ -181,6 +181,12 @@ export const insertUserSchema = createInsertSchema(users)
 		updatedAt: true,
 	});
 
+// Security: Use separate schemas for registration and profile updates to prevent mass assignment (e.g., self-assigning "admin" role)
+export const registerUserSchema = insertUserSchema.omit({ role: true });
+export const updateProfileSchema = insertUserSchema
+	.omit({ role: true })
+	.partial();
+
 export const insertSpotSchema = createInsertSchema(spots).omit({
 	id: true,
 	createdAt: true,
