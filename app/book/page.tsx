@@ -1,13 +1,12 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import Image from "next/image";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useAuthContext } from "@/components/auth-provider";
 import { getSupabaseClient } from "@/lib/supabase/client";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
 import { useToast } from "@/hooks/use-toast";
 import { MapPin, Navigation, DollarSign, Clock, ArrowRight, Loader2 } from "lucide-react";
 import Link from "next/link";
@@ -162,11 +161,13 @@ export default function BookRidePage() {
       <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-emerald-950 via-lime-950 to-amber-950">
         <div className="text-center">
           <div className="flex justify-center mb-6">
-            <div className="w-32 h-32 rounded-full border-4 border-emerald-400/50 dark:border-emerald-500/50 bg-gradient-to-br from-emerald-500/20 to-lime-500/20 backdrop-blur-sm shadow-2xl hover-lift animate-float overflow-hidden">
-              <img
+            <div className="w-32 h-32 rounded-full border-4 border-emerald-400/50 dark:border-emerald-500/50 bg-gradient-to-br from-emerald-500/20 to-lime-500/20 backdrop-blur-sm shadow-2xl hover-lift animate-float overflow-hidden relative">
+              <Image
                 src="/airbear-mascot.png"
                 alt="AirBear Mascot"
-                className="w-full h-full object-cover rounded-full animate-pulse-glow"
+                fill
+                priority
+                className="object-cover rounded-full animate-pulse-glow"
               />
             </div>
           </div>
@@ -184,11 +185,13 @@ export default function BookRidePage() {
         {/* Header */}
         <div className="text-center mb-8">
           <div className="flex justify-center mb-4">
-            <div className="w-24 h-24 rounded-full border-4 border-emerald-400/50 dark:border-emerald-500/50 bg-gradient-to-br from-emerald-500/20 to-lime-500/20 backdrop-blur-sm shadow-2xl hover-lift animate-float overflow-hidden">
-              <img
+            <div className="w-24 h-24 rounded-full border-4 border-emerald-400/50 dark:border-emerald-500/50 bg-gradient-to-br from-emerald-500/20 to-lime-500/20 backdrop-blur-sm shadow-2xl hover-lift animate-float overflow-hidden relative">
+              <Image
                 src="/airbear-mascot.png"
                 alt="AirBear Mascot"
-                className="w-full h-full object-cover rounded-full animate-pulse-glow"
+                fill
+                priority
+                className="object-cover rounded-full animate-pulse-glow"
               />
             </div>
           </div>
@@ -232,12 +235,15 @@ export default function BookRidePage() {
                   </Button>
                 </div>
               ) : (
-                <div className={`space-y-2 max-h-60 overflow-y-auto ${booking ? "opacity-50 cursor-not-allowed" : ""}`}>
+                <div className="space-y-2 max-h-60 overflow-y-auto pr-2">
                   {spots.map((spot) => (
-                    <div
+                    <button
                       key={spot.id}
-                      className="p-3 rounded-lg border hover:bg-muted cursor-pointer transition-colors"
+                      type="button"
+                      className="w-full text-left p-3 rounded-lg border hover:bg-muted focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                       onClick={() => !booking && setPickupSpot(spot)}
+                      disabled={booking}
+                      aria-label={`Select ${spot.name} as pickup location`}
                     >
                       <p className="font-medium">{spot.name}</p>
                       {spot.description && (
@@ -245,7 +251,7 @@ export default function BookRidePage() {
                           {spot.description}
                         </p>
                       )}
-                    </div>
+                    </button>
                   ))}
                 </div>
               )}
@@ -283,14 +289,17 @@ export default function BookRidePage() {
                   </Button>
                 </div>
               ) : (
-                <div className={`space-y-2 max-h-60 overflow-y-auto ${booking ? "opacity-50 cursor-not-allowed" : ""}`}>
+                <div className="space-y-2 max-h-60 overflow-y-auto pr-2">
                   {spots
                     .filter((s) => s.id !== pickupSpot?.id)
                     .map((spot) => (
-                      <div
+                      <button
                         key={spot.id}
-                        className="p-3 rounded-lg border hover:bg-muted cursor-pointer transition-colors"
+                        type="button"
+                        className="w-full text-left p-3 rounded-lg border hover:bg-muted focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-500 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                         onClick={() => !booking && setDestinationSpot(spot)}
+                        disabled={booking}
+                        aria-label={`Select ${spot.name} as destination`}
                       >
                         <p className="font-medium">{spot.name}</p>
                         {spot.description && (
@@ -298,7 +307,7 @@ export default function BookRidePage() {
                             {spot.description}
                           </p>
                         )}
-                      </div>
+                      </button>
                     ))}
                 </div>
               )}

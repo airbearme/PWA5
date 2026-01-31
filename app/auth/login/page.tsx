@@ -3,6 +3,7 @@
 import type React from "react";
 
 import { useState } from "react";
+import Image from "next/image";
 import { getSupabaseClient } from "@/lib/supabase/client";
 import { Button } from "@/components/ui/button";
 import {
@@ -15,7 +16,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useRouter } from "next/navigation";
-import { Apple, Chrome } from "lucide-react";
+import { Apple, Chrome, Loader2 } from "lucide-react";
 
 // Feature flag: Set to true when Apple Sign In is configured in Supabase
 const ENABLE_APPLE_SIGN_IN = false;
@@ -113,11 +114,13 @@ export default function LoginPage() {
       <Card className="w-full max-w-md shadow-xl">
         <CardHeader className="space-y-1 text-center">
           <div className="flex justify-center mb-4">
-            <div className="w-24 h-24 rounded-full border-4 border-emerald-400/50 dark:border-emerald-500/50 bg-gradient-to-br from-emerald-500/20 to-lime-500/20 backdrop-blur-sm shadow-2xl hover-lift animate-float overflow-hidden">
-              <img
+            <div className="w-24 h-24 rounded-full border-4 border-emerald-400/50 dark:border-emerald-500/50 bg-gradient-to-br from-emerald-500/20 to-lime-500/20 backdrop-blur-sm shadow-2xl hover-lift animate-float overflow-hidden relative">
+              <Image
                 src="/airbear-mascot.png"
                 alt="AirBear Mascot"
-                className="w-full h-full object-cover rounded-full animate-pulse-glow"
+                fill
+                priority
+                className="object-cover rounded-full animate-pulse-glow"
               />
             </div>
           </div>
@@ -143,8 +146,12 @@ export default function LoginPage() {
               onClick={handleGoogleSignIn}
               disabled={loading}
             >
-              <Chrome className="mr-2 h-5 w-5 text-red-500" />
-              Continue with Google
+              {loading ? (
+                <Loader2 className="mr-2 h-5 w-5 animate-spin" />
+              ) : (
+                <Chrome className="mr-2 h-5 w-5 text-red-500" />
+              )}
+              {loading ? "Signing in..." : "Continue with Google"}
             </Button>
 
             {ENABLE_APPLE_SIGN_IN && (
@@ -155,8 +162,12 @@ export default function LoginPage() {
                 onClick={handleAppleSignIn}
                 disabled={loading}
               >
-                <Apple className="mr-2 h-5 w-5" />
-                Continue with Apple
+                {loading ? (
+                  <Loader2 className="mr-2 h-5 w-5 animate-spin" />
+                ) : (
+                  <Apple className="mr-2 h-5 w-5" />
+                )}
+                {loading ? "Signing in..." : "Continue with Apple"}
               </Button>
             )}
           </div>
@@ -166,7 +177,7 @@ export default function LoginPage() {
               <span className="w-full border-t" />
             </div>
             <div className="relative flex justify-center text-xs uppercase">
-              <span className="bg-white px-2 text-muted-foreground">
+              <span className="bg-card px-2 text-muted-foreground">
                 Or continue with email
               </span>
             </div>
