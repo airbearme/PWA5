@@ -24,22 +24,17 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Setup pnpm
-        uses: pnpm/action-setup@v4
-        with:
-          version: 9
-
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
           node-version: ${{ env.NODE_VERSION }}
-          cache: 'pnpm'
+          cache: 'npm'
 
       - name: Install dependencies
-        run: pnpm install --frozen-lockfile
+        run: npm ci
 
       - name: Validate environment variables
-        run: pnpm run validate:env
+        run: npm run validate:env
         env:
           NEXT_PUBLIC_SUPABASE_PWA4_URL: ${{ secrets.NEXT_PUBLIC_SUPABASE_PWA4_URL }}
           NEXT_PUBLIC_SUPABASE_PWA4_ANON_KEY: ${{ secrets.NEXT_PUBLIC_SUPABASE_PWA4_ANON_KEY }}
@@ -50,7 +45,7 @@ jobs:
           NEXT_PUBLIC_SITE_URL: ${{ secrets.NEXT_PUBLIC_SITE_URL || 'https://airbear.me' }}
 
       - name: Check Supabase configuration
-        run: pnpm run check:supabase
+        run: npm run check:supabase
         env:
           NEXT_PUBLIC_SUPABASE_PWA4_URL: ${{ secrets.NEXT_PUBLIC_SUPABASE_PWA4_URL }}
           NEXT_PUBLIC_SUPABASE_PWA4_ANON_KEY: ${{ secrets.NEXT_PUBLIC_SUPABASE_PWA4_ANON_KEY }}
@@ -66,33 +61,28 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Setup pnpm
-        uses: pnpm/action-setup@v4
-        with:
-          version: 9
-
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
           node-version: ${{ env.NODE_VERSION }}
-          cache: 'pnpm'
+          cache: 'npm'
 
       - name: Install dependencies
-        run: pnpm install --frozen-lockfile
+        run: npm ci
 
       - name: Run type check
-        run: pnpm run type-check
+        run: npm run type-check
 
       - name: Run linting
-        run: pnpm run lint
+        run: npm run lint
         continue-on-error: true
 
       - name: Run unit tests
-        run: pnpm run test:unit
+        run: npm run test:unit
         continue-on-error: true
 
       - name: Test database connectivity
-        run: pnpm run test:database
+        run: npm run test:database
         env:
           NEXT_PUBLIC_SUPABASE_PWA4_URL: ${{ secrets.NEXT_PUBLIC_SUPABASE_PWA4_URL }}
           NEXT_PUBLIC_SUPABASE_PWA4_ANON_KEY: ${{ secrets.NEXT_PUBLIC_SUPABASE_PWA4_ANON_KEY }}
@@ -100,7 +90,7 @@ jobs:
         continue-on-error: true
 
       - name: Test Stripe configuration
-        run: pnpm run test:stripe
+        run: npm run test:stripe
         env:
           NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY: ${{ secrets.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY }}
           STRIPE_SECRET_KEY: ${{ secrets.STRIPE_SECRET_KEY }}
@@ -115,22 +105,17 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Setup pnpm
-        uses: pnpm/action-setup@v4
-        with:
-          version: 9
-
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
           node-version: ${{ env.NODE_VERSION }}
-          cache: 'pnpm'
+          cache: 'npm'
 
       - name: Install dependencies
-        run: pnpm install --frozen-lockfile
+        run: npm ci
 
       - name: Build application
-        run: pnpm run build
+        run: npm run build
         env:
           NEXT_PUBLIC_SUPABASE_PWA4_URL: ${{ secrets.NEXT_PUBLIC_SUPABASE_PWA4_URL }}
           NEXT_PUBLIC_SUPABASE_PWA4_ANON_KEY: ${{ secrets.NEXT_PUBLIC_SUPABASE_PWA4_ANON_KEY }}
@@ -160,19 +145,14 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Setup pnpm
-        uses: pnpm/action-setup@v4
-        with:
-          version: 9
-
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
           node-version: ${{ env.NODE_VERSION }}
-          cache: 'pnpm'
+          cache: 'npm'
 
       - name: Install Vercel CLI
-        run: pnpm install --global vercel@latest
+        run: npm install --global vercel@latest
 
       - name: Pull Vercel Environment Information
         id: vercel-env
@@ -245,7 +225,7 @@ jobs:
     if: github.ref == 'refs/heads/main'
     steps:
       - name: Install Vercel CLI
-        run: pnpm install --global vercel@latest
+        run: npm install --global vercel@latest
 
       - name: Sync environment variables to Vercel
         run: |

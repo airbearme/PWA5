@@ -51,7 +51,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Install Vercel CLI
-        run: pnpm install --global vercel@latest
+        run: npm install --global vercel@latest
 
       - name: Verify Vercel environment variables
         run: |
