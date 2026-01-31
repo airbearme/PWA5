@@ -10,7 +10,7 @@ jest.mock('next/server', () => ({
     json: jest.fn((data, options: any) => ({
       json: () => Promise.resolve(data),
       status: options?.status || 200,
-    })),
+    } as any)),
   },
 }));
 

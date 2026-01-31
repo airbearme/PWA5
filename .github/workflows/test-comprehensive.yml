@@ -65,7 +65,7 @@ jobs:
         run: pnpm run build
         env:
           NEXT_PUBLIC_SUPABASE_PWA4_URL: ${{ secrets.NEXT_PUBLIC_SUPABASE_PWA4_URL || 'https://placeholder.supabase.co' }}
-          NEXT_PUBLIC_SUPABASE_PWA4_ANON_KEY: ${{ secrets.NEXT_PUBLIC_SUPABASE_PWA4_ANON_KEY || 'placeholder' }}
+          NEXT_PUBLIC_SUPABASE_PWA4_ANON_KEY: ${{ secrets.NEXT_PUBLIC_SUPABASE_PWA4_ANON_KEY || 'eyJplaceholder' }}
           SUPABASE_PWA4_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_PWA4_SERVICE_ROLE_KEY || 'placeholder' }}
           STRIPE_SECRET_KEY: ${{ secrets.STRIPE_SECRET_KEY || 'sk_test_placeholder' }}
           NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY: ${{ secrets.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY || 'pk_test_placeholder' }}
@@ -75,7 +75,7 @@ jobs:
         run: pnpm run start &
         env:
           NEXT_PUBLIC_SUPABASE_PWA4_URL: ${{ secrets.NEXT_PUBLIC_SUPABASE_PWA4_URL || 'https://placeholder.supabase.co' }}
-          NEXT_PUBLIC_SUPABASE_PWA4_ANON_KEY: ${{ secrets.NEXT_PUBLIC_SUPABASE_PWA4_ANON_KEY || 'placeholder' }}
+          NEXT_PUBLIC_SUPABASE_PWA4_ANON_KEY: ${{ secrets.NEXT_PUBLIC_SUPABASE_PWA4_ANON_KEY || 'eyJplaceholder' }}
           SUPABASE_PWA4_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_PWA4_SERVICE_ROLE_KEY || 'placeholder' }}
           STRIPE_SECRET_KEY: ${{ secrets.STRIPE_SECRET_KEY || 'sk_test_placeholder' }}
           NEXT_PUBLIC_SITE_URL: ${{ secrets.NEXT_PUBLIC_SITE_URL || 'https://airbear.me' }}
@@ -108,7 +108,7 @@ jobs:
         run: pnpm run build
         env:
           NEXT_PUBLIC_SUPABASE_PWA4_URL: ${{ secrets.NEXT_PUBLIC_SUPABASE_PWA4_URL || 'https://placeholder.supabase.co' }}
-          NEXT_PUBLIC_SUPABASE_PWA4_ANON_KEY: ${{ secrets.NEXT_PUBLIC_SUPABASE_PWA4_ANON_KEY || 'placeholder' }}
+          NEXT_PUBLIC_SUPABASE_PWA4_ANON_KEY: ${{ secrets.NEXT_PUBLIC_SUPABASE_PWA4_ANON_KEY || 'eyJplaceholder' }}
           SUPABASE_PWA4_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_PWA4_SERVICE_ROLE_KEY || 'placeholder' }}
           STRIPE_SECRET_KEY: ${{ secrets.STRIPE_SECRET_KEY || 'sk_test_placeholder' }}
           NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY: ${{ secrets.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY || 'pk_test_placeholder' }}
@@ -118,7 +118,7 @@ jobs:
         run: pnpm run start &
         env:
           NEXT_PUBLIC_SUPABASE_PWA4_URL: ${{ secrets.NEXT_PUBLIC_SUPABASE_PWA4_URL || 'https://placeholder.supabase.co' }}
-          NEXT_PUBLIC_SUPABASE_PWA4_ANON_KEY: ${{ secrets.NEXT_PUBLIC_SUPABASE_PWA4_ANON_KEY || 'placeholder' }}
+          NEXT_PUBLIC_SUPABASE_PWA4_ANON_KEY: ${{ secrets.NEXT_PUBLIC_SUPABASE_PWA4_ANON_KEY || 'eyJplaceholder' }}
           SUPABASE_PWA4_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_PWA4_SERVICE_ROLE_KEY || 'placeholder' }}
           STRIPE_SECRET_KEY: ${{ secrets.STRIPE_SECRET_KEY || 'sk_test_placeholder' }}
           NEXT_PUBLIC_SITE_URL: ${{ secrets.NEXT_PUBLIC_SITE_URL || 'https://airbear.me' }}
@@ -195,7 +195,7 @@ jobs:
       - name: Run ultimate validation
         env:
           NEXT_PUBLIC_SUPABASE_PWA4_URL: ${{ secrets.NEXT_PUBLIC_SUPABASE_PWA4_URL || 'https://placeholder.supabase.co' }}
-          NEXT_PUBLIC_SUPABASE_PWA4_ANON_KEY: ${{ secrets.NEXT_PUBLIC_SUPABASE_PWA4_ANON_KEY || 'placeholder' }}
+          NEXT_PUBLIC_SUPABASE_PWA4_ANON_KEY: ${{ secrets.NEXT_PUBLIC_SUPABASE_PWA4_ANON_KEY || 'eyJplaceholder' }}
           SUPABASE_PWA4_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_PWA4_SERVICE_ROLE_KEY || 'placeholder' }}
           STRIPE_SECRET_KEY: ${{ secrets.STRIPE_SECRET_KEY || 'sk_test_placeholder' }}
           NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY: ${{ secrets.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY || 'pk_test_placeholder' }}
