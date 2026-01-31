@@ -12,6 +12,32 @@ import { useToast } from "@/hooks/use-toast";
 import { MapPin, Navigation, DollarSign, Clock, ArrowRight, Loader2 } from "lucide-react";
 import Link from "next/link";
 import type { Spot } from "@/components/map-view";
+import { useMemo } from "react";
+
+// Performance Optimization: Move pure functions outside the component
+// to prevent them from being redefined on every render.
+const calculateDistance = (spot1: Spot, spot2: Spot): number => {
+  const R = 6371; // Earth's radius in km
+  const lat1 = spot1.latitude * (Math.PI / 180);
+  const lat2 = spot2.latitude * (Math.PI / 180);
+  const deltaLat = (spot2.latitude - spot1.latitude) * (Math.PI / 180);
+  const deltaLon = (spot2.longitude - spot1.longitude) * (Math.PI / 180);
+
+  const a =
+    Math.sin(deltaLat / 2) * Math.sin(deltaLat / 2) +
+    Math.cos(lat1) *
+      Math.cos(lat2) *
+      Math.sin(deltaLon / 2) *
+      Math.sin(deltaLon / 2);
+  const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+
+  return R * c;
+};
+
+const estimateFare = (distance: number): number => {
+  // Flat rate $4.00 for all rides
+  return 4.0;
+};
 
 export default function BookRidePage() {
   const { user, loading: authLoading } = useAuthContext();
@@ -30,6 +56,8 @@ export default function BookRidePage() {
     }
   }, [user, authLoading, router]);
 
+  // Performance Optimization: Split data loading from search params logic.
+  // This prevents re-fetching all spots whenever search parameters change.
   useEffect(() => {
     const loadSpots = async () => {
       try {
@@ -42,13 +70,6 @@ export default function BookRidePage() {
 
         if (error) throw error;
         setSpots(data || []);
-
-        // Check for pickup spot from URL
-        const pickupId = searchParams.get("pickup");
-        if (pickupId && data) {
-          const spot = data.find((s) => s.id === pickupId);
-          if (spot) setPickupSpot(spot);
-        }
       } catch (error) {
         console.error("Error loading spots:", error);
         toast({
@@ -62,30 +83,18 @@ export default function BookRidePage() {
     };
 
     loadSpots();
-  }, [searchParams, toast]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []); // Empty dependency array to ensure this only runs once on mount.
 
-  const calculateDistance = (spot1: Spot, spot2: Spot): number => {
-    const R = 6371; // Earth's radius in km
-    const lat1 = spot1.latitude * (Math.PI / 180);
-    const lat2 = spot2.latitude * (Math.PI / 180);
-    const deltaLat = (spot2.latitude - spot1.latitude) * (Math.PI / 180);
-    const deltaLon = (spot2.longitude - spot1.longitude) * (Math.PI / 180);
-
-    const a =
-      Math.sin(deltaLat / 2) * Math.sin(deltaLat / 2) +
-      Math.cos(lat1) *
-        Math.cos(lat2) *
-        Math.sin(deltaLon / 2) *
-        Math.sin(deltaLon / 2);
-    const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
-
-    return R * c;
-  };
-
-  const estimateFare = (distance: number): number => {
-    // Flat rate $4.00 for all rides
-    return 4.0;
-  };
+  // Performance Optimization: Isolate search params handling.
+  // This runs only when searchParams or loaded spots change.
+  useEffect(() => {
+    const pickupId = searchParams.get("pickup");
+    if (pickupId && spots.length > 0) {
+      const spot = spots.find((s) => s.id === pickupId);
+      if (spot) setPickupSpot(spot);
+    }
+  }, [searchParams, spots]);
 
   const handleBookRide = async () => {
     if (!pickupSpot || !destinationSpot || !user) {
@@ -152,10 +161,16 @@ export default function BookRidePage() {
     }
   };
 
-  const distance = pickupSpot && destinationSpot
-    ? calculateDistance(pickupSpot, destinationSpot)
-    : 0;
-  const fare = estimateFare(distance);
+  // Performance Optimization: Memoize derived calculations
+  // to avoid redundant Haversine formula execution on every render.
+  const distance = useMemo(() =>
+    pickupSpot && destinationSpot
+      ? calculateDistance(pickupSpot, destinationSpot)
+      : 0,
+    [pickupSpot, destinationSpot]
+  );
+
+  const fare = useMemo(() => estimateFare(distance), [distance]);
 
   if (authLoading || loading) {
     return (
