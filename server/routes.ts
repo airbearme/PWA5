@@ -7,6 +7,8 @@ import {
 	insertOrderSchema,
 	insertPaymentSchema,
 	insertRideSchema,
+	registerUserSchema,
+	updateProfileSchema,
 } from "../shared/schema.js";
 import { storage } from "./storage.js";
 
@@ -45,17 +47,23 @@ export async function registerRoutes(app: Express): Promise<Server> {
 		});
 	});
 
-	// Auth routes
-	const profileSchema = z.object({
+	// Auth routes - Base internal schema (includes role for trusted updates)
+	const internalProfileSchema = z.object({
 		id: z.string().optional(),
-		email: z.string().optional().nullable(), // Loosen for sync resilience
+		email: z.string().optional().nullable(),
 		username: z.string().min(1),
 		fullName: z.string().optional().nullable(),
 		role: z.enum(["user", "driver", "admin"]).optional(),
 		avatarUrl: z.string().optional().nullable(),
 	});
 
-	const ensureUserProfile = async (payload: z.infer<typeof profileSchema>) => {
+	/**
+	 * ensureUserProfile: Synchronizes Supabase Auth users with local database.
+	 * Securely handles role assignment to prevent privilege escalation.
+	 */
+	const ensureUserProfile = async (
+		payload: z.infer<typeof internalProfileSchema>,
+	) => {
 		// Try lookup by ID first, then email
 		const existingUser = payload.id
 			? await storage.getUser(payload.id)
@@ -78,7 +86,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
 					username: payload.username,
 					fullName: payload.fullName ?? existingUser.fullName,
 					avatarUrl: payload.avatarUrl ?? existingUser.avatarUrl,
-					role: payload.role || existingUser.role,
+					// Only update role if explicitly provided from a trusted source
+					...(payload.role !== undefined ? { role: payload.role } : {}),
 				});
 			}
 			return existingUser;
@@ -90,6 +99,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
 			username: payload.username,
 			fullName: payload.fullName ?? null,
 			avatarUrl: payload.avatarUrl ?? null,
+			// New users always default to 'user' unless a role is trusted
 			role: payload.role || "user",
 			ecoPoints: 0,
 			totalRides: 0,
@@ -100,37 +110,36 @@ export async function registerRoutes(app: Express): Promise<Server> {
 	app.post("/api/auth/register", async (req, res) => {
 		try {
 			if (!supabaseAdmin) {
-				return res
-					.status(500)
-					.json({
-						message:
-							"Supabase is not configured. Set SUPABASE_URL and SUPABASE_SERVICE_ROLE_KEY.",
-					});
+				return res.status(500).json({
+					message:
+						"Supabase is not configured. Set SUPABASE_URL and SUPABASE_SERVICE_ROLE_KEY.",
+				});
 			}
 
-			const userData = profileSchema
+			// Sentinel: Use hardened registration schema to ignore any 'role' passed by user
+			const userData = registerUserSchema
 				.extend({ password: z.string().min(6) })
 				.parse(req.body);
+
 			const { data, error } = await supabaseAdmin.auth.admin.createUser({
 				email: userData.email || undefined,
 				password: userData.password,
 				email_confirm: true,
 				user_metadata: {
 					username: userData.username,
-					role: userData.role || "user",
+					role: "user", // ALWAYS hardcode new registrations to 'user' role
 					fullName: userData.fullName,
 				},
 			});
 
 			if (error) throw error;
+
 			const profile = await ensureUserProfile({
+				id: data.user?.id,
 				email: userData.email,
 				username: userData.username,
 				fullName: userData.fullName,
-				role:
-					(data.user?.user_metadata?.role as "user" | "driver" | "admin") ||
-					userData.role ||
-					"user",
+				role: "user", // Trust locally defined 'user' role for registration
 				avatarUrl: null,
 			});
 
@@ -207,15 +216,14 @@ export async function registerRoutes(app: Express): Promise<Server> {
 	app.post("/api/auth/sync-profile", async (req, res) => {
 		try {
 			if (!supabaseAdmin) {
-				return res
-					.status(500)
-					.json({
-						message:
-							"Supabase is not configured. Set SUPABASE_URL and SUPABASE_SERVICE_ROLE_KEY.",
-					});
+				return res.status(500).json({
+					message:
+						"Supabase is not configured. Set SUPABASE_URL and SUPABASE_SERVICE_ROLE_KEY.",
+				});
 			}
 
-			const payload = profileSchema.parse(req.body);
+			// Sentinel: Use hardened update schema to prevent 'role' modification via mass assignment
+			const payload = updateProfileSchema.parse(req.body);
 			const profile = await ensureUserProfile(payload);
 			res.json({ user: profile });
 		} catch (error: any) {

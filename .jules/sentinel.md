@@ -1,0 +1,4 @@
+## 2025-05-15 - [Mass Assignment Privilege Escalation]
+**Vulnerability:** API endpoints (`/api/auth/register`, `/api/auth/sync-profile`) allowed users to specify their own `role` (e.g., 'admin') via JSON payloads, leading to privilege escalation.
+**Learning:** Overly permissive Zod schemas used for both database inserts and API request parsing created a "mass assignment" vector. The presence of a `role` field in the shared user schema was automatically picked up by `createInsertSchema` and subsequently by API routes.
+**Prevention:** Use separate, hardened schemas for public-facing API requests (`registerUserSchema`, `updateProfileSchema`) that explicitly `omit` sensitive fields. Hardcode default roles at the route level rather than relying on schema defaults if those schemas are shared with the client.
