@@ -225,6 +225,7 @@ export default function BookRidePage() {
                     className="mt-2"
                     onClick={() => setPickupSpot(null)}
                     disabled={booking}
+                    aria-label={`Change pickup location from ${pickupSpot.name}`}
                   >
                     Change
                   </Button>
@@ -235,7 +236,7 @@ export default function BookRidePage() {
                     <button
                       key={spot.id}
                       type="button"
-                      className="w-full text-left p-3 rounded-lg border hover:bg-muted focus-visible:ring-2 focus-visible:ring-emerald-500 transition-colors"
+                      className="w-full text-left p-3 rounded-lg border hover:bg-muted focus-visible:ring-2 focus-visible:ring-emerald-500 transition-colors disabled:opacity-50"
                       onClick={() => setPickupSpot(spot)}
                       disabled={booking}
                       aria-label={`Select ${spot.name} as pickup location`}
@@ -265,7 +266,7 @@ export default function BookRidePage() {
             <CardContent className="space-y-2">
               {destinationSpot ? (
                 <div className="p-4 bg-amber-50 dark:bg-amber-900/20 rounded-lg border-2 border-amber-200 dark:border-amber-800">
-                  <p className="font-semibold text-amber-900 dark:text-amber-100">
+                  <p className="font-semibold text-amber-900 dark:text-emerald-100">
                     {destinationSpot.name}
                   </p>
                   {destinationSpot.description && (
@@ -279,6 +280,7 @@ export default function BookRidePage() {
                     className="mt-2"
                     onClick={() => setDestinationSpot(null)}
                     disabled={booking}
+                    aria-label={`Change destination from ${destinationSpot.name}`}
                   >
                     Change
                   </Button>
@@ -291,7 +293,7 @@ export default function BookRidePage() {
                       <button
                         key={spot.id}
                         type="button"
-                        className="w-full text-left p-3 rounded-lg border hover:bg-muted focus-visible:ring-2 focus-visible:ring-amber-500 transition-colors"
+                        className="w-full text-left p-3 rounded-lg border hover:bg-muted focus-visible:ring-2 focus-visible:ring-amber-500 transition-colors disabled:opacity-50"
                         onClick={() => setDestinationSpot(spot)}
                         disabled={booking}
                         aria-label={`Select ${spot.name} as destination`}
