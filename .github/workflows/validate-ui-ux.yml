@@ -30,7 +30,7 @@ jobs:
       - name: Validate Core UI Foundation
         run: |
           echo "🎨 Validating Core UI/UX Foundation..."
-          npm run validate:ui || exit 1
+          pnpm run validate:ui || exit 1
 
       - name: Check CSS animations exist
         run: |
