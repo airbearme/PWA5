@@ -48,9 +48,9 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       
-      - name: Run npm audit
+      - name: Run pnpm audit
         run: |
-          npm audit --audit-level=moderate || echo "Vulnerabilities found"
+          pnpm audit --audit-level=moderate || echo "Vulnerabilities found"
       
       - name: Run Snyk scan
         uses: snyk/actions/node@master

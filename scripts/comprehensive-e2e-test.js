@@ -146,10 +146,13 @@ async function testUserWorkflows() {
 async function runPlaywrightTests() {
 	try {
 		console.log("\n🎭 Running Playwright E2E tests...\n");
-		execSync("npx playwright test tests/app-flow.spec.ts --reporter=list", {
-			stdio: "inherit",
-			cwd: process.cwd(),
-		});
+		execSync(
+			"pnpm exec playwright test tests/app-flow.spec.ts --reporter=list",
+			{
+				stdio: "inherit",
+				cwd: process.cwd(),
+			},
+		);
 		console.log("\n✅ Playwright tests passed!");
 		return true;
 	} catch (error) {

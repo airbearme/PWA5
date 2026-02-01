@@ -6,10 +6,11 @@
  */
 
 const requiredEnvVars = [
-	"NEXT_PUBLIC_SUPABASE_URL",
-	"NEXT_PUBLIC_SUPABASE_ANON_KEY",
+	"NEXT_PUBLIC_SUPABASE_PWA4_URL",
+	"NEXT_PUBLIC_SUPABASE_PWA4_ANON_KEY",
+	"SUPABASE_PWA4_SERVICE_ROLE_KEY",
+	"NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY",
 	"STRIPE_SECRET_KEY",
-	"STRIPE_PUBLISHABLE_KEY",
 ];
 
 const optionalEnvVars = ["STRIPE_WEBHOOK_SECRET", "NEXT_PUBLIC_SITE_URL"];
@@ -44,6 +45,8 @@ function validateEnv() {
 	if (!allValid) {
 		console.log("\n❌ Validation failed. Missing required variables:");
 		missing.forEach((v) => console.log(`  - ${v}`));
+		// We don't exit 1 here in some CI contexts because we provided defaults in the workflow
+		// but let's keep it strict for now and see.
 		process.exit(1);
 	} else {
 		console.log("\n✅ All required environment variables are set");
