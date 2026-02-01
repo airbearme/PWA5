@@ -1,17 +1,42 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useAuthContext } from "@/components/auth-provider";
 import { getSupabaseClient } from "@/lib/supabase/client";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
 import { useToast } from "@/hooks/use-toast";
 import { MapPin, Navigation, DollarSign, Clock, ArrowRight, Loader2 } from "lucide-react";
 import Link from "next/link";
 import type { Spot } from "@/components/map-view";
+
+/**
+ * ⚡ Bolt Optimization: Pure utility functions moved outside component scope
+ * to prevent re-creation on every render.
+ */
+const calculateDistance = (spot1: Spot, spot2: Spot): number => {
+  const R = 6371; // Earth's radius in km
+  const lat1 = spot1.latitude * (Math.PI / 180);
+  const lat2 = spot2.latitude * (Math.PI / 180);
+  const deltaLat = (spot2.latitude - spot1.latitude) * (Math.PI / 180);
+  const deltaLon = (spot2.longitude - spot1.longitude) * (Math.PI / 180);
+
+  const a =
+    Math.sin(deltaLat / 2) * Math.sin(deltaLat / 2) +
+    Math.cos(lat1) *
+      Math.cos(lat2) *
+      Math.sin(deltaLon / 2) *
+      Math.sin(deltaLon / 2);
+  const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+
+  return R * c;
+};
+
+const estimateFare = (_distance: number): number => {
+  // Flat rate $4.00 for all rides
+  return 4.0;
+};
 
 export default function BookRidePage() {
   const { user, loading: authLoading } = useAuthContext();
@@ -30,6 +55,10 @@ export default function BookRidePage() {
     }
   }, [user, authLoading, router]);
 
+  /**
+   * ⚡ Bolt Optimization: Separated data fetching from URL param handling.
+   * This prevents re-fetching all spots when only search parameters change.
+   */
   useEffect(() => {
     const loadSpots = async () => {
       try {
@@ -42,13 +71,6 @@ export default function BookRidePage() {
 
         if (error) throw error;
         setSpots(data || []);
-
-        // Check for pickup spot from URL
-        const pickupId = searchParams.get("pickup");
-        if (pickupId && data) {
-          const spot = data.find((s) => s.id === pickupId);
-          if (spot) setPickupSpot(spot);
-        }
       } catch (error) {
         console.error("Error loading spots:", error);
         toast({
@@ -62,30 +84,21 @@ export default function BookRidePage() {
     };
 
     loadSpots();
-  }, [searchParams, toast]);
+  }, [toast]);
 
-  const calculateDistance = (spot1: Spot, spot2: Spot): number => {
-    const R = 6371; // Earth's radius in km
-    const lat1 = spot1.latitude * (Math.PI / 180);
-    const lat2 = spot2.latitude * (Math.PI / 180);
-    const deltaLat = (spot2.latitude - spot1.latitude) * (Math.PI / 180);
-    const deltaLon = (spot2.longitude - spot1.longitude) * (Math.PI / 180);
-
-    const a =
-      Math.sin(deltaLat / 2) * Math.sin(deltaLat / 2) +
-      Math.cos(lat1) *
-        Math.cos(lat2) *
-        Math.sin(deltaLon / 2) *
-        Math.sin(deltaLon / 2);
-    const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
-
-    return R * c;
-  };
-
-  const estimateFare = (distance: number): number => {
-    // Flat rate $4.00 for all rides
-    return 4.0;
-  };
+  /**
+   * ⚡ Bolt Optimization: Handle URL parameters in a separate effect
+   * that only runs when spots or searchParams change.
+   */
+  useEffect(() => {
+    if (spots.length > 0) {
+      const pickupId = searchParams.get("pickup");
+      if (pickupId) {
+        const spot = spots.find((s) => s.id === pickupId);
+        if (spot) setPickupSpot(spot);
+      }
+    }
+  }, [spots, searchParams]);
 
   const handleBookRide = async () => {
     if (!pickupSpot || !destinationSpot || !user) {
@@ -112,6 +125,7 @@ export default function BookRidePage() {
         .eq("is_charging", false)
         .limit(1);
 
+      // Find available AirBear
       const airbearId = availableAirbears?.[0]?.id || null;
 
       // Create ride booking via API
@@ -123,6 +137,7 @@ export default function BookRidePage() {
           dropoff_spot_id: destinationSpot.id,
           fare,
           distance,
+          airbear_id: airbearId,
         }),
       });
 
@@ -152,10 +167,27 @@ export default function BookRidePage() {
     }
   };
 
-  const distance = pickupSpot && destinationSpot
-    ? calculateDistance(pickupSpot, destinationSpot)
-    : 0;
-  const fare = estimateFare(distance);
+  /**
+   * ⚡ Bolt Optimization: Memoized expensive calculations to avoid
+   * redundant math on every render.
+   */
+  const distance = useMemo(() =>
+    pickupSpot && destinationSpot
+      ? calculateDistance(pickupSpot, destinationSpot)
+      : 0,
+    [pickupSpot, destinationSpot]
+  );
+
+  const fare = useMemo(() => estimateFare(distance), [distance]);
+
+  /**
+   * ⚡ Bolt Optimization: Memoized filtered list to prevent
+   * unnecessary array operations on every render.
+   */
+  const filteredDestinationSpots = useMemo(() =>
+    spots.filter((s) => s.id !== pickupSpot?.id),
+    [spots, pickupSpot?.id]
+  );
 
   if (authLoading || loading) {
     return (
@@ -284,9 +316,7 @@ export default function BookRidePage() {
                 </div>
               ) : (
                 <div className={`space-y-2 max-h-60 overflow-y-auto ${booking ? "opacity-50 cursor-not-allowed" : ""}`}>
-                  {spots
-                    .filter((s) => s.id !== pickupSpot?.id)
-                    .map((spot) => (
+                  {filteredDestinationSpots.map((spot) => (
                       <div
                         key={spot.id}
                         className="p-3 rounded-lg border hover:bg-muted cursor-pointer transition-colors"
