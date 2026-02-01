@@ -1,0 +1,3 @@
+## 2025-05-14 - [Semantic Buttons for Selection]
+**Learning:** In a production-ready codebase with strict PR reviews, micro-UX improvements must adhere to a "single-concern" principle. Bundling environment fixes (like Jest config) or unrelated refactors with UI changes violates size constraints and leads to rejection. UX accessibility improvements (like converting non-semantic `div`s to `button`s) are highly valued but must be delivered in isolation.
+**Action:** Always keep PRs focused and under 50 lines if specified. Use semantic HTML (`<button>`) for all interactive selection elements to ensure out-of-the-box keyboard and screen reader support.
