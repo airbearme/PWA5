@@ -100,37 +100,33 @@ export async function registerRoutes(app: Express): Promise<Server> {
 	app.post("/api/auth/register", async (req, res) => {
 		try {
 			if (!supabaseAdmin) {
-				return res
-					.status(500)
-					.json({
-						message:
-							"Supabase is not configured. Set SUPABASE_URL and SUPABASE_SERVICE_ROLE_KEY.",
-					});
+				return res.status(500).json({
+					message:
+						"Supabase is not configured. Set SUPABASE_URL and SUPABASE_SERVICE_ROLE_KEY.",
+				});
 			}
 
+			// Sentinel: Use hardened registration schema to ignore any 'role' passed by user
 			const userData = profileSchema
+				.omit({ role: true })
 				.extend({ password: z.string().min(6) })
 				.parse(req.body);
+
 			const { data, error } = await supabaseAdmin.auth.admin.createUser({
 				email: userData.email || undefined,
 				password: userData.password,
 				email_confirm: true,
 				user_metadata: {
 					username: userData.username,
-					role: userData.role || "user",
+					role: "user", // ALWAYS hardcode new registrations to 'user' role
 					fullName: userData.fullName,
 				},
 			});
 
 			if (error) throw error;
 			const profile = await ensureUserProfile({
-				email: userData.email,
-				username: userData.username,
-				fullName: userData.fullName,
-				role:
-					(data.user?.user_metadata?.role as "user" | "driver" | "admin") ||
-					userData.role ||
-					"user",
+				...userData,
+				role: "user",
 				avatarUrl: null,
 			});
 
@@ -207,16 +203,15 @@ export async function registerRoutes(app: Express): Promise<Server> {
 	app.post("/api/auth/sync-profile", async (req, res) => {
 		try {
 			if (!supabaseAdmin) {
-				return res
-					.status(500)
-					.json({
-						message:
-							"Supabase is not configured. Set SUPABASE_URL and SUPABASE_SERVICE_ROLE_KEY.",
-					});
+				return res.status(500).json({
+					message:
+						"Supabase is not configured. Set SUPABASE_URL and SUPABASE_SERVICE_ROLE_KEY.",
+				});
 			}
 
-			const payload = profileSchema.parse(req.body);
-			const profile = await ensureUserProfile(payload);
+			// Sentinel: Use hardened update schema to prevent 'role' modification via mass assignment
+			const payload = profileSchema.partial().omit({ role: true }).parse(req.body);
+			const profile = await ensureUserProfile(payload as any);
 			res.json({ user: profile });
 		} catch (error: any) {
 			res.status(400).json({ message: error.message });
