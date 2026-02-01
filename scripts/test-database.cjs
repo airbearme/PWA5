@@ -5,18 +5,17 @@
  * Tests Supabase database connection and basic operations
  */
 
-const SUPABASE_URL = process.env.NEXT_PUBLIC_SUPABASE_URL;
+const SUPABASE_URL = process.env.NEXT_PUBLIC_SUPABASE_PWA4_URL || process.env.NEXT_PUBLIC_SUPABASE_URL;
 const SUPABASE_KEY =
+	process.env.NEXT_PUBLIC_SUPABASE_PWA4_ANON_KEY ||
 	process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY ||
+	process.env.SUPABASE_PWA4_SERVICE_ROLE_KEY ||
 	process.env.SUPABASE_SERVICE_ROLE_KEY;
 
 console.log("💾 Testing database connectivity...\n");
 
 if (!SUPABASE_URL || !SUPABASE_KEY) {
 	console.log("❌ Supabase credentials not found in environment variables");
-	console.log(
-		"   Required: NEXT_PUBLIC_SUPABASE_URL, NEXT_PUBLIC_SUPABASE_ANON_KEY",
-	);
 	process.exit(1);
 }
 
@@ -74,5 +73,3 @@ async function testDatabase() {
 }
 
 testDatabase();
-
-
