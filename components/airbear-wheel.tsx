@@ -1,6 +1,5 @@
 "use client";
 
-import { memo } from "react";
 import { cn } from "@/lib/utils";
 
 interface AirbearWheelProps {
@@ -11,17 +10,13 @@ interface AirbearWheelProps {
   effectType?: "solar" | "eco" | string;
 }
 
-/**
- * ⚡ Bolt Optimization: Wrapped in React.memo to prevent unnecessary re-renders.
- * This component is purely presentational and used frequently in animations.
- */
-const AirbearWheel = ({
+export default function AirbearWheel({
   size = "md",
   className = "",
   glowing = false,
   animated = true,
   effectType,
-}: AirbearWheelProps) => {
+}: AirbearWheelProps) {
   const sizeClasses = {
     sm: "w-6 h-6",
     md: "w-10 h-10",
@@ -91,9 +86,7 @@ const AirbearWheel = ({
       )}
     </div>
   );
-};
-
-export default memo(AirbearWheel);
+}
 
 
 
