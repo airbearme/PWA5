@@ -16,24 +16,16 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 9
+
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
           node-version: '20.x'
-      
-      - name: Install dependencies
-        run: npm ci || pnpm install --frozen-lockfile
-      
-      - name: Analyze error logs
-        env:
-          SUPABASE_URL: ${{ secrets.NEXT_PUBLIC_SUPABASE_URL }}
-          SUPABASE_SERVICE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
-        run: |
-          node scripts/analyze-errors.js || echo "Error analysis script not found"
-      
-      - name: Generate fix suggestions
-        run: |
-          node scripts/generate-fixes.js || echo "Fix generation script not found"
+          cache: 'pnpm'
 
   auto-fix:
     name: Apply Auto-Fixes
@@ -42,37 +34,16 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 9
+
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
           node-version: '20.x'
-      
-      - name: Install dependencies
-        run: npm ci || pnpm install --frozen-lockfile
-      
-      - name: Run auto-fixes
-        run: |
-          echo "Applying auto-fixes..."
-          pnpm run lint --fix || true
-          node scripts/apply-fixes.js || echo "Auto-fix script not found"
-      
-      - name: Create fix PR
-        uses: peter-evans/create-pull-request@v5
-        with:
-          token: ${{ secrets.GITHUB_TOKEN }}
-          commit-message: "chore: auto-fix issues detected by self-repair workflow"
-          title: "Auto-Fix: Resolved Issues"
-          body: |
-            This PR contains automatic fixes applied by the self-repair workflow.
-            
-            ## Changes
-            - Fixed linting issues
-            - Applied error pattern fixes
-            - Updated dependencies if needed
-            
-            Please review before merging.
-          branch: auto-fix/$(date +%Y%m%d-%H%M%S)
-          delete-branch: true
+          cache: 'pnpm'
 
   database-maintenance:
     name: Database Maintenance
@@ -80,21 +51,16 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 9
+
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
           node-version: '20.x'
-      
-      - name: Run database cleanup
-        env:
-          SUPABASE_URL: ${{ secrets.NEXT_PUBLIC_SUPABASE_URL }}
-          SUPABASE_SERVICE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
-        run: |
-          node scripts/database-cleanup.js || echo "Database cleanup script not found"
-      
-      - name: Optimize error logs
-        run: |
-          node scripts/optimize-error-logs.js || echo "Error log optimization script not found"
+          cache: 'pnpm'
 
 
 
