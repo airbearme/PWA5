@@ -181,27 +181,6 @@ export const insertUserSchema = createInsertSchema(users)
 		updatedAt: true,
 	});
 
-/**
- * registerUserSchema: Secure schema for new user registration.
- * Explicitly omits 'role' and other sensitive fields to prevent mass assignment.
- */
-export const registerUserSchema = insertUserSchema.omit({
-	role: true,
-	ecoPoints: true,
-	totalRides: true,
-	co2Saved: true,
-	hasCeoTshirt: true,
-	tshirtPurchaseDate: true,
-	stripeCustomerId: true,
-	stripeSubscriptionId: true,
-});
-
-/**
- * updateProfileSchema: Secure schema for profile updates.
- * Only allows updating non-sensitive fields.
- */
-export const updateProfileSchema = registerUserSchema.partial();
-
 export const insertSpotSchema = createInsertSchema(spots).omit({
 	id: true,
 	createdAt: true,
