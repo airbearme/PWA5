@@ -15,7 +15,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useRouter } from "next/navigation";
-import { Apple, Chrome } from "lucide-react";
+import { Apple, Chrome, Loader2 } from "lucide-react";
 
 // Feature flag: Set to true when Apple Sign In is configured in Supabase
 const ENABLE_APPLE_SIGN_IN = false;
@@ -139,11 +139,15 @@ export default function LoginPage() {
             <Button
               type="button"
               variant="outline"
-              className="w-full h-12 text-base font-medium hover:bg-gray-50 transition-colors bg-transparent"
+              className="w-full h-12 text-base font-medium transition-colors"
               onClick={handleGoogleSignIn}
               disabled={loading}
             >
-              <Chrome className="mr-2 h-5 w-5 text-red-500" />
+              {loading ? (
+                <Loader2 className="mr-2 h-5 w-5 animate-spin" />
+              ) : (
+                <Chrome className="mr-2 h-5 w-5 text-red-500" />
+              )}
               Continue with Google
             </Button>
 
@@ -151,11 +155,15 @@ export default function LoginPage() {
               <Button
                 type="button"
                 variant="outline"
-                className="w-full h-12 text-base font-medium hover:bg-gray-50 transition-colors bg-transparent"
+                className="w-full h-12 text-base font-medium transition-colors"
                 onClick={handleAppleSignIn}
                 disabled={loading}
               >
-                <Apple className="mr-2 h-5 w-5" />
+                {loading ? (
+                  <Loader2 className="mr-2 h-5 w-5 animate-spin" />
+                ) : (
+                  <Apple className="mr-2 h-5 w-5" />
+                )}
                 Continue with Apple
               </Button>
             )}
@@ -166,7 +174,7 @@ export default function LoginPage() {
               <span className="w-full border-t" />
             </div>
             <div className="relative flex justify-center text-xs uppercase">
-              <span className="bg-white px-2 text-muted-foreground">
+              <span className="bg-card px-2 text-muted-foreground">
                 Or continue with email
               </span>
             </div>
