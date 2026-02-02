@@ -1,7 +1,7 @@
 // Integration Tests for AirBear PWA Features
 // Tests real-time updates, authentication flows, and payment processing
 
-import { describe, expect, it } from "@jest/globals";
+import { describe, it } from "@jest/globals";
 
 describe("Real-time Map Features", () => {
 	it("should connect to Supabase realtime", () => {

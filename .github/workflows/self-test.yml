@@ -39,19 +39,19 @@ jobs:
           SUPABASE_URL: ${{ secrets.NEXT_PUBLIC_SUPABASE_URL }}
           SUPABASE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
         run: |
-          node scripts/check-database.js || echo "Database check script not found"
+          node scripts/check-database.cjs || echo "Database check script not found"
       
       - name: Check Stripe connectivity
         env:
           STRIPE_SECRET_KEY: ${{ secrets.STRIPE_SECRET_KEY }}
         run: |
-          node scripts/check-stripe.js || echo "Stripe check script not found"
+          node scripts/check-stripe.cjs || echo "Stripe check script not found"
       
       - name: Report health status
         if: always()
         run: |
           echo "Health check completed"
-          node scripts/report-health.js || echo "Health reporting script not found"
+          node scripts/report-health.cjs || echo "Health reporting script not found"
 
   performance-test:
     name: Performance Testing
@@ -81,7 +81,7 @@ jobs:
       - name: Check bundle size
         run: |
           pnpm run build
-          node scripts/check-bundle-size.js || echo "Bundle size check script not found"
+          node scripts/check-bundle-size.cjs || echo "Bundle size check script not found"
         env:
           NEXT_PUBLIC_SUPABASE_PWA4_URL: ${{ secrets.NEXT_PUBLIC_SUPABASE_PWA4_URL || 'https://dummy.supabase.co' }}
           NEXT_PUBLIC_SUPABASE_PWA4_ANON_KEY: ${{ secrets.NEXT_PUBLIC_SUPABASE_PWA4_ANON_KEY || 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.dummy' }}
