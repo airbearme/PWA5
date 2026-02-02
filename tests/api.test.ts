@@ -1,7 +1,28 @@
 // Comprehensive API Testing Suite for AirBear PWA
 // Run with: npm run test
 
-import { describe, expect, it } from "@jest/globals";
+import { describe, it, jest } from "@jest/globals";
+
+// Mock global fetch for API tests
+global.fetch = jest.fn((url: string) => {
+	if (url.includes("/api/health")) {
+		return Promise.resolve({
+			status: 200,
+			json: () => Promise.resolve({ status: "healthy", database: "connected" }),
+		});
+	}
+	if (url.includes("/api/stripe/webhook")) {
+		return Promise.resolve({
+			status: 400,
+		});
+	}
+	if (url.includes("/api/auth/callback")) {
+		return Promise.resolve({
+			status: 400,
+		});
+	}
+	return Promise.reject(new Error(`Unhandled fetch to ${url}`));
+}) as any;
 
 describe("AirBear API Health Checks", () => {
 	const baseUrl = process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000";

@@ -2,6 +2,7 @@ import { sql } from "drizzle-orm";
 import {
 	boolean,
 	decimal,
+	index,
 	integer,
 	jsonb,
 	pgEnum,
@@ -110,6 +111,13 @@ export const rides = pgTable("rides", {
 	acceptedAt: timestamp("accepted_at"),
 	startedAt: timestamp("started_at"),
 	completedAt: timestamp("completed_at"),
+}, (table) => {
+	return {
+		// ⚡ Bolt: Optimize ride history queries.
+		// A composite index on userId and requestedAt significantly speeds up lookups
+		// for a user's rides, which is a common operation for dashboards and history views.
+		userIdRequestedAtIndex: index("user_id_requested_at_idx").on(table.userId, table.requestedAt),
+	};
 });
 
 // Bodega items table
