@@ -133,12 +133,12 @@ async function main() {
 	// Run comprehensive workflow tests
 	runTest(
 		"Complete Workflow Tests",
-		"node scripts/test-complete-workflows.cjs",
+		"node scripts/test-complete-workflows.js",
 		false,
 	);
 	runTest(
 		"Comprehensive E2E Tests",
-		"node scripts/comprehensive-e2e-test.cjs",
+		"node scripts/comprehensive-e2e-test.js",
 		false,
 	);
 
