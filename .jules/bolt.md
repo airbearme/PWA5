@@ -1,0 +1,3 @@
+## 2025-05-15 - [Decoupling Data Fetching from URL State]
+**Learning:** When using URL search parameters as the source of truth for UI state, avoid including the `searchParams` hook result in the dependency array of monolithic `useEffect` hooks that perform network requests. This prevents redundant API calls on every parameter change. However, when splitting into a dedicated sync effect, ensure the logic correctly handles transitions between different parameter values (e.g., checking for ID changes) to avoid state/URL desynchronization.
+**Action:** Always split "Initial Fetch" and "State/URL Sync" into separate `useEffect` hooks in Next.js client components using search params. Use ID comparison rather than existence checks to ensure reactive updates.

@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import Image from "next/image";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useAuthContext } from "@/components/auth-provider";
 import { getSupabaseClient } from "@/lib/supabase/client";
@@ -42,13 +43,6 @@ export default function BookRidePage() {
 
         if (error) throw error;
         setSpots(data || []);
-
-        // Check for pickup spot from URL
-        const pickupId = searchParams.get("pickup");
-        if (pickupId && data) {
-          const spot = data.find((s) => s.id === pickupId);
-          if (spot) setPickupSpot(spot);
-        }
       } catch (error) {
         console.error("Error loading spots:", error);
         toast({
@@ -62,7 +56,18 @@ export default function BookRidePage() {
     };
 
     loadSpots();
-  }, [searchParams, toast]);
+    // ⚡ Bolt: Removed searchParams from dependencies to prevent redundant fetches on param updates.
+  }, [toast]);
+
+  useEffect(() => {
+    // ⚡ Bolt: Separated URL parameter handling into a dedicated effect.
+    // This maintains sync with URL parameters without re-fetching all spots.
+    const pickupId = searchParams.get("pickup");
+    if (pickupId && spots.length > 0 && pickupSpot?.id !== pickupId) {
+      const spot = spots.find((s) => s.id === pickupId);
+      if (spot) setPickupSpot(spot);
+    }
+  }, [searchParams, spots, pickupSpot]);
 
   const calculateDistance = (spot1: Spot, spot2: Spot): number => {
     const R = 6371; // Earth's radius in km
@@ -163,9 +168,13 @@ export default function BookRidePage() {
         <div className="text-center">
           <div className="flex justify-center mb-6">
             <div className="w-32 h-32 rounded-full border-4 border-emerald-400/50 dark:border-emerald-500/50 bg-gradient-to-br from-emerald-500/20 to-lime-500/20 backdrop-blur-sm shadow-2xl hover-lift animate-float overflow-hidden">
-              <img
+              {/* ⚡ Bolt: Using next/image with priority for better LCP performance */}
+              <Image
                 src="/airbear-mascot.png"
                 alt="AirBear Mascot"
+                width={128}
+                height={128}
+                priority
                 className="w-full h-full object-cover rounded-full animate-pulse-glow"
               />
             </div>
@@ -185,9 +194,13 @@ export default function BookRidePage() {
         <div className="text-center mb-8">
           <div className="flex justify-center mb-4">
             <div className="w-24 h-24 rounded-full border-4 border-emerald-400/50 dark:border-emerald-500/50 bg-gradient-to-br from-emerald-500/20 to-lime-500/20 backdrop-blur-sm shadow-2xl hover-lift animate-float overflow-hidden">
-              <img
+              {/* ⚡ Bolt: Using next/image with priority for better LCP performance */}
+              <Image
                 src="/airbear-mascot.png"
                 alt="AirBear Mascot"
+                width={96}
+                height={96}
+                priority
                 className="w-full h-full object-cover rounded-full animate-pulse-glow"
               />
             </div>
