@@ -2,7 +2,7 @@
  * Error Boundary Component Tests
  */
 
-import { describe, it, expect, jest } from '@jest/globals';
+import { describe, it, jest } from '@jest/globals';
 import { render, screen } from '@testing-library/react';
 import { ErrorBoundary } from '@/components/error-boundary';
 
@@ -21,7 +21,7 @@ describe('ErrorBoundary', () => {
       </ErrorBoundary>
     );
 
-    expect(screen.getByText('Test Content')).toBeInTheDocument();
+    (expect(screen.getByText('Test Content')) as any).toBeInTheDocument();
   });
 
   it('renders error UI when error occurs', () => {
@@ -35,7 +35,7 @@ describe('ErrorBoundary', () => {
       </ErrorBoundary>
     );
 
-    expect(screen.getByText(/Oops! Something went wrong/i)).toBeInTheDocument();
+    (expect(screen.getByText(/Oops! Something went wrong/i)) as any).toBeInTheDocument();
   });
 });
 

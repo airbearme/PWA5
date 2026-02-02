@@ -1,5 +1,17 @@
 // Learn more: https://github.com/testing-library/jest-dom
 import '@testing-library/jest-dom'
+import fetch from 'node-fetch'
+
+// Polyfills for Node.js environment in Jest
+if (!global.fetch) {
+  global.fetch = fetch
+}
+
+if (!global.TextEncoder) {
+  const { TextEncoder, TextDecoder } = require('util')
+  global.TextEncoder = TextEncoder
+  global.TextDecoder = TextDecoder
+}
 
 // Mock Next.js router
 jest.mock('next/navigation', () => ({

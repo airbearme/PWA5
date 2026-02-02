@@ -214,6 +214,20 @@ export const insertPaymentSchema = createInsertSchema(payments).omit({
 	createdAt: true,
 });
 
+// Security-hardened schemas to prevent mass assignment
+export const registerUserSchema = insertUserSchema.omit({
+	role: true,
+	ecoPoints: true,
+	totalRides: true,
+	co2Saved: true,
+	hasCeoTshirt: true,
+	tshirtPurchaseDate: true,
+	stripeCustomerId: true,
+	stripeSubscriptionId: true,
+});
+
+export const updateProfileSchema = registerUserSchema;
+
 // Types
 export type User = typeof users.$inferSelect;
 export type InsertUser = z.infer<typeof insertUserSchema>;
