@@ -1,4 +1,4 @@
-import { describe, it, expect } from '@jest/globals';
+import { describe, it } from '@jest/globals';
 import { registerUserSchema } from '../../shared/schema';
 import { z } from 'zod';
 
@@ -12,10 +12,10 @@ describe('Auth Security - Mass Assignment', () => {
     };
 
     // @ts-ignore - testing runtime behavior with extra fields
-    const parsed = registerUserSchema.parse(input);
+    const parsed = registerUserSchema.parse(input) as any;
 
     expect(parsed.role).toBeUndefined();
-    expect((parsed as any).ecoPoints).toBeUndefined();
+    expect(parsed.ecoPoints).toBeUndefined();
     expect(parsed.username).toBe('attacker');
   });
 
@@ -29,7 +29,7 @@ describe('Auth Security - Mass Assignment', () => {
     };
 
     // @ts-ignore
-    const parsed = updateProfileSchema.parse(input);
+    const parsed = updateProfileSchema.parse(input) as any;
 
     expect(parsed.role).toBeUndefined();
     expect(parsed.hasCeoTshirt).toBeUndefined();

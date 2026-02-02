@@ -2,12 +2,12 @@
  * API Health Endpoint Tests
  */
 
-import { describe, it, expect, jest, beforeEach } from '@jest/globals';
+import { describe, it, jest, beforeEach } from '@jest/globals';
 
 // Mock Next.js
 jest.mock('next/server', () => ({
   NextResponse: {
-    json: jest.fn((data, options) => ({
+    json: jest.fn((data: any, options?: { status?: number }) => ({
       json: () => Promise.resolve(data),
       status: options?.status || 200,
     })),
@@ -31,7 +31,7 @@ describe('Health API', () => {
   it('should return healthy status when database is accessible', async () => {
     const { GET } = await import('@/app/api/health/route');
     const response = await GET();
-    const data = await response.json();
+    const data = (await response.json()) as any;
 
     expect(data.status).toBe('healthy');
     expect(data.services.database).toBe('healthy');
