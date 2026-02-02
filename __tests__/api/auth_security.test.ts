@@ -1,6 +1,5 @@
-import { describe, it } from '@jest/globals';
-import { registerUserSchema } from '../../shared/schema';
-import { z } from 'zod';
+import { describe, it, expect } from '@jest/globals';
+import { registerUserSchema, updateProfileSchema } from '../../shared/schema';
 
 describe('Auth Security - Mass Assignment', () => {
   it('should strip role field from registerUserSchema', () => {
@@ -12,15 +11,14 @@ describe('Auth Security - Mass Assignment', () => {
     };
 
     // @ts-ignore - testing runtime behavior with extra fields
-    const parsed = registerUserSchema.parse(input) as any;
+    const parsed = registerUserSchema.parse(input);
 
-    expect(parsed.role).toBeUndefined();
-    expect(parsed.ecoPoints).toBeUndefined();
+    expect((parsed as any).role).toBeUndefined();
+    expect((parsed as any).ecoPoints).toBeUndefined();
     expect(parsed.username).toBe('attacker');
   });
 
   it('should strip protected fields from updateProfileSchema', () => {
-    const { updateProfileSchema } = require('../../shared/schema');
     const input = {
       email: 'user@example.com',
       username: 'user',
@@ -29,10 +27,10 @@ describe('Auth Security - Mass Assignment', () => {
     };
 
     // @ts-ignore
-    const parsed = updateProfileSchema.parse(input) as any;
+    const parsed = updateProfileSchema.parse(input);
 
-    expect(parsed.role).toBeUndefined();
-    expect(parsed.hasCeoTshirt).toBeUndefined();
+    expect((parsed as any).role).toBeUndefined();
+    expect((parsed as any).hasCeoTshirt).toBeUndefined();
     expect(parsed.username).toBe('user');
   });
 });
