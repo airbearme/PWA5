@@ -1,4 +1,4 @@
-import { describe, it, expect, jest } from '@jest/globals';
+import { describe, it, jest } from '@jest/globals';
 import { z } from 'zod';
 
 // We want to verify that the profileSchema (once we modify it)
@@ -33,7 +33,7 @@ describe('Auth Security - Privilege Escalation', () => {
       role: 'admin'
     };
 
-    const result = vulnerableSchema.parse(payload);
+    const result = vulnerableSchema.parse(payload) as any;
     expect(result.role).toBe('admin');
   });
 
@@ -44,7 +44,7 @@ describe('Auth Security - Privilege Escalation', () => {
       role: 'admin'
     } as any;
 
-    const result = secureSchema.parse(payload);
+    const result = secureSchema.parse(payload) as any;
     expect(result.role).toBeUndefined();
   });
 });
