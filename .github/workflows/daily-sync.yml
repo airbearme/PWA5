@@ -50,8 +50,12 @@ jobs:
     name: 🔐 Verify Secrets Synced
     runs-on: ubuntu-latest
     steps:
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 9
       - name: Install Vercel CLI
-        run: npm install --global vercel@latest
+        run: pnpm add -g vercel
 
       - name: Verify Vercel environment variables
         run: |
