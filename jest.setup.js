@@ -1,5 +1,12 @@
 // Learn more: https://github.com/testing-library/jest-dom
 import '@testing-library/jest-dom'
+import { TextEncoder, TextDecoder } from 'util'
+import fetch from 'node-fetch'
+
+// Polyfills for ESM environment
+global.TextEncoder = TextEncoder
+global.TextDecoder = TextDecoder
+global.fetch = fetch
 
 // Mock Next.js router
 jest.mock('next/navigation', () => ({
