@@ -1,8 +1,8 @@
 #!/usr/bin/env node
 
-import dotenv from "dotenv";
-import path from "path";
-import SftpClient from "ssh2-sftp-client";
+const dotenv = require("dotenv");
+const path = require("path");
+const SftpClient = require("ssh2-sftp-client");
 
 // Load environment variables
 dotenv.config();
