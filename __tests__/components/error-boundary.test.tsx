@@ -3,6 +3,7 @@
  */
 
 import { describe, it, jest } from '@jest/globals';
+import '@testing-library/jest-dom';
 import { render, screen } from '@testing-library/react';
 import { ErrorBoundary } from '@/components/error-boundary';
 
