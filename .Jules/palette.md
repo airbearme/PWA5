@@ -1,7 +1,7 @@
-## 2024-05-22 - [Accessibility in Selection Lists]
-**Learning:** Using `div` with `onClick` for interactive elements like location selectors is a major accessibility hurdle. Screen readers won't identify them as interactive, and keyboard users can't tab to them.
-**Action:** Always use semantic `<button>` elements for selectable items. Use `w-full text-left` to maintain list layout, and ensure `focus-visible` styles are prominent.
+## 2026-02-03 - Accessible Location Selectors
+**Learning:** Using `div` with `onClick` for interactive lists (like spot selection) makes the UI inaccessible to keyboard and screen reader users. Semantic `<button>` elements provide native focus management and ARIA support.
+**Action:** Always use `<button>` for interactive list items and ensure they have descriptive `aria-label` when the text content alone isn't enough (e.g., "Select [Location] as pickup").
 
-## 2024-05-22 - [Dark Mode Consistency]
-**Learning:** Hardcoded `bg-white` in UI elements like separators or labels inside themed cards will break visual consistency in dark mode.
-**Action:** Use theme-aware utility classes like `bg-card` or `bg-background` to ensure elements blend correctly across themes.
+## 2026-02-03 - Theme-Aware UI Components
+**Learning:** Hardcoded color classes like `bg-white` on decorative elements (like text separators) break visual consistency in dark mode, appearing as high-contrast "glitches".
+**Action:** Prefer theme-aware Tailwind classes like `bg-card` or `bg-background` for containers and decorative overlays to ensure seamless theme transitions.

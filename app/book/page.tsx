@@ -232,13 +232,12 @@ export default function BookRidePage() {
                   </Button>
                 </div>
               ) : (
-                <div className={`space-y-2 max-h-60 overflow-y-auto ${booking ? "opacity-50 cursor-not-allowed" : ""}`}>
+                <div className="space-y-2 max-h-60 overflow-y-auto">
                   {spots.map((spot) => (
                     <button
                       key={spot.id}
-                      type="button"
-                      className="w-full text-left p-3 rounded-lg border hover:bg-muted focus-visible:ring-2 focus-visible:ring-emerald-500 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-                      onClick={() => !booking && setPickupSpot(spot)}
+                      className="w-full text-left p-3 rounded-lg border hover:bg-muted focus-visible:ring-2 focus-visible:ring-emerald-500 outline-none transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                      onClick={() => setPickupSpot(spot)}
                       disabled={booking}
                       aria-label={`Select ${spot.name} as pickup location`}
                     >
@@ -286,15 +285,14 @@ export default function BookRidePage() {
                   </Button>
                 </div>
               ) : (
-                <div className={`space-y-2 max-h-60 overflow-y-auto ${booking ? "opacity-50 cursor-not-allowed" : ""}`}>
+                <div className="space-y-2 max-h-60 overflow-y-auto">
                   {spots
                     .filter((s) => s.id !== pickupSpot?.id)
                     .map((spot) => (
                       <button
                         key={spot.id}
-                        type="button"
-                        className="w-full text-left p-3 rounded-lg border hover:bg-muted focus-visible:ring-2 focus-visible:ring-emerald-500 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-                        onClick={() => !booking && setDestinationSpot(spot)}
+                        className="w-full text-left p-3 rounded-lg border hover:bg-muted focus-visible:ring-2 focus-visible:ring-amber-500 outline-none transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                        onClick={() => setDestinationSpot(spot)}
                         disabled={booking}
                         aria-label={`Select ${spot.name} as destination`}
                       >
