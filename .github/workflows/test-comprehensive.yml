@@ -190,6 +190,9 @@ jobs:
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
 
+      - name: Install Playwright browsers
+        run: npx playwright install --with-deps
+
       - name: Run ultimate validation
         env:
           NODE_ENV: production
