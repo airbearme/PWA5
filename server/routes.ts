@@ -51,11 +51,17 @@ export async function registerRoutes(app: Express): Promise<Server> {
 		email: z.string().optional().nullable(), // Loosen for sync resilience
 		username: z.string().min(1),
 		fullName: z.string().optional().nullable(),
-		role: z.enum(["user", "driver", "admin"]).optional(),
 		avatarUrl: z.string().optional().nullable(),
 	});
 
-	const ensureUserProfile = async (payload: z.infer<typeof profileSchema>) => {
+	// Separate schema for operations that allow setting a role (e.g. registration)
+	const profileWithRoleSchema = profileSchema.extend({
+		role: z.enum(["user", "driver", "admin"]).optional(),
+	});
+
+	const ensureUserProfile = async (
+		payload: z.infer<typeof profileWithRoleSchema>,
+	) => {
 		// Try lookup by ID first, then email
 		const existingUser = payload.id
 			? await storage.getUser(payload.id)
@@ -100,15 +106,13 @@ export async function registerRoutes(app: Express): Promise<Server> {
 	app.post("/api/auth/register", async (req, res) => {
 		try {
 			if (!supabaseAdmin) {
-				return res
-					.status(500)
-					.json({
-						message:
-							"Supabase is not configured. Set SUPABASE_URL and SUPABASE_SERVICE_ROLE_KEY.",
-					});
+				return res.status(500).json({
+					message:
+						"Supabase is not configured. Set SUPABASE_URL and SUPABASE_SERVICE_ROLE_KEY.",
+				});
 			}
 
-			const userData = profileSchema
+			const userData = profileWithRoleSchema
 				.extend({ password: z.string().min(6) })
 				.parse(req.body);
 			const { data, error } = await supabaseAdmin.auth.admin.createUser({
@@ -273,10 +277,16 @@ export async function registerRoutes(app: Express): Promise<Server> {
 		}
 	});
 
+	const rideUpdateSchema = z.object({
+		status: z
+			.enum(["pending", "accepted", "in_progress", "completed", "cancelled"])
+			.optional(),
+	});
+
 	app.patch("/api/rides/:id", async (req, res) => {
 		try {
 			const { id } = req.params;
-			const updates = req.body;
+			const updates = rideUpdateSchema.parse(req.body);
 			const ride = await storage.updateRide(id, updates);
 			res.json(ride);
 		} catch (error: any) {
