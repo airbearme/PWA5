@@ -19,7 +19,7 @@ try {
 } catch {
 	console.log("⚠️  Lighthouse CLI not found. Installing...");
 	try {
-		execSync("npm install -g lighthouse", { stdio: "inherit" });
+		execSync("pnpm add -g lighthouse", { stdio: "inherit" });
 	} catch {
 		console.log("❌ Failed to install Lighthouse. Skipping performance tests.");
 		process.exit(0);

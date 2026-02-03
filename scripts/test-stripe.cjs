@@ -43,6 +43,12 @@ async function testStripe() {
 
 		console.log("📡 Testing Stripe API connection...");
 
+		// Check if it's a dummy key
+		if (STRIPE_SECRET_KEY.includes("dummy")) {
+			console.log("⚠️  Using dummy Stripe key, skipping API connection test");
+			process.exit(0);
+		}
+
 		// Test API connection by retrieving account balance
 		const balance = await stripe.balance.retrieve();
 
