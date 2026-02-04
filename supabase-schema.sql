@@ -61,21 +61,7 @@ CREATE TABLE IF NOT EXISTS public.rides (
   completed_at TIMESTAMP WITH TIME ZONE
 );
 
--- Create composite index for ride history lookups
-CREATE INDEX IF NOT EXISTS idx_rides_user_requested ON public.rides(user_id, requested_at DESC);
-
 -- Payments Table
-CREATE TABLE IF NOT EXISTS public.payments (
-  id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
-  ride_id UUID REFERENCES public.rides(id),
-  user_id UUID REFERENCES public.users(id),
-  amount DECIMAL(10, 2) NOT NULL,
-  currency TEXT DEFAULT 'usd',
-  payment_method TEXT CHECK (payment_method IN ('stripe', 'apple_pay', 'google_pay', 'cash')),
-  stripe_payment_intent_id TEXT,
-  status TEXT DEFAULT 'pending' CHECK (status IN ('pending', 'succeeded', 'failed', 'refunded')),
-  created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
-);
 
 -- Enable Row Level Security
 ALTER TABLE public.spots ENABLE ROW LEVEL SECURITY;
@@ -208,9 +194,6 @@ CREATE TABLE IF NOT EXISTS public.orders (
   created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
 );
 
--- Create composite index for order history lookups
-CREATE INDEX IF NOT EXISTS idx_orders_user_created ON public.orders(user_id, created_at DESC);
-
 -- Payments Table (Updated)
 CREATE TABLE IF NOT EXISTS public.payments (
   id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
@@ -225,9 +208,6 @@ CREATE TABLE IF NOT EXISTS public.payments (
   metadata JSONB,
   created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
 );
-
--- Create composite index for payment history lookups
-CREATE INDEX IF NOT EXISTS idx_payments_user_created ON public.payments(user_id, created_at DESC);
 
 -- Advertising Packages Table
 CREATE TABLE IF NOT EXISTS public.advertising_packages (
@@ -358,3 +338,7 @@ END $$;
 --        updated_at
 -- FROM public.airbears
 -- ORDER BY updated_at DESC;
+-- Composite indexes for user history lookups (Bolt optimization)
+CREATE INDEX IF NOT EXISTS idx_rides_user_requested ON public.rides(user_id, requested_at DESC);
+CREATE INDEX IF NOT EXISTS idx_orders_user_created ON public.orders(user_id, created_at DESC);
+CREATE INDEX IF NOT EXISTS idx_payments_user_created ON public.payments(user_id, created_at DESC);

@@ -2,7 +2,6 @@ import { sql } from "drizzle-orm";
 import {
 	boolean,
 	decimal,
-	index,
 	integer,
 	jsonb,
 	pgEnum,
@@ -111,9 +110,7 @@ export const rides = pgTable("rides", {
 	acceptedAt: timestamp("accepted_at"),
 	startedAt: timestamp("started_at"),
 	completedAt: timestamp("completed_at"),
-}, (table) => ({
-	userIdRequestedAtIdx: index("idx_rides_user_requested").on(table.userId, table.requestedAt.desc()),
-}));
+});
 
 // Bodega items table
 export const bodegaItems = pgTable("bodega_items", {
@@ -155,9 +152,7 @@ export const orders = pgTable("orders", {
 	status: text("status").notNull().default("pending"),
 	notes: text("notes"),
 	createdAt: timestamp("created_at").notNull().default(sql`now()`),
-}, (table) => ({
-	userIdCreatedAtIdx: index("idx_orders_user_created").on(table.userId, table.createdAt.desc()),
-}));
+});
 
 // Payments table
 export const payments = pgTable("payments", {
@@ -174,9 +169,7 @@ export const payments = pgTable("payments", {
 	paymentMethod: paymentMethodEnum("payment_method").notNull(),
 	metadata: jsonb("metadata"),
 	createdAt: timestamp("created_at").notNull().default(sql`now()`),
-}, (table) => ({
-	userIdCreatedAtIdx: index("idx_payments_user_created").on(table.userId, table.createdAt.desc()),
-}));
+});
 
 // Insert schemas
 export const insertUserSchema = createInsertSchema(users)
