@@ -57,22 +57,11 @@ CREATE TABLE IF NOT EXISTS public.rides (
   status TEXT DEFAULT 'pending' CHECK (status IN ('pending', 'booked', 'in_progress', 'completed', 'cancelled')),
   fare DECIMAL(10, 2),
   distance_km DECIMAL(10, 2),
-  created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+  requested_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
   completed_at TIMESTAMP WITH TIME ZONE
 );
 
 -- Payments Table
-CREATE TABLE IF NOT EXISTS public.payments (
-  id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
-  ride_id UUID REFERENCES public.rides(id),
-  user_id UUID REFERENCES public.users(id),
-  amount DECIMAL(10, 2) NOT NULL,
-  currency TEXT DEFAULT 'usd',
-  payment_method TEXT CHECK (payment_method IN ('stripe', 'apple_pay', 'google_pay', 'cash')),
-  stripe_payment_intent_id TEXT,
-  status TEXT DEFAULT 'pending' CHECK (status IN ('pending', 'succeeded', 'failed', 'refunded')),
-  created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
-);
 
 -- Enable Row Level Security
 ALTER TABLE public.spots ENABLE ROW LEVEL SECURITY;
@@ -349,3 +338,7 @@ END $$;
 --        updated_at
 -- FROM public.airbears
 -- ORDER BY updated_at DESC;
+-- Composite indexes for user history lookups (Bolt optimization)
+CREATE INDEX IF NOT EXISTS idx_rides_user_requested ON public.rides(user_id, requested_at DESC);
+CREATE INDEX IF NOT EXISTS idx_orders_user_created ON public.orders(user_id, created_at DESC);
+CREATE INDEX IF NOT EXISTS idx_payments_user_created ON public.payments(user_id, created_at DESC);

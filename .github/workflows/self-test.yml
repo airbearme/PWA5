@@ -20,7 +20,7 @@ jobs:
           node-version: '20.x'
       
       - name: Install dependencies
-        run: npm ci || pnpm install --frozen-lockfile
+        run: pnpm install --frozen-lockfile || pnpm install --frozen-lockfile
       
       - name: Check API endpoints
         run: |
@@ -59,16 +59,16 @@ jobs:
           node-version: '20.x'
       
       - name: Install dependencies
-        run: npm ci || pnpm install --frozen-lockfile
+        run: pnpm install --frozen-lockfile || pnpm install --frozen-lockfile
       
       - name: Run Lighthouse CI
         run: |
-          npm install -g @lhci/cli || true
+          pnpm add -g @lhci/cli || true
           lhci autorun || echo "Lighthouse CI not configured"
       
       - name: Check bundle size
         run: |
-          pnpm run build
+          ppnpm run build
           node scripts/check-bundle-size.js || echo "Bundle size check script not found"
 
   security-scan:
@@ -77,9 +77,9 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       
-      - name: Run npm audit
+      - name: Run pnpm audit
         run: |
-          npm audit --audit-level=moderate || echo "Vulnerabilities found"
+          pnpm audit --audit-level=moderate || echo "Vulnerabilities found"
       
       - name: Run Snyk scan
         uses: snyk/actions/node@master
