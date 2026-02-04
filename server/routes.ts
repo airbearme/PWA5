@@ -125,7 +125,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
 				email_confirm: true,
 				user_metadata: {
 					username: userData.username,
-					role: userData.role || "user",
+					role: "user",
 					fullName: userData.fullName,
 				},
 			});
@@ -137,7 +137,6 @@ export async function registerRoutes(app: Express): Promise<Server> {
 				fullName: userData.fullName,
 				role:
 					(data.user?.user_metadata?.role as "user" | "driver" | "admin") ||
-					userData.role ||
 					"user",
 				avatarUrl: null,
 			});
