@@ -1,5 +1,42 @@
 // Learn more: https://github.com/testing-library/jest-dom
-import '@testing-library/jest-dom'
+require('@testing-library/jest-dom')
+
+// Polyfill for fetch
+if (!global.fetch) {
+  const nodeFetch = require('node-fetch')
+  global.fetch = jest.fn().mockImplementation((url, options) => {
+    if (url.includes('/api/health')) {
+      return Promise.resolve({
+        status: 200,
+        ok: true,
+        json: () => Promise.resolve({ status: 'healthy', database: 'connected' }),
+      })
+    }
+    if (url.includes('/api/stripe/webhook')) {
+      return Promise.resolve({
+        status: 400,
+        ok: false,
+      })
+    }
+    if (url.includes('/api/auth/callback')) {
+      return Promise.resolve({
+        status: 302,
+        ok: true,
+      })
+    }
+    return nodeFetch(url, options)
+  })
+  global.Response = nodeFetch.Response
+  global.Headers = nodeFetch.Headers
+  global.Request = nodeFetch.Request
+}
+
+// Polyfill for TextEncoder/TextDecoder
+if (typeof global.TextEncoder === 'undefined') {
+  const { TextEncoder, TextDecoder } = require('util')
+  global.TextEncoder = TextEncoder
+  global.TextDecoder = TextDecoder
+}
 
 // Mock Next.js router
 jest.mock('next/navigation', () => ({
@@ -55,15 +92,3 @@ global.ResizeObserver = class ResizeObserver {
   observe() {}
   unobserve() {}
 }
-
-// Suppress console errors in tests (optional)
-// global.console = {
-//   ...console,
-//   error: jest.fn(),
-//   warn: jest.fn(),
-// }
-
-
-
-
-
