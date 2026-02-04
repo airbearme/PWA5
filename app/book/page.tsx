@@ -227,17 +227,24 @@ export default function BookRidePage() {
                     className="mt-2"
                     onClick={() => setPickupSpot(null)}
                     disabled={booking}
+                    aria-label={`Change pickup location, currently ${pickupSpot.name}`}
                   >
                     Change
                   </Button>
                 </div>
               ) : (
-                <div className={`space-y-2 max-h-60 overflow-y-auto ${booking ? "opacity-50 cursor-not-allowed" : ""}`}>
+                <div
+                  className={`space-y-2 max-h-60 overflow-y-auto ${booking ? "opacity-50 cursor-not-allowed" : ""}`}
+                  role="group"
+                  aria-label="Select pickup location"
+                >
                   {spots.map((spot) => (
-                    <div
+                    <button
                       key={spot.id}
-                      className="p-3 rounded-lg border hover:bg-muted cursor-pointer transition-colors"
+                      type="button"
+                      className="w-full text-left p-3 rounded-lg border hover:bg-muted transition-colors focus-visible:ring-2 focus-visible:ring-emerald-500 focus-visible:outline-none"
                       onClick={() => !booking && setPickupSpot(spot)}
+                      disabled={booking}
                     >
                       <p className="font-medium">{spot.name}</p>
                       {spot.description && (
@@ -245,7 +252,7 @@ export default function BookRidePage() {
                           {spot.description}
                         </p>
                       )}
-                    </div>
+                    </button>
                   ))}
                 </div>
               )}
@@ -278,19 +285,26 @@ export default function BookRidePage() {
                     className="mt-2"
                     onClick={() => setDestinationSpot(null)}
                     disabled={booking}
+                    aria-label={`Change destination location, currently ${destinationSpot.name}`}
                   >
                     Change
                   </Button>
                 </div>
               ) : (
-                <div className={`space-y-2 max-h-60 overflow-y-auto ${booking ? "opacity-50 cursor-not-allowed" : ""}`}>
+                <div
+                  className={`space-y-2 max-h-60 overflow-y-auto ${booking ? "opacity-50 cursor-not-allowed" : ""}`}
+                  role="group"
+                  aria-label="Select destination location"
+                >
                   {spots
                     .filter((s) => s.id !== pickupSpot?.id)
                     .map((spot) => (
-                      <div
+                      <button
                         key={spot.id}
-                        className="p-3 rounded-lg border hover:bg-muted cursor-pointer transition-colors"
+                        type="button"
+                        className="w-full text-left p-3 rounded-lg border hover:bg-muted transition-colors focus-visible:ring-2 focus-visible:ring-amber-500 focus-visible:outline-none"
                         onClick={() => !booking && setDestinationSpot(spot)}
+                        disabled={booking}
                       >
                         <p className="font-medium">{spot.name}</p>
                         {spot.description && (
@@ -298,7 +312,7 @@ export default function BookRidePage() {
                             {spot.description}
                           </p>
                         )}
-                      </div>
+                      </button>
                     ))}
                 </div>
               )}
