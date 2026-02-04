@@ -7,6 +7,9 @@ import {
 	insertOrderSchema,
 	insertPaymentSchema,
 	insertRideSchema,
+	registerUserSchema,
+	rideUpdateSchema,
+	updateProfileSchema,
 } from "../shared/schema.js";
 import { storage } from "./storage.js";
 
@@ -55,7 +58,13 @@ export async function registerRoutes(app: Express): Promise<Server> {
 		avatarUrl: z.string().optional().nullable(),
 	});
 
-	const ensureUserProfile = async (payload: z.infer<typeof profileSchema>) => {
+	// Restricted schema for user-provided payloads
+	const syncProfileSchema = updateProfileSchema.extend({
+		id: z.string().optional(),
+		email: z.string().optional().nullable(),
+	});
+
+	const ensureUserProfile = async (payload: any) => {
 		// Try lookup by ID first, then email
 		const existingUser = payload.id
 			? await storage.getUser(payload.id)
@@ -100,15 +109,14 @@ export async function registerRoutes(app: Express): Promise<Server> {
 	app.post("/api/auth/register", async (req, res) => {
 		try {
 			if (!supabaseAdmin) {
-				return res
-					.status(500)
-					.json({
-						message:
-							"Supabase is not configured. Set SUPABASE_URL and SUPABASE_SERVICE_ROLE_KEY.",
-					});
+				return res.status(500).json({
+					message:
+						"Supabase is not configured. Set SUPABASE_URL and SUPABASE_SERVICE_ROLE_KEY.",
+				});
 			}
 
-			const userData = profileSchema
+			// 🛡️ Sentinel: Prevent role escalation via registerUserSchema
+			const userData = registerUserSchema
 				.extend({ password: z.string().min(6) })
 				.parse(req.body);
 			const { data, error } = await supabaseAdmin.auth.admin.createUser({
@@ -117,7 +125,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
 				email_confirm: true,
 				user_metadata: {
 					username: userData.username,
-					role: userData.role || "user",
+					role: "user",
 					fullName: userData.fullName,
 				},
 			});
@@ -129,7 +137,6 @@ export async function registerRoutes(app: Express): Promise<Server> {
 				fullName: userData.fullName,
 				role:
 					(data.user?.user_metadata?.role as "user" | "driver" | "admin") ||
-					userData.role ||
 					"user",
 				avatarUrl: null,
 			});
@@ -207,15 +214,14 @@ export async function registerRoutes(app: Express): Promise<Server> {
 	app.post("/api/auth/sync-profile", async (req, res) => {
 		try {
 			if (!supabaseAdmin) {
-				return res
-					.status(500)
-					.json({
-						message:
-							"Supabase is not configured. Set SUPABASE_URL and SUPABASE_SERVICE_ROLE_KEY.",
-					});
+				return res.status(500).json({
+					message:
+						"Supabase is not configured. Set SUPABASE_URL and SUPABASE_SERVICE_ROLE_KEY.",
+				});
 			}
 
-			const payload = profileSchema.parse(req.body);
+			// 🛡️ Sentinel: Prevent role escalation via syncProfileSchema
+			const payload = syncProfileSchema.parse(req.body);
 			const profile = await ensureUserProfile(payload);
 			res.json({ user: profile });
 		} catch (error: any) {
@@ -276,7 +282,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
 	app.patch("/api/rides/:id", async (req, res) => {
 		try {
 			const { id } = req.params;
-			const updates = req.body;
+			// 🛡️ Sentinel: Prevent price/user tampering via rideUpdateSchema
+			const updates = rideUpdateSchema.parse(req.body);
 			const ride = await storage.updateRide(id, updates);
 			res.json(ride);
 		} catch (error: any) {

@@ -214,6 +214,21 @@ export const insertPaymentSchema = createInsertSchema(payments).omit({
 	createdAt: true,
 });
 
+// 🛡️ Sentinel: Hardened schemas to prevent mass assignment
+export const registerUserSchema = insertUserSchema.omit({
+	role: true, ecoPoints: true, totalRides: true, co2Saved: true,
+	hasCeoTshirt: true, tshirtPurchaseDate: true,
+	stripeCustomerId: true, stripeSubscriptionId: true,
+});
+export const updateProfileSchema = z.object({
+	username: z.string().min(1).optional(),
+	fullName: z.string().optional().nullable(),
+	avatarUrl: z.string().optional().nullable(),
+});
+export const rideUpdateSchema = z.object({
+	status: z.enum(["pending", "accepted", "in_progress", "completed", "cancelled"]),
+});
+
 // Types
 export type User = typeof users.$inferSelect;
 export type InsertUser = z.infer<typeof insertUserSchema>;
