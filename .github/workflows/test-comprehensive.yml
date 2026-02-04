@@ -9,6 +9,15 @@ on:
     - cron: '0 */6 * * *' # Every 6 hours
   workflow_dispatch:
 
+env:
+  NEXT_PUBLIC_SUPABASE_PWA4_URL: ${{ secrets.NEXT_PUBLIC_SUPABASE_PWA4_URL || 'https://ci-dummy.supabase.co' }}
+  NEXT_PUBLIC_SUPABASE_PWA4_ANON_KEY: ${{ secrets.NEXT_PUBLIC_SUPABASE_PWA4_ANON_KEY || 'eyJci-dummy' }}
+  SUPABASE_PWA4_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_PWA4_SERVICE_ROLE_KEY || 'dummy-service-role-key' }}
+  NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY: ${{ secrets.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY || 'pk_test_cidummy' }}
+  STRIPE_SECRET_KEY: ${{ secrets.STRIPE_SECRET_KEY || 'sk_test_cidummy' }}
+  STRIPE_WEBHOOK_SECRET: ${{ secrets.STRIPE_WEBHOOK_SECRET || 'whsec_cidummy' }}
+  NEXT_PUBLIC_SITE_URL: ${{ secrets.NEXT_PUBLIC_SITE_URL || 'https://airbear.me' }}
+
 jobs:
   # Unit & Integration Tests
   unit-tests:
@@ -20,7 +29,7 @@ jobs:
       - name: Install pnpm
         uses: pnpm/action-setup@v4
         with:
-          version: '8'
+          version: latest
 
       - name: Setup Node.js
         uses: actions/setup-node@v4
@@ -47,7 +56,7 @@ jobs:
       - name: Install pnpm
         uses: pnpm/action-setup@v4
         with:
-          version: '8'
+          version: latest
 
       - name: Setup Node.js
         uses: actions/setup-node@v4
@@ -83,7 +92,7 @@ jobs:
       - name: Install pnpm
         uses: pnpm/action-setup@v4
         with:
-          version: '8'
+          version: latest
 
       - name: Setup Node.js
         uses: actions/setup-node@v4
@@ -122,7 +131,7 @@ jobs:
       - name: Install pnpm
         uses: pnpm/action-setup@v4
         with:
-          version: '8'
+          version: latest
 
       - name: Setup Node.js
         uses: actions/setup-node@v4
@@ -161,7 +170,7 @@ jobs:
       - name: Install pnpm
         uses: pnpm/action-setup@v4
         with:
-          version: '8'
+          version: latest
 
       - name: Setup Node.js
         uses: actions/setup-node@v4
