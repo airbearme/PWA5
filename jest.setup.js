@@ -1,5 +1,23 @@
 // Learn more: https://github.com/testing-library/jest-dom
 import '@testing-library/jest-dom'
+import fetch from 'node-fetch'
+import { TextEncoder, TextDecoder } from 'util'
+
+global.fetch = fetch
+global.Request = fetch.Request
+global.Response = fetch.Response
+global.Headers = fetch.Headers
+global.TextEncoder = TextEncoder
+global.TextDecoder = TextDecoder
+
+if (typeof global.TransformStream === 'undefined') {
+  global.TransformStream = class TransformStream {
+    constructor() {
+      this.readable = {}
+      this.writable = {}
+    }
+  }
+}
 
 // Mock Next.js router
 jest.mock('next/navigation', () => ({

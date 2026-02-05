@@ -19,7 +19,7 @@ try {
 } catch {
 	console.log("⚠️  Lighthouse CLI not found. Installing...");
 	try {
-		execSync("npm install -g lighthouse", { stdio: "inherit" });
+		execSync("pnpm add -g lighthouse", { stdio: "inherit" });
 	} catch {
 		console.log("❌ Failed to install Lighthouse. Skipping performance tests.");
 		process.exit(0);
@@ -49,7 +49,7 @@ async function runPerformanceTests() {
 		console.log(
 			`⚠️  Site ${SITE_URL} is not accessible. Skipping Lighthouse tests.`,
 		);
-		console.log("💡 Start the dev server with: npm run dev");
+		console.log("💡 Start the dev server with: pnpm run dev");
 		process.exit(0);
 	}
 

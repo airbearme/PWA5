@@ -7,6 +7,7 @@ import {
   useTransform,
   useSpring,
 } from "framer-motion";
+import Image from "next/image";
 import AirbearWheel from "@/components/airbear-wheel";
 
 export default function FloatingMascot() {
@@ -35,6 +36,7 @@ export default function FloatingMascot() {
   return (
     <motion.a
       href="/"
+      aria-label="Go to home page"
       className="fixed bottom-6 right-6 z-50"
       style={{
         translateX: followX,
@@ -56,9 +58,11 @@ export default function FloatingMascot() {
           </div>
           
           {/* Mascot image */}
-          <img
+          <Image
             src="/airbear-mascot.png"
             alt="AirBear Mascot"
+            width={80}
+            height={80}
             className="w-full h-full object-cover rounded-full animate-float"
             style={{ animationDuration: "4s" }}
           />
