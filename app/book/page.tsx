@@ -81,7 +81,7 @@ export default function BookRidePage() {
     return R * c;
   };
 
-  const estimateFare = (distance: number): number => {
+  const estimateFare = (_distance: number): number => {
     // Flat rate $4.00 for all rides
     return 4.0;
   };
@@ -120,6 +120,7 @@ export default function BookRidePage() {
         body: JSON.stringify({
           pickup_spot_id: pickupSpot.id,
           dropoff_spot_id: destinationSpot.id,
+          airbear_id: airbearId,
           fare,
           distance,
         }),
@@ -241,6 +242,7 @@ export default function BookRidePage() {
                   {spots.map((spot) => (
                     <button
                       key={spot.id}
+                      type="button"
                       className="w-full text-left p-3 rounded-lg border hover:bg-muted focus-visible:ring-2 focus-visible:ring-emerald-500 outline-none transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                       onClick={() => !booking && setPickupSpot(spot)}
                       disabled={booking}
@@ -296,6 +298,7 @@ export default function BookRidePage() {
                     .map((spot) => (
                       <button
                         key={spot.id}
+                        type="button"
                         className="w-full text-left p-3 rounded-lg border hover:bg-muted focus-visible:ring-2 focus-visible:ring-emerald-500 outline-none transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                         onClick={() => !booking && setDestinationSpot(spot)}
                         disabled={booking}
