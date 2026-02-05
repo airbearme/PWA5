@@ -103,24 +103,14 @@ export default function BookRidePage() {
       const distance = calculateDistance(pickupSpot, destinationSpot);
       const fare = estimateFare(distance);
 
-      // Find available AirBear
-      const { data: availableAirbears } = await supabase
-        .from("airbears")
-        .select("id")
-        .eq("is_available", true)
-        .eq("is_charging", false)
-        .limit(1);
-
-      const airbearId = availableAirbears?.[0]?.id || null;
-
       // Create ride booking via API
-      const response = await fetch("/api/rides/create", {
+      const response = await fetch("/api/rides", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          pickup_spot_id: pickupSpot.id,
-          dropoff_spot_id: destinationSpot.id,
-          airbear_id: airbearId,
+          userId: user.id,
+          pickupSpotId: pickupSpot.id,
+          dropoffSpotId: destinationSpot.id,
           fare,
           distance,
         }),
