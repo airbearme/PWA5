@@ -1,5 +1,14 @@
 // Learn more: https://github.com/testing-library/jest-dom
 import '@testing-library/jest-dom'
+import { TextEncoder, TextDecoder } from 'node:util'
+import fetch from 'node-fetch'
+import { TransformStream } from 'node:stream/web'
+
+// Polyfills for ESM/hybrid environment
+global.TextEncoder = TextEncoder
+global.TextDecoder = TextDecoder
+global.fetch = fetch
+global.TransformStream = TransformStream
 
 // Mock Next.js router
 jest.mock('next/navigation', () => ({
