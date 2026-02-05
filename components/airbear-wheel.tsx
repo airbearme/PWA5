@@ -31,6 +31,7 @@ export default function AirbearWheel({
 
   return (
     <div
+      aria-hidden="true"
       className={cn(
         "airbear-wheel relative",
         sizeClasses[size],
