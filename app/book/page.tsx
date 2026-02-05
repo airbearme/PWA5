@@ -93,11 +93,13 @@ export default function BookRidePage() {
     if (pickupId && spots.length > 0) {
       const spot = spots.find((s) => s.id === pickupId);
       // Only update if it's a different spot to prevent redundant renders
+      // We exclude pickupSpot from dependencies to allow manual user overrides
       if (spot && pickupSpot?.id !== pickupId) {
         setPickupSpot(spot);
       }
     }
-  }, [searchParams, spots, pickupSpot]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [searchParams, spots]); // intentionally omit pickupSpot to allow manual changes
 
   const handleBookRide = async () => {
     if (!pickupSpot || !destinationSpot || !user) {
