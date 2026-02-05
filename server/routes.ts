@@ -8,6 +8,7 @@ import {
 	insertPaymentSchema,
 	insertRideSchema,
 	rideUpdateSchema,
+	updateProfileSchema,
 } from "../shared/schema.js";
 import { storage } from "./storage.js";
 
@@ -216,9 +217,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
 					});
 			}
 
-			// Sentinel: Use a restricted schema for sync-profile to prevent privilege escalation
-			const syncProfileSchema = profileSchema.omit({ role: true });
-			const payload = syncProfileSchema.parse(req.body);
+			// Sentinel: Use a restricted schema for sync-profile to prevent privilege escalation.
+			// The updateProfileSchema explicitly omits the 'role' field to prevent unauthorized privilege escalation.
+			const payload = updateProfileSchema.parse(req.body);
 			const profile = await ensureUserProfile(payload);
 			res.json({ user: profile });
 		} catch (error: any) {

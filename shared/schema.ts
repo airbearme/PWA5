@@ -227,6 +227,14 @@ export const updateUserSchema = insertUserSchema.omit({
 	stripeSubscriptionId: true,
 });
 
+export const updateProfileSchema = z.object({
+	id: z.string().optional(),
+	email: z.string().optional().nullable(),
+	username: z.string().min(1),
+	fullName: z.string().optional().nullable(),
+	avatarUrl: z.string().optional().nullable(),
+});
+
 export const rideUpdateSchema = z.object({
 	status: z.enum([
 		"pending",
