@@ -70,12 +70,12 @@ async function main() {
 	// 1. Environment Validation
 	log("\n📋 Phase 1: Environment & Configuration", "bright");
 	runTest("Environment Variables", "node scripts/validate-env.js", true);
-	runTest("TypeScript Type Check", "npm run type-check", true);
-	runTest("ESLint", "npm run lint", false);
+	runTest("TypeScript Type Check", "pnpm run type-check", true);
+	runTest("ESLint", "pnpm run lint", false);
 
 	// 2. Build Validation
 	log("\n📦 Phase 2: Build & Compilation", "bright");
-	runTest("Next.js Build", "npm run build", true);
+	runTest("Next.js Build", "pnpm run build", true);
 
 	// Check build output
 	if (checkFileExists(".next")) {
@@ -88,8 +88,8 @@ async function main() {
 
 	// 3. Unit Tests
 	log("\n🔬 Phase 3: Unit Tests", "bright");
-	if (checkFileExists("jest.config.js")) {
-		runTest("Jest Unit Tests", "npm run test -- --passWithNoTests", false);
+	if (checkFileExists("jest.config.cjs") || checkFileExists("jest.config.js")) {
+		runTest("Jest Unit Tests", "pnpm run test -- --passWithNoTests", false);
 	} else {
 		log("⚠️  Jest not configured, skipping unit tests", "yellow");
 		results.warnings.push("Unit Tests (Jest not configured)");
@@ -100,7 +100,7 @@ async function main() {
 	if (checkFileExists("tests/integration.test.ts")) {
 		runTest(
 			"Integration Tests",
-			"npm run test -- tests/integration.test.ts",
+			"pnpm run test -- tests/integration.test.ts",
 			false,
 		);
 	} else {
@@ -111,7 +111,7 @@ async function main() {
 	// 5. API Tests
 	log("\n🌐 Phase 5: API Tests", "bright");
 	if (checkFileExists("tests/api.test.ts")) {
-		runTest("API Tests", "npm run test -- tests/api.test.ts", false);
+		runTest("API Tests", "pnpm run test -- tests/api.test.ts", false);
 	} else {
 		log("⚠️  API tests not found", "yellow");
 		results.warnings.push("API Tests");
@@ -122,7 +122,7 @@ async function main() {
 	if (checkFileExists("playwright.config.ts")) {
 		runTest(
 			"Playwright E2E Tests",
-			"npm run test:e2e -- --reporter=list",
+			"pnpm run test:e2e -- --reporter=list",
 			false,
 		);
 	} else {
