@@ -11,9 +11,13 @@
 
 import Image from "next/image";
 import Link from "next/link";
+import dynamic from "next/dynamic";
 import { Button } from "@/components/ui/button";
 import { MapPin, ShoppingBag, Leaf, Zap, Crown } from "lucide-react";
-import AirbearWheel from "@/components/airbear-wheel";
+
+const AirbearWheel = dynamic(() => import("@/components/airbear-wheel"), {
+  ssr: false,
+});
 
 export default function HomePage() {
   return (
