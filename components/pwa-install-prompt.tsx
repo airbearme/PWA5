@@ -98,9 +98,13 @@ export default function PWAInstallPrompt() {
     }
   };
 
-  const handleDismiss = () => {
+  const handlePermanentDismiss = () => {
     setShowPrompt(false);
     localStorage.setItem("pwa-install-dismissed", "true");
+  };
+
+  const handleDismiss = () => {
+    setShowPrompt(false);
   };
 
   if (!showPrompt || isInstalled) {
@@ -155,7 +159,7 @@ export default function PWAInstallPrompt() {
 
           {/* Dismiss link */}
           <button
-            onClick={handleDismiss}
+            onClick={handlePermanentDismiss}
             className="w-full mt-2 text-xs text-center text-muted-foreground hover:text-foreground transition-colors"
           >
             Maybe later
