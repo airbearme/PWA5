@@ -2,8 +2,10 @@
  * Error Boundary Component Tests
  */
 
+/// <reference types="@testing-library/jest-dom" />
 import { describe, it, expect, jest } from '@jest/globals';
 import { render, screen } from '@testing-library/react';
+import '@testing-library/jest-dom';
 import { ErrorBoundary } from '@/components/error-boundary';
 
 // Mock the error logger
@@ -21,7 +23,7 @@ describe('ErrorBoundary', () => {
       </ErrorBoundary>
     );
 
-    expect(screen.getByText('Test Content')).toBeInTheDocument();
+    (expect(screen.getByText('Test Content')) as any).toBeInTheDocument();
   });
 
   it('renders error UI when error occurs', () => {
@@ -35,7 +37,7 @@ describe('ErrorBoundary', () => {
       </ErrorBoundary>
     );
 
-    expect(screen.getByText(/Oops! Something went wrong/i)).toBeInTheDocument();
+    (expect(screen.getByText(/Oops! Something went wrong/i)) as any).toBeInTheDocument();
   });
 });
 

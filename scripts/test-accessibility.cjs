@@ -17,7 +17,7 @@ try {
 } catch {
 	console.log("⚠️  pa11y not found. Installing...");
 	try {
-		execSync("npm install -g pa11y", { stdio: "inherit" });
+		execSync("pnpm add -g pa11y", { stdio: "inherit" });
 	} catch {
 		console.log("❌ Failed to install pa11y. Skipping accessibility tests.");
 		process.exit(0);
