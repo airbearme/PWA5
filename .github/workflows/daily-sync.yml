@@ -51,7 +51,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Install Vercel CLI
-        run: npm install --global vercel@latest
+        run: pnpm add -g vercel@latest
 
       - name: Verify Vercel environment variables
         run: |
@@ -71,7 +71,6 @@ jobs:
           echo "- ✅ API health endpoint" >> $GITHUB_STEP_SUMMARY
           echo "- ✅ UI assets loading" >> $GITHUB_STEP_SUMMARY
           echo "- ✅ Vercel secrets verification" >> $GITHUB_STEP_SUMMARY
-
 
 
 
