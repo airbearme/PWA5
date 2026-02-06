@@ -145,6 +145,8 @@ jobs:
 
       - name: Re-run build after repair
         run: pnpm run build || echo "Build still failing after repair"
+        env:
+          NODE_ENV: production
 
   # Deploy to Vercel
   deploy:

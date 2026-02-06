@@ -78,7 +78,7 @@ jobs:
       
       - name: Run Lighthouse CI
         run: |
-          npm install -g @lhci/cli || true
+          pnpm add -g @lhci/cli || true
           lhci autorun || echo "Lighthouse CI not configured"
       
       - name: Check bundle size

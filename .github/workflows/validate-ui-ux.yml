@@ -149,4 +149,3 @@ jobs:
           echo "✅ **Mascot**: Validated" >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
           echo "All UI/UX components are properly configured!" >> $GITHUB_STEP_SUMMARY
-
