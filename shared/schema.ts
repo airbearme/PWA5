@@ -9,6 +9,7 @@ import {
 	text,
 	timestamp,
 	varchar,
+	index,
 } from "drizzle-orm/pg-core";
 import { createInsertSchema } from "drizzle-zod";
 import { z } from "zod";
@@ -110,6 +111,11 @@ export const rides = pgTable("rides", {
 	acceptedAt: timestamp("accepted_at"),
 	startedAt: timestamp("started_at"),
 	completedAt: timestamp("completed_at"),
+}, (table) => {
+	return {
+		// Optimized index for user ride history lookups
+		userIdRequestedAtIndex: index("rides_user_id_requested_at_idx").on(table.userId, table.requestedAt.desc()),
+	};
 });
 
 // Bodega items table
@@ -152,6 +158,11 @@ export const orders = pgTable("orders", {
 	status: text("status").notNull().default("pending"),
 	notes: text("notes"),
 	createdAt: timestamp("created_at").notNull().default(sql`now()`),
+}, (table) => {
+	return {
+		// Optimized index for user order history lookups
+		userIdCreatedAtIndex: index("orders_user_id_created_at_idx").on(table.userId, table.createdAt.desc()),
+	};
 });
 
 // Payments table
@@ -169,6 +180,11 @@ export const payments = pgTable("payments", {
 	paymentMethod: paymentMethodEnum("payment_method").notNull(),
 	metadata: jsonb("metadata"),
 	createdAt: timestamp("created_at").notNull().default(sql`now()`),
+}, (table) => {
+	return {
+		// Optimized index for user payment history lookups
+		userIdCreatedAtIndex: index("payments_user_id_created_at_idx").on(table.userId, table.createdAt.desc()),
+	};
 });
 
 // Insert schemas

@@ -57,9 +57,12 @@ CREATE TABLE IF NOT EXISTS public.rides (
   status TEXT DEFAULT 'pending' CHECK (status IN ('pending', 'booked', 'in_progress', 'completed', 'cancelled')),
   fare DECIMAL(10, 2),
   distance_km DECIMAL(10, 2),
-  created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+  requested_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
   completed_at TIMESTAMP WITH TIME ZONE
 );
+
+-- Indexes for performance
+CREATE INDEX IF NOT EXISTS rides_user_id_requested_at_idx ON public.rides (user_id, requested_at DESC);
 
 -- Payments Table
 CREATE TABLE IF NOT EXISTS public.payments (
@@ -205,6 +208,8 @@ CREATE TABLE IF NOT EXISTS public.orders (
   created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
 );
 
+CREATE INDEX IF NOT EXISTS orders_user_id_created_at_idx ON public.orders (user_id, created_at DESC);
+
 -- Payments Table (Updated)
 CREATE TABLE IF NOT EXISTS public.payments (
   id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
@@ -219,6 +224,8 @@ CREATE TABLE IF NOT EXISTS public.payments (
   metadata JSONB,
   created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
 );
+
+CREATE INDEX IF NOT EXISTS payments_user_id_created_at_idx ON public.payments (user_id, created_at DESC);
 
 -- Advertising Packages Table
 CREATE TABLE IF NOT EXISTS public.advertising_packages (
