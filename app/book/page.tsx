@@ -11,6 +11,7 @@ import { Label } from "@/components/ui/label";
 import { useToast } from "@/hooks/use-toast";
 import { MapPin, Navigation, DollarSign, Clock, ArrowRight, Loader2 } from "lucide-react";
 import Link from "next/link";
+import { motion, AnimatePresence } from "framer-motion";
 import type { Spot } from "@/components/map-view";
 
 export default function BookRidePage() {
@@ -234,10 +235,13 @@ export default function BookRidePage() {
               ) : (
                 <div className={`space-y-2 max-h-60 overflow-y-auto ${booking ? "opacity-50 cursor-not-allowed" : ""}`}>
                   {spots.map((spot) => (
-                    <div
+                    <button
                       key={spot.id}
-                      className="p-3 rounded-lg border hover:bg-muted cursor-pointer transition-colors"
+                      type="button"
+                      className="w-full text-left p-3 rounded-lg border hover:bg-muted focus-visible:ring-2 focus-visible:ring-emerald-500 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                       onClick={() => !booking && setPickupSpot(spot)}
+                      disabled={booking}
+                      aria-label={`Select ${spot.name} as pickup location`}
                     >
                       <p className="font-medium">{spot.name}</p>
                       {spot.description && (
@@ -245,7 +249,7 @@ export default function BookRidePage() {
                           {spot.description}
                         </p>
                       )}
-                    </div>
+                    </button>
                   ))}
                 </div>
               )}
@@ -287,10 +291,13 @@ export default function BookRidePage() {
                   {spots
                     .filter((s) => s.id !== pickupSpot?.id)
                     .map((spot) => (
-                      <div
+                      <button
                         key={spot.id}
-                        className="p-3 rounded-lg border hover:bg-muted cursor-pointer transition-colors"
+                        type="button"
+                        className="w-full text-left p-3 rounded-lg border hover:bg-muted focus-visible:ring-2 focus-visible:ring-emerald-500 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                         onClick={() => !booking && setDestinationSpot(spot)}
+                        disabled={booking}
+                        aria-label={`Select ${spot.name} as destination`}
                       >
                         <p className="font-medium">{spot.name}</p>
                         {spot.description && (
@@ -298,7 +305,7 @@ export default function BookRidePage() {
                             {spot.description}
                           </p>
                         )}
-                      </div>
+                      </button>
                     ))}
                 </div>
               )}
@@ -307,12 +314,19 @@ export default function BookRidePage() {
         </div>
 
         {/* Ride Summary */}
-        {pickupSpot && destinationSpot && (
-          <Card className="mt-6 p-6 hover-lift">
-            <CardHeader>
-              <CardTitle>Ride Summary</CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-4">
+        <AnimatePresence>
+          {pickupSpot && destinationSpot && (
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -20 }}
+              transition={{ duration: 0.3 }}
+            >
+              <Card className="mt-6 p-6 hover-lift" aria-live="polite">
+                <CardHeader>
+                  <CardTitle>Ride Summary</CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-4">
               <div className="flex items-center justify-between p-4 bg-muted/50 rounded-lg">
                 <div className="flex items-center gap-3">
                   <MapPin className="w-5 h-5 text-emerald-600" />
@@ -378,9 +392,11 @@ export default function BookRidePage() {
                 "Book Ride & Continue to Payment"
               )}
               </Button>
-            </CardContent>
-          </Card>
-        )}
+                </CardContent>
+              </Card>
+            </motion.div>
+          )}
+        </AnimatePresence>
 
         {/* Back to Map */}
         <div className="mt-6 text-center">
