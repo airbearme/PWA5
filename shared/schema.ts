@@ -214,6 +214,32 @@ export const insertPaymentSchema = createInsertSchema(payments).omit({
 	createdAt: true,
 });
 
+// Security Hardened schemas for updates
+export const updateProfileSchema = insertUserSchema
+	.omit({
+		role: true,
+		ecoPoints: true,
+		totalRides: true,
+		co2Saved: true,
+		hasCeoTshirt: true,
+		tshirtPurchaseDate: true,
+		stripeCustomerId: true,
+		stripeSubscriptionId: true,
+	})
+	.extend({
+		email: z.string().optional().nullable(),
+	});
+
+export const rideUpdateSchema = z.object({
+	status: z.enum([
+		"pending",
+		"accepted",
+		"in_progress",
+		"completed",
+		"cancelled",
+	]),
+});
+
 // Types
 export type User = typeof users.$inferSelect;
 export type InsertUser = z.infer<typeof insertUserSchema>;
