@@ -241,7 +241,6 @@ export default function BookRidePage() {
                       className="w-full text-left p-3 rounded-lg border hover:bg-muted focus-visible:ring-2 focus-visible:ring-emerald-500 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                       onClick={() => !booking && setPickupSpot(spot)}
                       disabled={booking}
-                      aria-label={`Select ${spot.name} as pickup location`}
                     >
                       <p className="font-medium">{spot.name}</p>
                       {spot.description && (
@@ -297,7 +296,6 @@ export default function BookRidePage() {
                         className="w-full text-left p-3 rounded-lg border hover:bg-muted focus-visible:ring-2 focus-visible:ring-emerald-500 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                         onClick={() => !booking && setDestinationSpot(spot)}
                         disabled={booking}
-                        aria-label={`Select ${spot.name} as destination`}
                       >
                         <p className="font-medium">{spot.name}</p>
                         {spot.description && (
