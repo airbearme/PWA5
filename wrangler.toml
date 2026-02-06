@@ -3,7 +3,7 @@ main = "functions/_middleware.js"
 compatibility_date = "2023-10-16"
 
 [build]
-  command = "npm run build"
+  command = "pnpm run build"
   publish = "dist/public"
 
 [build.upload]
