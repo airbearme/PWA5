@@ -20,9 +20,8 @@
 		],
 		"paths": {
 			"@/*": ["./*"]
-		},
-		"types": ["jest", "@testing-library/jest-dom"]
+		}
 	},
 	"include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", ".next/types/**/*.ts"],
-	"exclude": ["node_modules", "client", "server", "functions", "supabase"]
+	"exclude": ["node_modules", "client", "server", "functions", "supabase", "__tests__", "tests"]
 }

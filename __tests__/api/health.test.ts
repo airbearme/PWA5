@@ -33,8 +33,8 @@ describe('Health API', () => {
     const response = await GET();
     const data = await response.json();
 
-    expect(data.status).toBe('healthy');
-    expect(data.services.database).toBe('healthy');
+    expect((data as any).status).toBe('healthy');
+    expect((data as any).services.database).toBe('healthy');
   });
 });
 
