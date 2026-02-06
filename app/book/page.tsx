@@ -1,17 +1,39 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
+import Image from "next/image";
 import { useAuthContext } from "@/components/auth-provider";
 import { getSupabaseClient } from "@/lib/supabase/client";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
 import { useToast } from "@/hooks/use-toast";
 import { MapPin, Navigation, DollarSign, Clock, ArrowRight, Loader2 } from "lucide-react";
 import Link from "next/link";
 import type { Spot } from "@/components/map-view";
+
+const calculateDistance = (spot1: Spot, spot2: Spot): number => {
+  const R = 6371; // Earth's radius in km
+  const lat1 = spot1.latitude * (Math.PI / 180);
+  const lat2 = spot2.latitude * (Math.PI / 180);
+  const deltaLat = (spot2.latitude - spot1.latitude) * (Math.PI / 180);
+  const deltaLon = (spot2.longitude - spot1.longitude) * (Math.PI / 180);
+
+  const a =
+    Math.sin(deltaLat / 2) * Math.sin(deltaLat / 2) +
+    Math.cos(lat1) *
+      Math.cos(lat2) *
+      Math.sin(deltaLon / 2) *
+      Math.sin(deltaLon / 2);
+  const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+
+  return R * c;
+};
+
+const estimateFare = (_distance: number): number => {
+  // Flat rate $4.00 for all rides
+  return 4.0;
+};
 
 export default function BookRidePage() {
   const { user, loading: authLoading } = useAuthContext();
@@ -42,13 +64,6 @@ export default function BookRidePage() {
 
         if (error) throw error;
         setSpots(data || []);
-
-        // Check for pickup spot from URL
-        const pickupId = searchParams.get("pickup");
-        if (pickupId && data) {
-          const spot = data.find((s) => s.id === pickupId);
-          if (spot) setPickupSpot(spot);
-        }
       } catch (error) {
         console.error("Error loading spots:", error);
         toast({
@@ -62,30 +77,19 @@ export default function BookRidePage() {
     };
 
     loadSpots();
-  }, [searchParams, toast]);
+  }, [toast]);
 
-  const calculateDistance = (spot1: Spot, spot2: Spot): number => {
-    const R = 6371; // Earth's radius in km
-    const lat1 = spot1.latitude * (Math.PI / 180);
-    const lat2 = spot2.latitude * (Math.PI / 180);
-    const deltaLat = (spot2.latitude - spot1.latitude) * (Math.PI / 180);
-    const deltaLon = (spot2.longitude - spot1.longitude) * (Math.PI / 180);
-
-    const a =
-      Math.sin(deltaLat / 2) * Math.sin(deltaLat / 2) +
-      Math.cos(lat1) *
-        Math.cos(lat2) *
-        Math.sin(deltaLon / 2) *
-        Math.sin(deltaLon / 2);
-    const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
-
-    return R * c;
-  };
-
-  const estimateFare = (distance: number): number => {
-    // Flat rate $4.00 for all rides
-    return 4.0;
-  };
+  // Handle pickup spot from URL once spots are loaded
+  // We only sync if no pickup spot is currently selected to avoid overwriting manual changes
+  useEffect(() => {
+    if (spots.length > 0 && !pickupSpot) {
+      const pickupId = searchParams.get("pickup");
+      if (pickupId) {
+        const spot = spots.find((s) => s.id === pickupId);
+        if (spot) setPickupSpot(spot);
+      }
+    }
+  }, [searchParams, spots, pickupSpot]);
 
   const handleBookRide = async () => {
     if (!pickupSpot || !destinationSpot || !user) {
@@ -115,14 +119,16 @@ export default function BookRidePage() {
       const airbearId = availableAirbears?.[0]?.id || null;
 
       // Create ride booking via API
-      const response = await fetch("/api/rides/create", {
+      const response = await fetch("/api/rides", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          pickup_spot_id: pickupSpot.id,
-          dropoff_spot_id: destinationSpot.id,
-          fare,
-          distance,
+          userId: user.id,
+          pickupSpotId: pickupSpot.id,
+          dropoffSpotId: destinationSpot.id,
+          airbearId,
+          fare: fare.toString(),
+          distance: distance.toString(),
         }),
       });
 
@@ -152,21 +158,27 @@ export default function BookRidePage() {
     }
   };
 
-  const distance = pickupSpot && destinationSpot
-    ? calculateDistance(pickupSpot, destinationSpot)
-    : 0;
-  const fare = estimateFare(distance);
+  const distance = useMemo(() =>
+    pickupSpot && destinationSpot
+      ? calculateDistance(pickupSpot, destinationSpot)
+      : 0,
+    [pickupSpot, destinationSpot]
+  );
+
+  const fare = useMemo(() => estimateFare(distance), [distance]);
 
   if (authLoading || loading) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-emerald-950 via-lime-950 to-amber-950">
         <div className="text-center">
           <div className="flex justify-center mb-6">
-            <div className="w-32 h-32 rounded-full border-4 border-emerald-400/50 dark:border-emerald-500/50 bg-gradient-to-br from-emerald-500/20 to-lime-500/20 backdrop-blur-sm shadow-2xl hover-lift animate-float overflow-hidden">
-              <img
+            <div className="w-32 h-32 relative rounded-full border-4 border-emerald-400/50 dark:border-emerald-500/50 bg-gradient-to-br from-emerald-500/20 to-lime-500/20 backdrop-blur-sm shadow-2xl hover-lift animate-float overflow-hidden">
+              <Image
                 src="/airbear-mascot.png"
                 alt="AirBear Mascot"
-                className="w-full h-full object-cover rounded-full animate-pulse-glow"
+                fill
+                priority
+                className="object-cover rounded-full animate-pulse-glow"
               />
             </div>
           </div>
@@ -184,11 +196,13 @@ export default function BookRidePage() {
         {/* Header */}
         <div className="text-center mb-8">
           <div className="flex justify-center mb-4">
-            <div className="w-24 h-24 rounded-full border-4 border-emerald-400/50 dark:border-emerald-500/50 bg-gradient-to-br from-emerald-500/20 to-lime-500/20 backdrop-blur-sm shadow-2xl hover-lift animate-float overflow-hidden">
-              <img
+            <div className="w-24 h-24 relative rounded-full border-4 border-emerald-400/50 dark:border-emerald-500/50 bg-gradient-to-br from-emerald-500/20 to-lime-500/20 backdrop-blur-sm shadow-2xl hover-lift animate-float overflow-hidden">
+              <Image
                 src="/airbear-mascot.png"
                 alt="AirBear Mascot"
-                className="w-full h-full object-cover rounded-full animate-pulse-glow"
+                fill
+                priority
+                className="object-cover rounded-full animate-pulse-glow"
               />
             </div>
           </div>
