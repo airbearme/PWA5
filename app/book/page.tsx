@@ -1,43 +1,17 @@
 "use client";
 
-import { useState, useEffect, useMemo } from "react";
+import { useState, useEffect } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
-import Image from "next/image";
 import { useAuthContext } from "@/components/auth-provider";
 import { getSupabaseClient } from "@/lib/supabase/client";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 import { useToast } from "@/hooks/use-toast";
 import { MapPin, Navigation, DollarSign, Clock, ArrowRight, Loader2 } from "lucide-react";
 import Link from "next/link";
 import type { Spot } from "@/components/map-view";
-
-/**
- * ⚡ Bolt Optimization: Pure utility functions moved outside component scope
- * to prevent redundant re-creation on every render.
- */
-const calculateDistance = (spot1: Spot, spot2: Spot): number => {
-  const R = 6371; // Earth's radius in km
-  const lat1 = spot1.latitude * (Math.PI / 180);
-  const lat2 = spot2.latitude * (Math.PI / 180);
-  const deltaLat = (spot2.latitude - spot1.latitude) * (Math.PI / 180);
-  const deltaLon = (spot2.longitude - spot1.longitude) * (Math.PI / 180);
-
-  const a =
-    Math.sin(deltaLat / 2) * Math.sin(deltaLat / 2) +
-    Math.cos(lat1) *
-      Math.cos(lat2) *
-      Math.sin(deltaLon / 2) *
-      Math.sin(deltaLon / 2);
-  const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
-
-  return R * c;
-};
-
-const estimateFare = (_distance: number): number => {
-  // Flat rate $4.00 for all rides
-  return 4.0;
-};
 
 export default function BookRidePage() {
   const { user, loading: authLoading } = useAuthContext();
@@ -56,10 +30,6 @@ export default function BookRidePage() {
     }
   }, [user, authLoading, router]);
 
-  /**
-   * ⚡ Bolt Optimization: Separated data fetching from URL synchronization.
-   * This effect only runs once on mount to fetch spots.
-   */
   useEffect(() => {
     const loadSpots = async () => {
       try {
@@ -72,6 +42,13 @@ export default function BookRidePage() {
 
         if (error) throw error;
         setSpots(data || []);
+
+        // Check for pickup spot from URL
+        const pickupId = searchParams.get("pickup");
+        if (pickupId && data) {
+          const spot = data.find((s) => s.id === pickupId);
+          if (spot) setPickupSpot(spot);
+        }
       } catch (error) {
         console.error("Error loading spots:", error);
         toast({
@@ -85,25 +62,30 @@ export default function BookRidePage() {
     };
 
     loadSpots();
-  }, [toast]);
+  }, [searchParams, toast]);
 
-  /**
-   * ⚡ Bolt Optimization: Dedicated effect for URL synchronization.
-   * Decoupled from spot fetching to prevent redundant network requests.
-   * Only runs when spots are first loaded to avoid overwriting manual selections.
-   */
-  useEffect(() => {
-    if (spots.length > 0) {
-      const pickupId = searchParams.get("pickup");
-      if (pickupId) {
-        const spot = spots.find((s) => s.id === pickupId);
-        if (spot) {
-          setPickupSpot(spot);
-        }
-      }
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [spots]);
+  const calculateDistance = (spot1: Spot, spot2: Spot): number => {
+    const R = 6371; // Earth's radius in km
+    const lat1 = spot1.latitude * (Math.PI / 180);
+    const lat2 = spot2.latitude * (Math.PI / 180);
+    const deltaLat = (spot2.latitude - spot1.latitude) * (Math.PI / 180);
+    const deltaLon = (spot2.longitude - spot1.longitude) * (Math.PI / 180);
+
+    const a =
+      Math.sin(deltaLat / 2) * Math.sin(deltaLat / 2) +
+      Math.cos(lat1) *
+        Math.cos(lat2) *
+        Math.sin(deltaLon / 2) *
+        Math.sin(deltaLon / 2);
+    const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+
+    return R * c;
+  };
+
+  const estimateFare = (distance: number): number => {
+    // Flat rate $4.00 for all rides
+    return 4.0;
+  };
 
   const handleBookRide = async () => {
     if (!pickupSpot || !destinationSpot || !user) {
@@ -130,8 +112,7 @@ export default function BookRidePage() {
         .eq("is_charging", false)
         .limit(1);
 
-      // _airbearId preserved for potential future logic or logging as in original code
-      const _airbearId = availableAirbears?.[0]?.id || null;
+      const airbearId = availableAirbears?.[0]?.id || null;
 
       // Create ride booking via API
       const response = await fetch("/api/rides/create", {
@@ -171,30 +152,21 @@ export default function BookRidePage() {
     }
   };
 
-  /**
-   * ⚡ Bolt Optimization: Memoized derived state to prevent redundant calculations on re-renders.
-   */
-  const distance = useMemo(() => {
-    return pickupSpot && destinationSpot
-      ? calculateDistance(pickupSpot, destinationSpot)
-      : 0;
-  }, [pickupSpot, destinationSpot]);
-
-  const fare = useMemo(() => estimateFare(distance), [distance]);
+  const distance = pickupSpot && destinationSpot
+    ? calculateDistance(pickupSpot, destinationSpot)
+    : 0;
+  const fare = estimateFare(distance);
 
   if (authLoading || loading) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-emerald-950 via-lime-950 to-amber-950">
         <div className="text-center">
           <div className="flex justify-center mb-6">
-            <div className="w-32 h-32 rounded-full border-4 border-emerald-400/50 dark:border-emerald-500/50 bg-gradient-to-br from-emerald-500/20 to-lime-500/20 backdrop-blur-sm shadow-2xl hover-lift animate-float overflow-hidden relative">
-              {/* ⚡ Bolt Optimization: Using Next.js Image for automatic optimization and lazy loading */}
-              <Image
+            <div className="w-32 h-32 rounded-full border-4 border-emerald-400/50 dark:border-emerald-500/50 bg-gradient-to-br from-emerald-500/20 to-lime-500/20 backdrop-blur-sm shadow-2xl hover-lift animate-float overflow-hidden">
+              <img
                 src="/airbear-mascot.png"
                 alt="AirBear Mascot"
-                fill
-                priority
-                className="object-cover rounded-full animate-pulse-glow"
+                className="w-full h-full object-cover rounded-full animate-pulse-glow"
               />
             </div>
           </div>
@@ -212,12 +184,11 @@ export default function BookRidePage() {
         {/* Header */}
         <div className="text-center mb-8">
           <div className="flex justify-center mb-4">
-            <div className="w-24 h-24 rounded-full border-4 border-emerald-400/50 dark:border-emerald-500/50 bg-gradient-to-br from-emerald-500/20 to-lime-500/20 backdrop-blur-sm shadow-2xl hover-lift animate-float overflow-hidden relative">
-              <Image
+            <div className="w-24 h-24 rounded-full border-4 border-emerald-400/50 dark:border-emerald-500/50 bg-gradient-to-br from-emerald-500/20 to-lime-500/20 backdrop-blur-sm shadow-2xl hover-lift animate-float overflow-hidden">
+              <img
                 src="/airbear-mascot.png"
                 alt="AirBear Mascot"
-                fill
-                className="object-cover rounded-full animate-pulse-glow"
+                className="w-full h-full object-cover rounded-full animate-pulse-glow"
               />
             </div>
           </div>
