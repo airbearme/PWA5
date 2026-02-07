@@ -108,7 +108,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
 					});
 			}
 
+			// Sentinel: Prevent mass assignment of 'role' during registration
 			const userData = profileSchema
+				.omit({ role: true })
 				.extend({ password: z.string().min(6) })
 				.parse(req.body);
 			const { data, error } = await supabaseAdmin.auth.admin.createUser({
@@ -117,7 +119,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
 				email_confirm: true,
 				user_metadata: {
 					username: userData.username,
-					role: userData.role || "user",
+					role: "user",
 					fullName: userData.fullName,
 				},
 			});
@@ -127,10 +129,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
 				email: userData.email,
 				username: userData.username,
 				fullName: userData.fullName,
-				role:
-					(data.user?.user_metadata?.role as "user" | "driver" | "admin") ||
-					userData.role ||
-					"user",
+				role: "user",
 				avatarUrl: null,
 			});
 
@@ -215,7 +214,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
 					});
 			}
 
-			const payload = profileSchema.parse(req.body);
+			// Sentinel: Prevent mass assignment of 'role' by omitting it from the sync payload
+			const payload = profileSchema.omit({ role: true }).parse(req.body);
 			const profile = await ensureUserProfile(payload);
 			res.json({ user: profile });
 		} catch (error: any) {
