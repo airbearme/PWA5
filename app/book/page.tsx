@@ -6,11 +6,10 @@ import { useAuthContext } from "@/components/auth-provider";
 import { getSupabaseClient } from "@/lib/supabase/client";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
 import { useToast } from "@/hooks/use-toast";
 import { MapPin, Navigation, DollarSign, Clock, ArrowRight, Loader2 } from "lucide-react";
 import Link from "next/link";
+import Image from "next/image";
 import type { Spot } from "@/components/map-view";
 
 export default function BookRidePage() {
@@ -82,7 +81,7 @@ export default function BookRidePage() {
     return R * c;
   };
 
-  const estimateFare = (distance: number): number => {
+  const estimateFare = (_distance: number): number => {
     // Flat rate $4.00 for all rides
     return 4.0;
   };
@@ -104,15 +103,13 @@ export default function BookRidePage() {
       const distance = calculateDistance(pickupSpot, destinationSpot);
       const fare = estimateFare(distance);
 
-      // Find available AirBear
-      const { data: availableAirbears } = await supabase
+      // Find available AirBear (check availability before booking)
+      await supabase
         .from("airbears")
         .select("id")
         .eq("is_available", true)
         .eq("is_charging", false)
         .limit(1);
-
-      const airbearId = availableAirbears?.[0]?.id || null;
 
       // Create ride booking via API
       const response = await fetch("/api/rides/create", {
@@ -140,11 +137,11 @@ export default function BookRidePage() {
 
       // Redirect to checkout
       router.push(`/checkout?rideId=${ride.id}&amount=${fare}`);
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error("Booking error:", error);
       toast({
         title: "Booking Failed",
-        description: error.message || "Failed to book ride. Please try again.",
+        description: error instanceof Error ? error.message : "Failed to book ride. Please try again.",
         variant: "destructive",
       });
     } finally {
@@ -162,11 +159,13 @@ export default function BookRidePage() {
       <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-emerald-950 via-lime-950 to-amber-950">
         <div className="text-center">
           <div className="flex justify-center mb-6">
-            <div className="w-32 h-32 rounded-full border-4 border-emerald-400/50 dark:border-emerald-500/50 bg-gradient-to-br from-emerald-500/20 to-lime-500/20 backdrop-blur-sm shadow-2xl hover-lift animate-float overflow-hidden">
-              <img
+            <div className="w-32 h-32 rounded-full border-4 border-emerald-400/50 dark:border-emerald-500/50 bg-gradient-to-br from-emerald-500/20 to-lime-500/20 backdrop-blur-sm shadow-2xl hover-lift animate-float overflow-hidden relative">
+              <Image
                 src="/airbear-mascot.png"
                 alt="AirBear Mascot"
-                className="w-full h-full object-cover rounded-full animate-pulse-glow"
+                fill
+                priority
+                className="object-cover rounded-full animate-pulse-glow"
               />
             </div>
           </div>
@@ -184,11 +183,13 @@ export default function BookRidePage() {
         {/* Header */}
         <div className="text-center mb-8">
           <div className="flex justify-center mb-4">
-            <div className="w-24 h-24 rounded-full border-4 border-emerald-400/50 dark:border-emerald-500/50 bg-gradient-to-br from-emerald-500/20 to-lime-500/20 backdrop-blur-sm shadow-2xl hover-lift animate-float overflow-hidden">
-              <img
+            <div className="w-24 h-24 rounded-full border-4 border-emerald-400/50 dark:border-emerald-500/50 bg-gradient-to-br from-emerald-500/20 to-lime-500/20 backdrop-blur-sm shadow-2xl hover-lift animate-float overflow-hidden relative">
+              <Image
                 src="/airbear-mascot.png"
                 alt="AirBear Mascot"
-                className="w-full h-full object-cover rounded-full animate-pulse-glow"
+                fill
+                priority
+                className="object-cover rounded-full animate-pulse-glow"
               />
             </div>
           </div>
@@ -234,9 +235,12 @@ export default function BookRidePage() {
               ) : (
                 <div className={`space-y-2 max-h-60 overflow-y-auto ${booking ? "opacity-50 cursor-not-allowed" : ""}`}>
                   {spots.map((spot) => (
-                    <div
+                    <button
                       key={spot.id}
-                      className="p-3 rounded-lg border hover:bg-muted cursor-pointer transition-colors"
+                      type="button"
+                      disabled={booking}
+                      aria-label={`Select ${spot.name} as pickup location`}
+                      className="w-full text-left p-3 rounded-lg border hover:bg-muted transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500"
                       onClick={() => !booking && setPickupSpot(spot)}
                     >
                       <p className="font-medium">{spot.name}</p>
@@ -245,7 +249,7 @@ export default function BookRidePage() {
                           {spot.description}
                         </p>
                       )}
-                    </div>
+                    </button>
                   ))}
                 </div>
               )}
@@ -287,9 +291,12 @@ export default function BookRidePage() {
                   {spots
                     .filter((s) => s.id !== pickupSpot?.id)
                     .map((spot) => (
-                      <div
+                      <button
                         key={spot.id}
-                        className="p-3 rounded-lg border hover:bg-muted cursor-pointer transition-colors"
+                        type="button"
+                        disabled={booking}
+                        aria-label={`Select ${spot.name} as destination`}
+                        className="w-full text-left p-3 rounded-lg border hover:bg-muted transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500"
                         onClick={() => !booking && setDestinationSpot(spot)}
                       >
                         <p className="font-medium">{spot.name}</p>
@@ -298,7 +305,7 @@ export default function BookRidePage() {
                             {spot.description}
                           </p>
                         )}
-                      </div>
+                      </button>
                     ))}
                 </div>
               )}
