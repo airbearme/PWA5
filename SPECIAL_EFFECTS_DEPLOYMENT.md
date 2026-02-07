@@ -130,8 +130,8 @@ Your AirBear PWA now includes **ALL** the beautiful special effects and is ready
 #### 1. Build & Test Locally
 
 ```bash
-npm run build
-npm run start
+pnpm run build
+pnpm run start
 ```
 
 #### 2. Deploy to Vercel

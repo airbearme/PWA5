@@ -17,8 +17,8 @@
 3. Configure project:
    - **Framework Preset**: Next.js
    - **Root Directory**: ./
-   - **Build Command**: `npm run build`
-   - **Install Command**: `npm install`
+   - **Build Command**: `pnpm run build`
+   - **Install Command**: `pnpm install`
 
 ### Option B: Deploy via CLI
 

@@ -36,12 +36,12 @@ if ! command -v node &> /dev/null; then
 fi
 echo -e "${GREEN}✓ Node.js $(node --version)${NC}"
 
-# Check npm
-if ! command -v npm &> /dev/null; then
-    echo -e "${RED}✗ npm not found${NC}"
+# Check pnpm
+if ! command -v pnpm &> /dev/null; then
+    echo -e "${RED}✗ pnpm not found${NC}"
     exit 1
 fi
-echo -e "${GREEN}✓ npm $(npm --version)${NC}"
+echo -e "${GREEN}✓ pnpm $(pnpm --version)${NC}"
 
 # Check git
 if ! command -v git &> /dev/null; then
@@ -55,7 +55,7 @@ echo ""
 # Step 2: Install dependencies
 echo -e "${YELLOW}Step 2/5: Installing dependencies...${NC}"
 if [ ! -d "node_modules" ]; then
-    npm install
+    pnpm install
     echo -e "${GREEN}✓ Dependencies installed${NC}"
 else
     echo -e "${GREEN}✓ Dependencies already installed${NC}"
@@ -76,7 +76,7 @@ echo ""
 # Step 4: Sync to GitHub
 echo -e "${YELLOW}Step 4/5: Syncing to GitHub...${NC}"
 chmod +x scripts/sync-github.sh
-npm run sync:github
+pnpm run sync:github
 
 echo -e "${GREEN}✓ Code pushed to GitHub${NC}"
 echo ""
@@ -116,7 +116,7 @@ if curl -sSf https://airbear.me > /dev/null 2>&1; then
     echo "  3. Test payments: https://airbear.me/products"
     echo ""
     echo "Run comprehensive tests:"
-    echo "  npm run test:production https://airbear.me"
+    echo "  pnpm run test:production https://airbear.me"
     echo ""
 else
     echo -e "${YELLOW}"

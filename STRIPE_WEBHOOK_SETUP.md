@@ -141,7 +141,7 @@ Your webhook won't work until you have a backend server running. Here's how:
 
 1. Install Vercel CLI:
    \`\`\`bash
-   npm install -g vercel
+   pnpm install -g vercel
    \`\`\`
 
 2. Deploy backend:

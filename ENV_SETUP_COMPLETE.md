@@ -35,7 +35,7 @@ All required environment variables are properly set in `.env.local`:
 You can validate your environment variables at any time by running:
 
 ```bash
-npm run validate:env
+pnpm run validate:env
 ```
 
 Or directly:
@@ -48,7 +48,7 @@ node scripts/validate-env.js
 
 1. **For Development**: Your `.env.local` is already configured and ready to use
 2. **For Production**: Update `NEXT_PUBLIC_SITE_URL` to `https://airbear.me` in your deployment platform (Vercel)
-3. **Test the Setup**: Run `npm run dev` to start the development server
+3. **Test the Setup**: Run `pnpm run dev` to start the development server
 
 ## 🔒 Security Notes
 

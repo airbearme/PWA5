@@ -9,7 +9,7 @@ The beautiful UI/UX is **permanently embedded** in the codebase and **loads by d
 Run this to verify all UI features are present:
 
 ```bash
-npm run validate:ui
+pnpm run validate:ui
 ```
 
 ## 📋 Core Features (Always Present)
@@ -46,7 +46,7 @@ npm run validate:ui
 
 ## 🛡️ Protection
 
-- ✅ Validation script (`npm run validate:ui`)
+- ✅ Validation script (`pnpm run validate:ui`)
 - ✅ GitHub Actions workflow checks
 - ✅ Documentation in code comments
 - ✅ Safelist prevents CSS purging
@@ -54,7 +54,7 @@ npm run validate:ui
 ## 📚 Documentation
 
 - **Complete Guide:** `CORE_UI_FOUNDATION.md`
-- **Validation:** `npm run validate:ui`
+- **Validation:** `pnpm run validate:ui`
 - **Workflow:** `.github/workflows/validate-ui-ux.yml`
 
 ---

@@ -68,12 +68,12 @@
 ```bash
 bash scripts/install-testing-tools.sh
 # OR
-npm run setup:testing
+pnpm run setup:testing
 ```
 
 ### 2. Run Ultimate Validation
 ```bash
-npm run test:validate
+pnpm run test:validate
 ```
 
 This runs **all 17 test categories**:
@@ -118,25 +118,25 @@ This runs **all 17 test categories**:
 
 ```bash
 # Individual test categories
-npm run test              # Unit tests
-npm run test:unit         # Unit tests only
-npm run test:integration   # Integration tests
-npm run test:api          # API tests
-npm run test:e2e          # E2E tests
-npm run test:performance  # Performance
-npm run test:security     # Security
-npm run test:accessibility # Accessibility
-npm run test:database     # Database
-npm run test:stripe       # Stripe
-npm run test:pwa          # PWA
-npm run test:components   # Components
-npm run test:realtime     # Real-time
-npm run test:error-logger # Error logger
-npm run test:bundle       # Bundle size
+pnpm run test              # Unit tests
+pnpm run test:unit         # Unit tests only
+pnpm run test:integration   # Integration tests
+pnpm run test:api          # API tests
+pnpm run test:e2e          # E2E tests
+pnpm run test:performance  # Performance
+pnpm run test:security     # Security
+pnpm run test:accessibility # Accessibility
+pnpm run test:database     # Database
+pnpm run test:stripe       # Stripe
+pnpm run test:pwa          # PWA
+pnpm run test:components   # Components
+pnpm run test:realtime     # Real-time
+pnpm run test:error-logger # Error logger
+pnpm run test:bundle       # Bundle size
 
 # Combined
-npm run test:all          # All automated tests
-npm run test:validate     # 🚀 Ultimate validation (everything)
+pnpm run test:all          # All automated tests
+pnpm run test:validate     # 🚀 Ultimate validation (everything)
 ```
 
 ## 📁 File Structure
@@ -230,7 +230,7 @@ The ultimate validation provides:
 ## 🎓 Next Steps
 
 1. **Install tools**: `bash scripts/install-testing-tools.sh`
-2. **Run validation**: `npm run test:validate`
+2. **Run validation**: `pnpm run test:validate`
 3. **Review results**: Check output for any failures
 4. **Fix issues**: Address any failing tests
 5. **Maintain**: Write tests for new features
@@ -258,7 +258,7 @@ The ultimate validation provides:
 **Coverage**: All aspects
 **Ready**: Production-ready testing suite
 
-**Run `npm run test:validate` to validate everything!** 🚀
+**Run `pnpm run test:validate` to validate everything!** 🚀
 
 
 

@@ -6,7 +6,7 @@ This document describes the complete testing infrastructure for the AirBear PWA.
 
 ## Test Categories
 
-### 1. **Unit Tests** (`npm run test:unit`)
+### 1. **Unit Tests** (`pnpm run test:unit`)
 - Component rendering
 - Utility functions
 - Custom hooks
@@ -14,7 +14,7 @@ This document describes the complete testing infrastructure for the AirBear PWA.
 - **Framework**: Jest + React Testing Library
 - **Location**: `__tests__/`, `*.test.ts`, `*.test.tsx`
 
-### 2. **Integration Tests** (`npm run test:integration`)
+### 2. **Integration Tests** (`pnpm run test:integration`)
 - API route handlers
 - Database operations
 - Authentication flows
@@ -22,7 +22,7 @@ This document describes the complete testing infrastructure for the AirBear PWA.
 - **Framework**: Jest + Supertest
 - **Location**: `tests/integration.test.ts`
 
-### 3. **End-to-End Tests** (`npm run test:e2e`)
+### 3. **End-to-End Tests** (`pnpm run test:e2e`)
 - User flows
 - Booking process
 - Payment flows
@@ -30,7 +30,7 @@ This document describes the complete testing infrastructure for the AirBear PWA.
 - **Framework**: Playwright
 - **Location**: `tests/*.spec.ts`
 
-### 4. **Performance Tests** (`npm run test:performance`)
+### 4. **Performance Tests** (`pnpm run test:performance`)
 - Lighthouse audits
 - Bundle size analysis
 - Load time metrics
@@ -38,33 +38,33 @@ This document describes the complete testing infrastructure for the AirBear PWA.
 - **Tool**: Lighthouse CLI
 - **Script**: `scripts/test-performance.js`
 
-### 5. **Security Tests** (`npm run test:security`)
+### 5. **Security Tests** (`pnpm run test:security`)
 - Security headers validation
 - npm audit
 - Dependency vulnerabilities
 - API security
 - **Script**: `scripts/test-security-headers.js`
 
-### 6. **Accessibility Tests** (`npm run test:accessibility`)
+### 6. **Accessibility Tests** (`pnpm run test:accessibility`)
 - WCAG compliance
 - Screen reader compatibility
 - Keyboard navigation
 - **Tool**: pa11y
 - **Script**: `scripts/test-accessibility.js`
 
-### 7. **Database Tests** (`npm run test:database`)
+### 7. **Database Tests** (`pnpm run test:database`)
 - Connection validation
 - Schema verification
 - Query performance
 - **Script**: `scripts/test-database.js`
 
-### 8. **Payment Tests** (`npm run test:stripe`)
+### 8. **Payment Tests** (`pnpm run test:stripe`)
 - Stripe API connectivity
 - Key validation
 - Payment intent creation
 - **Script**: `scripts/test-stripe.js`
 
-### 9. **PWA Tests** (`npm run test:pwa`)
+### 9. **PWA Tests** (`pnpm run test:pwa`)
 - Manifest validation
 - Service worker functionality
 - Offline capabilities
@@ -72,25 +72,25 @@ This document describes the complete testing infrastructure for the AirBear PWA.
   - `scripts/test-pwa-manifest.js`
   - `scripts/test-service-worker.js`
 
-### 10. **Component Tests** (`npm run test:components`)
+### 10. **Component Tests** (`pnpm run test:components`)
 - Component structure
 - Import validation
 - Critical components check
 - **Script**: `scripts/test-components.js`
 
-### 11. **Real-time Tests** (`npm run test:realtime`)
+### 11. **Real-time Tests** (`pnpm run test:realtime`)
 - Supabase real-time subscriptions
 - WebSocket connectivity
 - Live updates
 - **Script**: `scripts/test-realtime.js`
 
-### 12. **Error Logger Tests** (`npm run test:error-logger`)
+### 12. **Error Logger Tests** (`pnpm run test:error-logger`)
 - Error logging system
 - Consent management
 - Database integration
 - **Script**: `scripts/test-error-logger.js`
 
-### 13. **Bundle Size Tests** (`npm run test:bundle`)
+### 13. **Bundle Size Tests** (`pnpm run test:bundle`)
 - JavaScript bundle analysis
 - Asset size validation
 - Code splitting verification
@@ -100,7 +100,7 @@ This document describes the complete testing infrastructure for the AirBear PWA.
 
 ### Run All Tests
 ```bash
-npm run test:validate
+pnpm run test:validate
 ```
 
 This runs the **Ultimate Validation Script** (`scripts/ultimate-validation.js`) which executes:
@@ -127,14 +127,14 @@ This runs the **Ultimate Validation Script** (`scripts/ultimate-validation.js`) 
 
 ### Initial Setup
 ```bash
-npm run setup:testing
+pnpm run setup:testing
 ```
 
 This installs all testing dependencies and creates necessary directories.
 
 ### Manual Setup
 ```bash
-npm install --save-dev \
+pnpm install --save-dev \
   @testing-library/react @testing-library/jest-dom \
   @playwright/test \
   lighthouse @lhci/cli \
@@ -146,23 +146,23 @@ npm install --save-dev \
 
 | Command | Description |
 |---------|-------------|
-| `npm run test` | Run all Jest tests |
-| `npm run test:unit` | Run unit tests only |
-| `npm run test:integration` | Run integration tests |
-| `npm run test:api` | Run API tests |
-| `npm run test:e2e` | Run Playwright E2E tests |
-| `npm run test:performance` | Run Lighthouse performance audit |
-| `npm run test:security` | Check security headers |
-| `npm run test:accessibility` | Run accessibility audit |
-| `npm run test:database` | Test database connectivity |
-| `npm run test:stripe` | Validate Stripe configuration |
-| `npm run test:pwa` | Test PWA features |
-| `npm run test:components` | Validate component structure |
-| `npm run test:realtime` | Test real-time features |
-| `npm run test:error-logger` | Test error logging system |
-| `npm run test:bundle` | Check bundle sizes |
-| `npm run test:all` | Run all automated tests |
-| `npm run test:validate` | **Ultimate validation (runs everything)** |
+| `pnpm run test` | Run all Jest tests |
+| `pnpm run test:unit` | Run unit tests only |
+| `pnpm run test:integration` | Run integration tests |
+| `pnpm run test:api` | Run API tests |
+| `pnpm run test:e2e` | Run Playwright E2E tests |
+| `pnpm run test:performance` | Run Lighthouse performance audit |
+| `pnpm run test:security` | Check security headers |
+| `pnpm run test:accessibility` | Run accessibility audit |
+| `pnpm run test:database` | Test database connectivity |
+| `pnpm run test:stripe` | Validate Stripe configuration |
+| `pnpm run test:pwa` | Test PWA features |
+| `pnpm run test:components` | Validate component structure |
+| `pnpm run test:realtime` | Test real-time features |
+| `pnpm run test:error-logger` | Test error logging system |
+| `pnpm run test:bundle` | Check bundle sizes |
+| `pnpm run test:all` | Run all automated tests |
+| `pnpm run test:validate` | **Ultimate validation (runs everything)** |
 
 ## Continuous Integration
 
@@ -225,7 +225,7 @@ test('user can book a ride', async ({ page }) => {
 4. Check test logs for specific errors
 
 ### Performance tests failing?
-- Ensure dev server is running: `npm run dev`
+- Ensure dev server is running: `pnpm run dev`
 - Check site is accessible at configured URL
 
 ### Database tests failing?

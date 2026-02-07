@@ -217,7 +217,7 @@ If issues occur:
 ### Build Fails
 - Check build logs in Vercel
 - Verify environment variables
-- Test build locally: `npm run build`
+- Test build locally: `pnpm run build`
 
 ### Database Connection Issues
 - Verify Supabase environment variables

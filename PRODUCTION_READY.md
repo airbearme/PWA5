@@ -89,7 +89,7 @@ git push origin main
 
 Run production readiness check:
 ```bash
-npm run deploy:prep
+pnpm run deploy:prep
 ```
 
 This validates:

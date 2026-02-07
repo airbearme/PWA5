@@ -39,7 +39,7 @@ Complete this checklist before deploying to airbear.me.
 - [ ] All TypeScript errors resolved
 - [ ] No console errors in browser
 - [ ] All dependencies updated to latest stable
-- [ ] Build succeeds locally: `npm run build`
+- [ ] Build succeeds locally: `pnpm run build`
 - [ ] No security vulnerabilities: `npm audit`
 
 ## Deployment Steps

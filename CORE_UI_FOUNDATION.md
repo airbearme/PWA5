@@ -110,7 +110,7 @@ safelist: [
 ## 🛡️ Protection Mechanisms
 
 ### 1. **Validation Script**
-Run `npm run validate:ui` to check all core UI features are present.
+Run `pnpm run validate:ui` to check all core UI features are present.
 
 ### 2. **GitHub Actions**
 The `.github/workflows/validate-ui-ux.yml` workflow validates UI on every commit.

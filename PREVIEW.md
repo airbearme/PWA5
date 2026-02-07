@@ -184,7 +184,7 @@ firefox http://localhost:5000
 
 ### Deployment Command
 \`\`\`bash
-npm run deploy:ionos
+pnpm run deploy:ionos
 \`\`\`
 
 ---

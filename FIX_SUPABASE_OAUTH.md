@@ -15,7 +15,7 @@ The Supabase environment variables are either:
 
 Run this diagnostic script:
 ```bash
-npm run check:supabase
+pnpm run check:supabase
 ```
 
 This will show you:
@@ -101,7 +101,7 @@ git push origin main
 
 ## Quick Checklist
 
-- [ ] Ran `npm run check:supabase` diagnostic
+- [ ] Ran `pnpm run check:supabase` diagnostic
 - [ ] Got credentials from **actual** Supabase project (not demo)
 - [ ] Added `NEXT_PUBLIC_SUPABASE_PWA4_URL` to Vercel
 - [ ] Added `NEXT_PUBLIC_SUPABASE_PWA4_ANON_KEY` to Vercel
