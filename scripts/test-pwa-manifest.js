@@ -5,8 +5,8 @@
  * Validates PWA manifest file and configuration
  */
 
-const fs = require("fs");
-const path = require("path");
+import fs from "fs";
+import path from "path";
 
 console.log("📱 Testing PWA manifest...\n");
 

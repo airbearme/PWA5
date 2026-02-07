@@ -5,10 +5,14 @@
  * Tests Supabase real-time subscriptions
  */
 
-const SUPABASE_URL = process.env.NEXT_PUBLIC_SUPABASE_URL;
+import { createClient } from "@supabase/supabase-js";
+import path from "path";
+import fs from "fs";
+
+const SUPABASE_URL = process.env.NEXT_PUBLIC_SUPABASE_PWA4_URL;
 const SUPABASE_KEY =
-	process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY ||
-	process.env.SUPABASE_SERVICE_ROLE_KEY;
+	process.env.NEXT_PUBLIC_SUPABASE_PWA4_ANON_KEY ||
+	process.env.SUPABASE_PWA4_SERVICE_ROLE_KEY;
 
 console.log("📡 Testing real-time features...\n");
 
@@ -19,7 +23,6 @@ if (!SUPABASE_URL || !SUPABASE_KEY) {
 
 async function testRealtime() {
 	try {
-		const { createClient } = require("@supabase/supabase-js");
 		const supabase = createClient(SUPABASE_URL, SUPABASE_KEY);
 
 		console.log("📡 Testing real-time subscription...");
@@ -57,13 +60,12 @@ async function testRealtime() {
 		supabase.removeChannel(channel);
 
 		// Check realtime file
-		const realtimePath = require("path").join(
+		const realtimePath = path.join(
 			process.cwd(),
 			"lib",
 			"supabase",
 			"realtime.ts",
 		);
-		const fs = require("fs");
 		if (fs.existsSync(realtimePath)) {
 			console.log("\n✅ Real-time utilities file exists");
 		}

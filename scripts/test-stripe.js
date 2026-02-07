@@ -5,6 +5,8 @@
  * Validates Stripe API keys and configuration
  */
 
+import Stripe from "stripe";
+
 const STRIPE_SECRET_KEY = process.env.STRIPE_SECRET_KEY;
 const STRIPE_PUBLISHABLE_KEY =
 	process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY ||
@@ -38,7 +40,6 @@ console.log("✅ Stripe key formats are valid");
 // Test Stripe API connection
 async function testStripe() {
 	try {
-		const Stripe = require("stripe");
 		const stripe = new Stripe(STRIPE_SECRET_KEY);
 
 		console.log("📡 Testing Stripe API connection...");

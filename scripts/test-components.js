@@ -5,8 +5,8 @@
  * Validates React components can be imported and rendered
  */
 
-const fs = require("fs");
-const path = require("path");
+import fs from "fs";
+import path from "path";
 
 console.log("🎨 Testing component structure...\n");
 

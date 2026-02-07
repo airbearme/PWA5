@@ -5,8 +5,8 @@
  * Checks all critical endpoints and services
  */
 
-const https = require("https");
-const http = require("http");
+import https from "https";
+import http from "http";
 
 const checks = [
 	{

@@ -5,7 +5,7 @@
  * Tests application accessibility using pa11y
  */
 
-const { execSync } = require("child_process");
+import { execSync } from "child_process";
 
 const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || "http://localhost:3000";
 
