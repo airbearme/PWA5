@@ -79,6 +79,9 @@ jobs:
           lhci autorun || echo "Lighthouse CI not configured"
       
       - name: Check bundle size
+        env:
+          NEXT_PUBLIC_SUPABASE_PWA4_URL: ${{ secrets.NEXT_PUBLIC_SUPABASE_PWA4_URL || 'https://dummy.supabase.co' }}
+          NEXT_PUBLIC_SUPABASE_PWA4_ANON_KEY: ${{ secrets.NEXT_PUBLIC_SUPABASE_PWA4_ANON_KEY || 'dummy-anon-key' }}
         run: |
           pnpm run build
           node scripts/check-bundle-size.js || echo "Bundle size check script not found"
