@@ -2,6 +2,7 @@ import { sql } from "drizzle-orm";
 import {
 	boolean,
 	decimal,
+	index,
 	integer,
 	jsonb,
 	pgEnum,
@@ -110,7 +111,12 @@ export const rides = pgTable("rides", {
 	acceptedAt: timestamp("accepted_at"),
 	startedAt: timestamp("started_at"),
 	completedAt: timestamp("completed_at"),
-});
+}, (table) => ({
+	// ⚡ Bolt: Composite index to optimize history queries by user/driver and date.
+	// Impact: Reduces history retrieval from O(N) to O(log N).
+	userIdRequestedAtIdx: index("rides_user_id_requested_at_idx").on(table.userId, table.requestedAt),
+	driverIdRequestedAtIdx: index("rides_driver_id_requested_at_idx").on(table.driverId, table.requestedAt),
+}));
 
 // Bodega items table
 export const bodegaItems = pgTable("bodega_items", {
@@ -152,7 +158,11 @@ export const orders = pgTable("orders", {
 	status: text("status").notNull().default("pending"),
 	notes: text("notes"),
 	createdAt: timestamp("created_at").notNull().default(sql`now()`),
-});
+}, (table) => ({
+	// ⚡ Bolt: Composite index to optimize user order history queries.
+	// Impact: Prevents linear scan on orders table as it grows.
+	userIdCreatedAtIdx: index("orders_user_id_created_at_idx").on(table.userId, table.createdAt),
+}));
 
 // Payments table
 export const payments = pgTable("payments", {
@@ -169,7 +179,11 @@ export const payments = pgTable("payments", {
 	paymentMethod: paymentMethodEnum("payment_method").notNull(),
 	metadata: jsonb("metadata"),
 	createdAt: timestamp("created_at").notNull().default(sql`now()`),
-});
+}, (table) => ({
+	// ⚡ Bolt: Composite index to optimize user payment history queries.
+	// Impact: Speeds up dashboard loading for long-term users.
+	userIdCreatedAtIdx: index("payments_user_id_created_at_idx").on(table.userId, table.createdAt),
+}));
 
 // Insert schemas
 export const insertUserSchema = createInsertSchema(users)

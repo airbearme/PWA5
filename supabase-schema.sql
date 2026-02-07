@@ -61,6 +61,10 @@ CREATE TABLE IF NOT EXISTS public.rides (
   completed_at TIMESTAMP WITH TIME ZONE
 );
 
+-- ⚡ Bolt: Composite indexes for history query performance
+CREATE INDEX IF NOT EXISTS rides_user_id_created_at_idx ON public.rides (user_id, created_at DESC);
+CREATE INDEX IF NOT EXISTS rides_airbear_id_created_at_idx ON public.rides (airbear_id, created_at DESC);
+
 -- Payments Table
 CREATE TABLE IF NOT EXISTS public.payments (
   id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
@@ -205,6 +209,9 @@ CREATE TABLE IF NOT EXISTS public.orders (
   created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
 );
 
+-- ⚡ Bolt: Composite index for user order history performance
+CREATE INDEX IF NOT EXISTS orders_user_id_created_at_idx ON public.orders (user_id, created_at DESC);
+
 -- Payments Table (Updated)
 CREATE TABLE IF NOT EXISTS public.payments (
   id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
@@ -219,6 +226,9 @@ CREATE TABLE IF NOT EXISTS public.payments (
   metadata JSONB,
   created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
 );
+
+-- ⚡ Bolt: Composite index for user payment history performance
+CREATE INDEX IF NOT EXISTS payments_user_id_created_at_idx ON public.payments (user_id, created_at DESC);
 
 -- Advertising Packages Table
 CREATE TABLE IF NOT EXISTS public.advertising_packages (
