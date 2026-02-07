@@ -13,7 +13,7 @@ The beautiful UI/UX/GUI is now **permanently embedded** in the heart of the code
 
 ### 2. ✅ Validation Script
 - **`scripts/validate-ui-foundation.js`** - Automated validation
-- **Command:** `npm run validate:ui`
+- **Command:** `pnpm run validate:ui`
 - **Checks:** All animations, classes, configurations
 
 ### 3. ✅ GitHub Actions Protection
@@ -53,7 +53,7 @@ The beautiful UI/UX/GUI is now **permanently embedded** in the heart of the code
 
 ### Validation:
 ```bash
-npm run validate:ui
+pnpm run validate:ui
 ```
 
 This checks:
@@ -74,7 +74,7 @@ This checks:
 Run this to verify everything is working:
 
 ```bash
-npm run validate:ui
+pnpm run validate:ui
 ```
 
 Expected output:

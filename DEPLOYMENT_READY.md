@@ -88,7 +88,7 @@ GitHub Actions will automatically deploy to Vercel.
 
 Option B - **Via Vercel CLI**:
 ```bash
-npm run deploy:vercel
+pnpm run deploy:vercel
 ```
 
 ### Step 3: Configure Custom Domain

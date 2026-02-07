@@ -3,7 +3,7 @@
 ## Quick Deploy
 
 ```bash
-npm run deploy:now
+pnpm run deploy:now
 ```
 
 OR
@@ -86,7 +86,7 @@ npm i -g vercel
 vercel login
 
 # Deploy
-npm run deploy:now
+pnpm run deploy:now
 ```
 
 ### Method 2: GitHub Actions (Automatic)
@@ -125,7 +125,7 @@ After deployment, verify:
 ### Build Fails
 - Check Vercel build logs
 - Verify all environment variables are set
-- Run `npm run build` locally to test
+- Run `pnpm run build` locally to test
 
 ### Dark Mode Not Working
 - Verify `app/layout.tsx` has `defaultTheme="dark"` and `enableSystem={false}`
@@ -156,4 +156,4 @@ After deployment, verify:
 **Dark Mode**: ✅ Permanently enabled
 **Target**: https://airbear.me
 
-**Run `npm run deploy:now` to deploy!** 🚀
+**Run `pnpm run deploy:now` to deploy!** 🚀

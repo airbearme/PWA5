@@ -44,7 +44,7 @@ bash scripts/push-and-deploy.sh
 
 - **Framework Preset:** Next.js (auto-detected)
 - **Root Directory:** `./` (leave default)
-- **Build Command:** `npm run build` (auto-detected)
+- **Build Command:** `pnpm run build` (auto-detected)
 - **Output Directory:** `.next` (auto-detected)
 - **Install Command:** `npm ci` (auto-detected)
 
@@ -158,7 +158,7 @@ Check these:
 ### Build Fails
 - Check Vercel build logs
 - Verify all environment variables are set
-- Run `npm run build` locally to test
+- Run `pnpm run build` locally to test
 
 ### Domain Not Working
 - Check DNS propagation: https://dnschecker.org

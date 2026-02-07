@@ -46,7 +46,7 @@ This single command will:
 ### Step 3: Test Production
 
 ```bash
-npm run test:production https://airbear.me
+pnpm run test:production https://airbear.me
 ```
 
 ---

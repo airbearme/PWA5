@@ -6,7 +6,7 @@
 
 ### Run Ultimate Validation
 ```bash
-npm run test:validate
+pnpm run test:validate
 ```
 
 OR use the Claude command:
@@ -297,24 +297,24 @@ The validation is so comprehensive that:
 
 ### Run All Validation
 ```bash
-npm run test:validate
+pnpm run test:validate
 ```
 
 ### Run Individual Workflows
 ```bash
-npm run test:workflows          # Complete workflow tests
-npm run test:comprehensive-e2e  # Comprehensive E2E tests
-npm run test:e2e                # Playwright tests
+pnpm run test:workflows          # Complete workflow tests
+pnpm run test:comprehensive-e2e  # Comprehensive E2E tests
+pnpm run test:e2e                # Playwright tests
 ```
 
 ### Run Specific Categories
 ```bash
-npm run test:unit               # Unit tests
-npm run test:integration        # Integration tests
-npm run test:database           # Database tests
-npm run test:stripe             # Payment tests
-npm run test:realtime           # Real-time tests
-npm run test:pwa                # PWA tests
+pnpm run test:unit               # Unit tests
+pnpm run test:integration        # Integration tests
+pnpm run test:database           # Database tests
+pnpm run test:stripe             # Payment tests
+pnpm run test:realtime           # Real-time tests
+pnpm run test:pwa                # PWA tests
 ```
 
 ## CI/CD Integration
@@ -345,7 +345,7 @@ The E2E testing is comprehensive enough that:
 **External Integrations**: Google, Apple, Stripe, Supabase
 **Ready**: Production-ready validation
 
-**Run `npm run test:validate` or `/validate` to validate everything!** 🚀
+**Run `pnpm run test:validate` or `/validate` to validate everything!** 🚀
 
 
 

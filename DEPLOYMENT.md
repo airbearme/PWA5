@@ -25,7 +25,7 @@
 If you need to deploy manually:
 
 ```bash
-npm run deploy:vercel
+pnpm run deploy:vercel
 ```
 
 ## Environment Variables Setup
@@ -61,7 +61,7 @@ The GitHub Actions workflow (`.github/workflows/ci-cd.yml`) will:
 ### Build Fails
 - Check GitHub Actions logs
 - Verify all environment variables are set
-- Run `npm run validate:env` locally
+- Run `pnpm run validate:env` locally
 
 ### Deployment Fails
 - Verify Vercel secrets in GitHub

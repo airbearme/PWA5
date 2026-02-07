@@ -8,22 +8,22 @@ Complete testing guide for all features before production deployment.
 
 ```bash
 # Type check
-npm run type-check
+pnpm run type-check
 
 # Lint check
-npm run lint
+pnpm run lint
 
 # Build test
-npm run build
+pnpm run build
 
 # Run all verification
-npm run verify
+pnpm run verify
 
 # Production endpoint tests
-npm run test:production https://airbear.me
+pnpm run test:production https://airbear.me
 
 # Sync to GitHub
-npm run sync:github
+pnpm run sync:github
 ```
 
 ---
@@ -270,7 +270,7 @@ SELECT * FROM orders WHERE user_id = auth.uid();
 
 ```bash
 # Verify no secrets in client bundle
-npm run build
+pnpm run build
 grep -r "sk_live_" .next/static
 # Should return NO results
 
@@ -382,8 +382,8 @@ Payments:
 [ ] Ready to switch to live mode
 
 Testing:
-[ ] npm run verify passes
-[ ] npm run test:production passes
+[ ] pnpm run verify passes
+[ ] pnpm run test:production passes
 [ ] Manual testing completed
 [ ] Mobile testing completed
 [ ] Real-time updates working
@@ -462,4 +462,4 @@ CREATE POLICY "Allow public read" ON airbears FOR SELECT USING (true);
 
 ---
 
-**Ready to deploy!** Run `npm run sync:github` to push to production.
+**Ready to deploy!** Run `pnpm run sync:github` to push to production.

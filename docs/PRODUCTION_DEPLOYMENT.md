@@ -28,7 +28,7 @@ User → IONOS DNS (airbear.me) → Vercel (Next.js App) → Supabase (Database/
 4. Configure:
    - Framework Preset: **Next.js**
    - Root Directory: `./` (root)
-   - Build Command: `npm run build`
+   - Build Command: `pnpm run build`
    - Output Directory: `.next`
    - Install Command: `npm ci`
 
@@ -238,7 +238,7 @@ The `.github/workflows/ci-cd.yml` will:
 ### Build Failures
 
 1. Check GitHub Actions logs
-2. Run `npm run verify` locally
+2. Run `pnpm run verify` locally
 3. Verify all environment variables
 4. Check for TypeScript errors
 

@@ -22,7 +22,7 @@ ERRORS=0
 
 # Check 1: TypeScript
 echo -n "1. TypeScript type checking... "
-if npm run type-check > /dev/null 2>&1; then
+if pnpm run type-check > /dev/null 2>&1; then
     echo -e "${GREEN}✓ PASS${NC}"
 else
     echo -e "${RED}✗ FAIL${NC}"
@@ -31,7 +31,7 @@ fi
 
 # Check 2: Lint
 echo -n "2. ESLint checking... "
-if npm run lint > /dev/null 2>&1; then
+if pnpm run lint > /dev/null 2>&1; then
     echo -e "${GREEN}✓ PASS${NC}"
 else
     echo -e "${YELLOW}⚠ WARNINGS${NC}"
@@ -39,7 +39,7 @@ fi
 
 # Check 3: Build
 echo -n "3. Production build... "
-if npm run build > /dev/null 2>&1; then
+if pnpm run build > /dev/null 2>&1; then
     echo -e "${GREEN}✓ PASS${NC}"
 else
     echo -e "${RED}✗ FAIL${NC}"
@@ -130,9 +130,9 @@ if [ $ERRORS -eq 0 ]; then
     echo "Ready to deploy to production!"
     echo ""
     echo "Next steps:"
-    echo "  1. npm run sync:github     # Push to GitHub"
+    echo "  1. pnpm run sync:github     # Push to GitHub"
     echo "  2. Monitor GitHub Actions  # Watch deployment"
-    echo "  3. npm run test:production # Verify live site"
+    echo "  3. pnpm run test:production # Verify live site"
     echo ""
     exit 0
 else

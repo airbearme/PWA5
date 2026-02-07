@@ -10,7 +10,7 @@
 Host: access-5018328928.webspace-host.com
 Port: 22
 Username: a2096159
-Password: Danknugs420420
+Password: [REDACTED]
 
 📤 UPLOAD STEPS:
 1. Open FileZilla

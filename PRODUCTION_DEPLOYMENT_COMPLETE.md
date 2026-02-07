@@ -124,7 +124,7 @@ git push origin main
 
 **OR deploy manually:**
 ```bash
-npm run deploy:vercel
+pnpm run deploy:vercel
 ```
 
 ### Step 7: Verify Deployment

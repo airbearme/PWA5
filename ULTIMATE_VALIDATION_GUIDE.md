@@ -8,7 +8,7 @@ The AirBear PWA now includes the **most comprehensive testing suite** available,
 
 ### Run Ultimate Validation
 ```bash
-npm run test:validate
+pnpm run test:validate
 ```
 
 This single command runs **all tests** across **17 different categories**.
@@ -136,7 +136,7 @@ All test scripts are located in `scripts/`:
 
 ### First Time Setup
 ```bash
-npm run setup:testing
+pnpm run setup:testing
 ```
 
 This installs:
@@ -148,7 +148,7 @@ This installs:
 
 ### Manual Installation
 ```bash
-npm install --save-dev \
+pnpm install --save-dev \
   @testing-library/react @testing-library/jest-dom @testing-library/user-event \
   @playwright/test \
   lighthouse @lhci/cli \
@@ -161,21 +161,21 @@ npm install --save-dev \
 
 ### Individual Test Categories
 ```bash
-npm run test              # Unit tests
-npm run test:integration  # Integration tests
-npm run test:e2e          # E2E tests
-npm run test:performance  # Performance
-npm run test:security     # Security
-npm run test:accessibility # Accessibility
-npm run test:database     # Database
-npm run test:stripe       # Stripe
-npm run test:pwa          # PWA features
-npm run test:all          # All automated tests
+pnpm run test              # Unit tests
+pnpm run test:integration  # Integration tests
+pnpm run test:e2e          # E2E tests
+pnpm run test:performance  # Performance
+pnpm run test:security     # Security
+pnpm run test:accessibility # Accessibility
+pnpm run test:database     # Database
+pnpm run test:stripe       # Stripe
+pnpm run test:pwa          # PWA features
+pnpm run test:all          # All automated tests
 ```
 
 ### Ultimate Validation (All Tests)
 ```bash
-npm run test:validate
+pnpm run test:validate
 ```
 
 ## Test Output
@@ -280,33 +280,33 @@ process.exit(0); // 0 = success, 1 = failure
 
 1. **Environment Variables**
    ```bash
-   npm run validate:env
+   pnpm run validate:env
    ```
 
 2. **Database Connection**
    ```bash
-   npm run test:database
+   pnpm run test:database
    ```
 
 3. **Build Issues**
    ```bash
-   npm run build
+   pnpm run build
    ```
 
 4. **Dependencies**
    ```bash
-   npm install
+   pnpm install
    ```
 
 ### Performance Tests Failing?
 
-- Ensure dev server is running: `npm run dev`
+- Ensure dev server is running: `pnpm run dev`
 - Check site is accessible at configured URL
-- Verify Lighthouse is installed: `npm install -g lighthouse`
+- Verify Lighthouse is installed: `pnpm install -g lighthouse`
 
 ### Accessibility Tests Failing?
 
-- Install pa11y: `npm install -g pa11y`
+- Install pa11y: `pnpm install -g pa11y`
 - Ensure site is running
 - Check for actual accessibility issues
 
@@ -365,7 +365,7 @@ The testing suite is designed to:
 **Test Scripts**: 15+
 **Coverage**: All aspects of the application
 
-**Run `npm run test:validate` to validate everything!** 🚀
+**Run `pnpm run test:validate` to validate everything!** 🚀
 
 
 

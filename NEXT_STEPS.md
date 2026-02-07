@@ -14,7 +14,7 @@
 **Quick Fix:** See `FIX_SUPABASE_OAUTH.md` for detailed instructions.
 
 **TL;DR:**
-1. Run: `npm run check:supabase` to diagnose
+1. Run: `pnpm run check:supabase` to diagnose
 2. Add correct Supabase environment variables to Vercel:
    - `NEXT_PUBLIC_SUPABASE_PWA4_URL`
    - `NEXT_PUBLIC_SUPABASE_PWA4_ANON_KEY`

@@ -26,7 +26,7 @@ This will verify:
 
 ```bash
 chmod +x scripts/sync-github.sh
-npm run sync:github
+pnpm run sync:github
 ```
 
 This will:
@@ -39,7 +39,7 @@ This will:
 
 ```bash
 chmod +x scripts/test-production.sh
-npm run test:production https://airbear.me
+pnpm run test:production https://airbear.me
 ```
 
 This tests:
@@ -278,7 +278,7 @@ Your AirBear PWA is production-ready with:
 - ✅ Automatic deployments
 - ✅ Full security measures
 
-**Run `npm run sync:github` to deploy now!**
+**Run `pnpm run sync:github` to deploy now!**
 
 ---
 

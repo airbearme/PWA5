@@ -171,7 +171,7 @@
 
 1. **Set up VAPID keys** for push notifications:
    ```bash
-   npm install -g web-push
+   pnpm install -g web-push
    web-push generate-vapid-keys
    ```
 

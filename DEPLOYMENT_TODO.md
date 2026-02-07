@@ -12,7 +12,7 @@
 - Host: access-5018328928.webspace-host.com
 - Port: 22
 - User: a2096159
-- Password: Danknugs420420
+- Password: [REDACTED]
 
 ## Success Criteria
 - Orange and green UI displays correctly on airbear.me

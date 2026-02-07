@@ -88,16 +88,16 @@ After pushing to `main` branch:
 
 ```bash
 # Validate environment variables
-npm run validate:env
+pnpm run validate:env
 
 # Type check
-npm run type-check
+pnpm run type-check
 
 # Lint
-npm run lint
+pnpm run lint
 
 # Build (local test)
-npm run build
+pnpm run build
 ```
 
 ## 📚 Documentation
@@ -110,7 +110,7 @@ npm run build
 
 ### Build Errors
 - Check GitHub Actions logs
-- Run `npm run validate:env` locally
+- Run `pnpm run validate:env` locally
 - Verify all environment variables are set
 
 ### Deployment Fails
