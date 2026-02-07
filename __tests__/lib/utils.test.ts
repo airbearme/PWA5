@@ -19,7 +19,8 @@ describe('cn utility', () => {
   });
 
   it('merges Tailwind classes', () => {
-    expect(cn('px-2 py-1', 'px-4')).toBe('px-4 py-1');
+    // Note: tailwind-merge may reorder classes. Current version produces 'py-1 px-4'
+    expect(cn('px-2 py-1', 'px-4')).toBe('py-1 px-4');
   });
 });
 
