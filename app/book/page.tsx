@@ -60,7 +60,6 @@ export default function BookRidePage() {
 
   /**
    * ⚡ Bolt: Decoupled spot fetching from searchParams to prevent redundant network calls.
-   * Initial URL synchronization is handled once when data is first loaded.
    */
   useEffect(() => {
     const loadSpots = async () => {
@@ -74,13 +73,6 @@ export default function BookRidePage() {
 
         if (error) throw error;
         setSpots(data || []);
-
-        // One-time sync from URL on initial load
-        const pickupId = searchParams.get("pickup");
-        if (pickupId && data) {
-          const spot = data.find((s) => s.id === pickupId);
-          if (spot) setPickupSpot(spot);
-        }
       } catch (error) {
         console.error("Error loading spots:", error);
         toast({
@@ -94,8 +86,27 @@ export default function BookRidePage() {
     };
 
     loadSpots();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [toast]);
+
+  /**
+   * ⚡ Bolt: Added dedicated effect for URL state synchronization.
+   * This restores deep-linking functionality without redundant database fetches.
+   */
+  useEffect(() => {
+    if (spots.length === 0) return;
+
+    const pickupId = searchParams.get("pickup");
+    if (pickupId && (!pickupSpot || pickupSpot.id !== pickupId)) {
+      const spot = spots.find((s) => s.id === pickupId);
+      if (spot) setPickupSpot(spot);
+    }
+
+    const destinationId = searchParams.get("destination");
+    if (destinationId && (!destinationSpot || destinationSpot.id !== destinationId)) {
+      const spot = spots.find((s) => s.id === destinationId);
+      if (spot) setDestinationSpot(spot);
+    }
+  }, [searchParams, spots, pickupSpot, destinationSpot]);
 
   const handleBookRide = async () => {
     if (!pickupSpot || !destinationSpot || !user) {
