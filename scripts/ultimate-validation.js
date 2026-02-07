@@ -88,7 +88,7 @@ async function main() {
 
 	// 3. Unit Tests
 	log("\n🔬 Phase 3: Unit Tests", "bright");
-	if (checkFileExists("jest.config.js")) {
+	if (checkFileExists("jest.config.js") || checkFileExists("jest.config.cjs")) {
 		runTest("Jest Unit Tests", "npm run test -- --passWithNoTests", false);
 	} else {
 		log("⚠️  Jest not configured, skipping unit tests", "yellow");

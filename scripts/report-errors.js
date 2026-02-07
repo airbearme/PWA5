@@ -5,10 +5,10 @@
  * Reports build/test errors to the error logging database
  */
 
-const https = require("https");
+import https from "https";
 
-const SUPABASE_URL = process.env.NEXT_PUBLIC_SUPABASE_URL;
-const SUPABASE_SERVICE_KEY = process.env.SUPABASE_SERVICE_ROLE_KEY;
+const SUPABASE_URL = process.env.NEXT_PUBLIC_SUPABASE_PWA4_URL;
+const SUPABASE_SERVICE_KEY = process.env.SUPABASE_PWA4_SERVICE_ROLE_KEY;
 
 if (!SUPABASE_URL || !SUPABASE_SERVICE_KEY) {
 	console.log("⚠️  Supabase credentials not set, skipping error reporting");

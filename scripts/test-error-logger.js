@@ -5,8 +5,8 @@
  * Tests error logging system functionality
  */
 
-const fs = require("fs");
-const path = require("path");
+import fs from "fs";
+import path from "path";
 
 console.log("🚨 Testing error logger...\n");
 

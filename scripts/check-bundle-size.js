@@ -5,8 +5,8 @@
  * Validates bundle sizes are within acceptable limits
  */
 
-const fs = require("fs");
-const path = require("path");
+import fs from "fs";
+import path from "path";
 
 console.log("📦 Checking bundle sizes...\n");
 
