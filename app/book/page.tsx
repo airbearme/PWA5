@@ -6,21 +6,21 @@ import { useAuthContext } from "@/components/auth-provider";
 import { getSupabaseClient } from "@/lib/supabase/client";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
 import { useToast } from "@/hooks/use-toast";
 import { MapPin, Navigation, DollarSign, Clock, ArrowRight, Loader2 } from "lucide-react";
 import Link from "next/link";
 import type { Spot } from "@/components/map-view";
 
-// Pure utility functions moved outside component to avoid recreation on render
+/**
+ * Pure utility function to calculate distance between two spots.
+ * Moved outside component to avoid re-creation on every render.
+ */
 const calculateDistance = (spot1: Spot, spot2: Spot): number => {
   const R = 6371; // Earth's radius in km
-  // Ensure we handle string types from database if necessary
-  const lat1 = Number(spot1.latitude) * (Math.PI / 180);
-  const lat2 = Number(spot2.latitude) * (Math.PI / 180);
-  const deltaLat = (Number(spot2.latitude) - Number(spot1.latitude)) * (Math.PI / 180);
-  const deltaLon = (Number(spot2.longitude) - Number(spot1.longitude)) * (Math.PI / 180);
+  const lat1 = spot1.latitude * (Math.PI / 180);
+  const lat2 = spot2.latitude * (Math.PI / 180);
+  const deltaLat = (spot2.latitude - spot1.latitude) * (Math.PI / 180);
+  const deltaLon = (spot2.longitude - spot1.longitude) * (Math.PI / 180);
 
   const a =
     Math.sin(deltaLat / 2) * Math.sin(deltaLat / 2) +
@@ -33,8 +33,12 @@ const calculateDistance = (spot1: Spot, spot2: Spot): number => {
   return R * c;
 };
 
+/**
+ * Pure utility function to estimate fare based on distance.
+ * Moved outside component to avoid re-creation on every render.
+ */
 const estimateFare = (_distance: number): number => {
-  // Flat rate $4.00 for all rides per requirement
+  // Flat rate $4.00 for all rides
   return 4.0;
 };
 
@@ -55,6 +59,8 @@ export default function BookRidePage() {
     }
   }, [user, authLoading, router]);
 
+  // Decoupled spot fetching from searchParams to avoid redundant network calls
+  // when unrelated URL parameters change.
   useEffect(() => {
     const loadSpots = async () => {
       try {
@@ -82,16 +88,16 @@ export default function BookRidePage() {
     loadSpots();
   }, [toast]);
 
-  // Handle URL-based pickup spot synchronization separately to avoid redundant fetches
+  // Initial synchronization with URL parameters only when spots are loaded.
   useEffect(() => {
     if (spots.length > 0) {
       const pickupId = searchParams.get("pickup");
-      // Only auto-select if no pickup spot is already selected (preserves manual choice)
       if (pickupId && !pickupSpot) {
         const spot = spots.find((s) => s.id === pickupId);
         if (spot) setPickupSpot(spot);
       }
     }
+    // Only run when spots are loaded to set initial state
   }, [spots, searchParams, pickupSpot]);
 
   const handleBookRide = async () => {
@@ -107,19 +113,8 @@ export default function BookRidePage() {
     setBooking(true);
 
     try {
-      const supabase = getSupabaseClient();
-      const distance = calculateDistance(pickupSpot, destinationSpot);
-      const fare = estimateFare(distance);
-
-      // Find available AirBear
-      const { data: availableAirbears } = await supabase
-        .from("airbears")
-        .select("id")
-        .eq("is_available", true)
-        .eq("is_charging", false)
-        .limit(1);
-
-      const airbearId = availableAirbears?.[0]?.id || null;
+      const dist = calculateDistance(pickupSpot, destinationSpot);
+      const estimatedFareValue = estimateFare(dist);
 
       // Create ride booking via API
       const response = await fetch("/api/rides/create", {
@@ -128,14 +123,14 @@ export default function BookRidePage() {
         body: JSON.stringify({
           pickup_spot_id: pickupSpot.id,
           dropoff_spot_id: destinationSpot.id,
-          fare,
-          distance,
+          fare: estimatedFareValue,
+          distance: dist,
         }),
       });
 
       if (!response.ok) {
-        const error = await response.json();
-        throw new Error(error.error || "Failed to create ride");
+        const errorRes = await response.json();
+        throw new Error(errorRes.error || "Failed to create ride");
       }
 
       const { ride } = await response.json();
@@ -146,12 +141,13 @@ export default function BookRidePage() {
       });
 
       // Redirect to checkout
-      router.push(`/checkout?rideId=${ride.id}&amount=${fare}`);
-    } catch (error: any) {
-      console.error("Booking error:", error);
+      router.push(`/checkout?rideId=${ride.id}&amount=${estimatedFareValue}`);
+    } catch (err: unknown) {
+      const errorMessage = err instanceof Error ? err.message : "Failed to book ride. Please try again.";
+      console.error("Booking error:", err);
       toast({
         title: "Booking Failed",
-        description: error.message || "Failed to book ride. Please try again.",
+        description: errorMessage,
         variant: "destructive",
       });
     } finally {
@@ -159,13 +155,14 @@ export default function BookRidePage() {
     }
   };
 
-  const distance = useMemo(() => {
+  // Memoized distance and fare to prevent re-calculation on unrelated renders.
+  const distanceValue = useMemo(() => {
     return pickupSpot && destinationSpot
       ? calculateDistance(pickupSpot, destinationSpot)
       : 0;
   }, [pickupSpot, destinationSpot]);
 
-  const fare = useMemo(() => estimateFare(distance), [distance]);
+  const fareValue = useMemo(() => estimateFare(distanceValue), [distanceValue]);
 
   if (authLoading || loading) {
     return (
@@ -346,7 +343,7 @@ export default function BookRidePage() {
                   <Navigation className="w-5 h-5 text-blue-600" />
                   <div>
                     <p className="text-sm text-muted-foreground">Distance</p>
-                    <p className="font-semibold">{distance.toFixed(1)} km</p>
+                    <p className="font-semibold">{distanceValue.toFixed(1)} km</p>
                   </div>
                 </div>
                 <div className="flex items-center gap-3 p-3 bg-muted/30 rounded-lg">
@@ -354,7 +351,7 @@ export default function BookRidePage() {
                   <div>
                     <p className="text-sm text-muted-foreground">Est. Time</p>
                     <p className="font-semibold">
-                      {Math.round(distance * 3)} min
+                      {Math.round(distanceValue * 3)} min
                     </p>
                   </div>
                 </div>
@@ -367,7 +364,7 @@ export default function BookRidePage() {
                     <div>
                       <p className="text-sm text-muted-foreground">Total Fare</p>
                       <p className="text-2xl font-bold text-emerald-600">
-                        ${fare.toFixed(2)}
+                        ${fareValue.toFixed(2)}
                       </p>
                     </div>
                   </div>
@@ -402,4 +399,3 @@ export default function BookRidePage() {
     </div>
   );
 }
-

@@ -1,3 +1,3 @@
-## 2026-02-08 - [Booking Page Performance Optimization]
-**Learning:** Moving pure utility functions outside the component scope and using `useMemo` for derived state are effective ways to reduce recreation of objects and unnecessary re-calculations on every render. Additionally, decoupling data fetching from search parameters by splitting `useEffect` prevents redundant network requests.
-**Action:** Always check if `useEffect` dependencies can be minimized by splitting logic into separate effects, especially when one dependency triggers an expensive operation (like fetching) and another only performs a local sync.
+## 2025-05-14 - Decoupling Network Fetching from URL State
+**Learning:** Attaching network requests to highly dynamic URL parameters (like `searchParams`) causes redundant API calls and layout flashes even when the data doesn't need to change.
+**Action:** Separate initial data synchronization from the main data fetching effect, and use memoization for derived state (fare/distance) to stabilize the component's render cycle.
