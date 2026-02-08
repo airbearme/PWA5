@@ -1,0 +1,3 @@
+## 2026-02-08 - [Booking Page Performance Optimization]
+**Learning:** Moving pure utility functions outside the component scope and using `useMemo` for derived state are effective ways to reduce recreation of objects and unnecessary re-calculations on every render. Additionally, decoupling data fetching from search parameters by splitting `useEffect` prevents redundant network requests.
+**Action:** Always check if `useEffect` dependencies can be minimized by splitting logic into separate effects, especially when one dependency triggers an expensive operation (like fetching) and another only performs a local sync.
