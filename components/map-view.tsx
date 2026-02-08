@@ -16,6 +16,8 @@ export default function MapView({ spots, airbears, onSpotSelect }: MapViewProps)
   const mapRef = useRef<HTMLDivElement>(null)
   const mapInstanceRef = useRef<any>(null)
   const markersRef = useRef<Map<string, any>>(new Map())
+  const spotLastCountRef = useRef<Map<string, number>>(new Map())
+  const airbearLastStatusRef = useRef<Map<string, string>>(new Map())
   const LeafletRef = useRef<any>(null)
 
 
@@ -86,16 +88,25 @@ export default function MapView({ spots, airbears, onSpotSelect }: MapViewProps)
     const map = mapInstanceRef.current
     const L = LeafletRef.current
 
-    markersRef.current.forEach((marker, id) => {
-      if (id.startsWith("spot-")) {
-        marker.remove()
-        markersRef.current.delete(id)
+    // Pre-calculate available airbear counts per spot (O(S+A) optimization)
+    const countsBySpot = airbears.reduce((acc, a) => {
+      if (a.is_available && a.current_spot_id) {
+        acc[a.current_spot_id] = (acc[a.current_spot_id] || 0) + 1;
       }
-    })
+      return acc;
+    }, {} as Record<string, number>);
 
+    // Update spot markers
     spots.forEach((spot) => {
-      const airbearsAtSpot = airbears.filter((a) => a.current_spot_id === spot.id && a.is_available)
-      const hasAvailableAirbears = airbearsAtSpot.length > 0
+      const count = countsBySpot[spot.id] || 0;
+      const hasAvailableAirbears = count > 0;
+      const markerId = `spot-${spot.id}`;
+      let marker = markersRef.current.get(markerId);
+
+      // Only update icon if count or availability status changed
+      if (marker && spotLastCountRef.current.get(markerId) === count) {
+        return;
+      }
 
       const icon = L.divIcon({
         html: `
@@ -134,7 +145,7 @@ export default function MapView({ spots, airbears, onSpotSelect }: MapViewProps)
                 font-weight: bold;
                 border: 3px solid white;
                 box-shadow: 0 2px 6px rgba(0,0,0,0.2);
-              ">${airbearsAtSpot.length}</div>
+              ">${count}</div>
             `
                 : ""
             }
@@ -146,15 +157,13 @@ export default function MapView({ spots, airbears, onSpotSelect }: MapViewProps)
         popupAnchor: [0, -48],
       })
 
-      const marker = L.marker([spot.latitude, spot.longitude], { icon }).addTo(map)
-
       const popupContent = `
         <div style="min-width: 220px; padding: 8px;">
           <h3 style="font-size: 18px; font-weight: bold; margin-bottom: 8px; color: #1f2937;">${spot.name}</h3>
           ${spot.description ? `<p style="margin-bottom: 12px; color: #6b7280; font-size: 14px;">${spot.description}</p>` : ""}
           <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 12px; padding: 8px; background: ${hasAvailableAirbears ? "#ecfdf5" : "#f3f4f6"}; border-radius: 8px;">
             <div style="width: 16px; height: 16px; background: ${hasAvailableAirbears ? "#10b981" : "#9ca3af"}; border-radius: 50%; box-shadow: 0 0 8px ${hasAvailableAirbears ? "#10b981" : "#9ca3af"};"></div>
-            <span style="font-weight: 600; color: ${hasAvailableAirbears ? "#047857" : "#4b5563"}; font-size: 14px;">${airbearsAtSpot.length} AirBear${airbearsAtSpot.length !== 1 ? "s" : ""} available</span>
+            <span style="font-weight: 600; color: ${hasAvailableAirbears ? "#047857" : "#4b5563"}; font-size: 14px;">${count} AirBear${count !== 1 ? "s" : ""} available</span>
           </div>
           ${
             spot.amenities && spot.amenities.length > 0
@@ -168,14 +177,34 @@ export default function MapView({ spots, airbears, onSpotSelect }: MapViewProps)
         </div>
       `
 
-      marker.bindPopup(popupContent, { maxWidth: 300 })
+      if (marker) {
+        marker.setIcon(icon);
+        marker.setPopupContent(popupContent);
+      } else {
+        marker = L.marker([spot.latitude, spot.longitude], { icon }).addTo(map)
+        marker.bindPopup(popupContent, { maxWidth: 300 })
 
-      if (onSpotSelect) {
-        marker.on("click", () => onSpotSelect(spot))
+        if (onSpotSelect) {
+          marker.on("click", () => onSpotSelect(spot))
+        }
+
+        markersRef.current.set(markerId, marker)
       }
 
-      markersRef.current.set(`spot-${spot.id}`, marker)
+      spotLastCountRef.current.set(markerId, count);
     })
+
+    // Remove old spot markers
+    markersRef.current.forEach((marker, id) => {
+      if (id.startsWith("spot-")) {
+        const spotId = id.replace("spot-", "");
+        if (!spots.find(s => s.id === spotId)) {
+          marker.remove();
+          markersRef.current.delete(id);
+          spotLastCountRef.current.delete(id);
+        }
+      }
+    });
   }, [spots, airbears, onSpotSelect])
 
   useEffect(() => {
@@ -187,6 +216,13 @@ export default function MapView({ spots, airbears, onSpotSelect }: MapViewProps)
     airbears.forEach((airbear) => {
       const markerId = `airbear-${airbear.id}`
       let marker = markersRef.current.get(markerId)
+      const status = `${airbear.is_available}-${airbear.is_charging}`;
+
+      // Only update position if status hasn't changed
+      if (marker && airbearLastStatusRef.current.get(markerId) === status) {
+        marker.setLatLng([airbear.latitude, airbear.longitude]);
+        return;
+      }
 
       const icon = L.divIcon({
         html: `
@@ -202,7 +238,7 @@ export default function MapView({ spots, airbears, onSpotSelect }: MapViewProps)
               align-items: center;
               justify-content: center;
               font-size: 20px;
-              animation: ${airbear.is_available ? "pulse 2s infinite" : "none"};
+              animation: ${airbear.is_available ? "map-pulse 2s infinite" : "none"};
               transition: transform 0.3s;
             " onmouseover="this.style.transform='scale(1.15)'" onmouseout="this.style.transform='scale(1)'">
               🚲
@@ -229,12 +265,6 @@ export default function MapView({ spots, airbears, onSpotSelect }: MapViewProps)
                 : ""
             }
           </div>
-          <style>
-            @keyframes pulse {
-              0%, 100% { opacity: 1; }
-              50% { opacity: 0.7; }
-            }
-          </style>
         `,
         className: "bg-transparent border-0",
         iconSize: [40, 40],
@@ -279,6 +309,8 @@ export default function MapView({ spots, airbears, onSpotSelect }: MapViewProps)
         marker.bindPopup(popupContent, { maxWidth: 250 })
         markersRef.current.set(markerId, marker)
       }
+
+      airbearLastStatusRef.current.set(markerId, status);
     })
 
     markersRef.current.forEach((marker, id) => {
@@ -287,6 +319,7 @@ export default function MapView({ spots, airbears, onSpotSelect }: MapViewProps)
         if (!airbears.find((a) => a.id === airbearId)) {
           marker.remove()
           markersRef.current.delete(id)
+          airbearLastStatusRef.current.delete(id)
         }
       }
     })
@@ -294,6 +327,12 @@ export default function MapView({ spots, airbears, onSpotSelect }: MapViewProps)
 
   return (
     <div className="relative">
+      <style dangerouslySetInnerHTML={{ __html: `
+        @keyframes map-pulse {
+          0%, 100% { opacity: 1; }
+          50% { opacity: 0.7; }
+        }
+      `}} />
       <div 
         ref={mapRef} 
         className="w-full h-[600px] rounded-lg overflow-hidden shadow-lg border-2 border-gray-200 bg-gray-100"

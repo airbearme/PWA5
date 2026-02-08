@@ -1,0 +1,18 @@
+
+> airbear-pwa@2.0.0 dev /app
+> next dev
+
+   ▲ Next.js 15.1.11
+   - Local:        http://localhost:3000
+   - Network:      http://192.168.0.2:3000
+
+ ✓ Starting...
+ ✓ Ready in 2.2s
+ ○ Compiling /middleware ...
+ ✓ Compiled /middleware in 4.8s (148 modules)
+ ○ Compiling /map ...
+<w> [webpack.cache.PackFileCacheStrategy] Serializing big strings (130kiB) impacts deserialization performance (consider using Buffer instead and decode when needed)
+ ✓ Compiled /map in 20.1s (1573 modules)
+ ⚠ Unsupported metadata themeColor is configured in metadata export in /map. Please move it to viewport export instead.
+Read more: https://nextjs.org/docs/app/api-reference/functions/generate-viewport
+ GET /map 200 in 21457ms
