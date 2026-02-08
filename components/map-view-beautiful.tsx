@@ -20,6 +20,8 @@ export default function MapView({
   const mapRef = useRef<HTMLDivElement>(null);
   const mapInstanceRef = useRef<any>(null);
   const markersRef = useRef<Map<string, any>>(new Map());
+  const spotLastCountRef = useRef<Map<string, number>>(new Map());
+  const airbearLastStatusRef = useRef<Map<string, string>>(new Map());
   const LeafletRef = useRef<any>(null);
   const [mapLoaded, setMapLoaded] = useState(false);
 
@@ -105,16 +107,6 @@ export default function MapView({
 
         mapInstanceRef.current = map;
         setMapLoaded(true);
-        
-        // Setup global booking function
-        if (typeof window !== "undefined" && onSpotSelect) {
-          (window as any).selectSpotForBooking = (spotId: string) => {
-            const spot = spots.find(s => s.id === spotId);
-            if (spot) {
-              onSpotSelect(spot);
-            }
-          };
-        }
       } catch (error) {
         console.error("❌ Error initializing map:", error);
         setMapLoaded(false);
@@ -135,26 +127,43 @@ export default function MapView({
     };
   }, []);
 
+  // Setup global booking function (updated when spots or onSpotSelect change)
+  useEffect(() => {
+    if (typeof window !== "undefined" && onSpotSelect) {
+      (window as any).selectSpotForBooking = (spotId: string) => {
+        const spot = spots.find(s => s.id === spotId);
+        if (spot) {
+          onSpotSelect(spot);
+        }
+      };
+    }
+  }, [spots, onSpotSelect]);
+
   useEffect(() => {
     if (!mapInstanceRef.current || !LeafletRef.current || !mapLoaded) return;
 
     const map = mapInstanceRef.current;
     const L = LeafletRef.current;
 
-    // Remove old spot markers
-    markersRef.current.forEach((marker, id) => {
-      if (id.startsWith("spot-")) {
-        marker.remove();
-        markersRef.current.delete(id);
+    // Pre-calculate available airbear counts per spot (O(S+A) optimization)
+    const countsBySpot = airbears.reduce((acc, a) => {
+      if (a.is_available && a.current_spot_id) {
+        acc[a.current_spot_id] = (acc[a.current_spot_id] || 0) + 1;
       }
-    });
+      return acc;
+    }, {} as Record<string, number>);
 
-    // Add spot markers with beautiful styling
+    // Update spot markers with beautiful styling
     spots.forEach((spot) => {
-      const airbearsAtSpot = airbears.filter(
-        (a) => a.current_spot_id === spot.id && a.is_available
-      );
-      const hasAvailableAirbears = airbearsAtSpot.length > 0;
+      const count = countsBySpot[spot.id] || 0;
+      const hasAvailableAirbears = count > 0;
+      const markerId = `spot-${spot.id}`;
+      let marker = markersRef.current.get(markerId);
+
+      // Performance Optimization: Only update icon if count or availability status changed
+      if (marker && spotLastCountRef.current.get(markerId) === count) {
+        return;
+      }
 
       const icon = L.divIcon({
         html: `
@@ -183,7 +192,7 @@ export default function MapView({
               transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
               animation: ${
                 hasAvailableAirbears
-                  ? "pulse-glow 2s ease-in-out infinite"
+                  ? "map-pulse-glow 2s ease-in-out infinite"
                   : "none"
               };
             " 
@@ -218,36 +227,18 @@ export default function MapView({
                 font-weight: bold;
                 border: 4px solid white;
                 box-shadow: 0 4px 12px rgba(239, 68, 68, 0.5);
-                animation: pulse 1.5s ease-in-out infinite;
-              ">${airbearsAtSpot.length}</div>
+                animation: map-pulse 1.5s ease-in-out infinite;
+              ">${count}</div>
             `
                 : ""
             }
           </div>
-          <style>
-            @keyframes pulse {
-              0%, 100% { transform: scale(1); opacity: 1; }
-              50% { transform: scale(1.1); opacity: 0.9; }
-            }
-            @keyframes pulse-glow {
-              0%, 100% { 
-                box-shadow: 0 6px 20px rgba(0,0,0,0.3), 0 0 0 3px rgba(16, 185, 129, 0.3), 0 0 20px rgba(16, 185, 129, 0.4);
-              }
-              50% { 
-                box-shadow: 0 6px 20px rgba(0,0,0,0.3), 0 0 0 5px rgba(16, 185, 129, 0.6), 0 0 30px rgba(16, 185, 129, 0.8);
-              }
-            }
-          </style>
         `,
         className: "bg-transparent border-0",
         iconSize: [56, 56],
         iconAnchor: [28, 56],
         popupAnchor: [0, -56],
       });
-
-      const marker = L.marker([spot.latitude, spot.longitude], { icon }).addTo(
-        map
-      );
 
       const popupContent = `
         <div style="min-width: 240px; padding: 12px; font-family: system-ui, -apple-system, sans-serif;">
@@ -271,12 +262,12 @@ export default function MapView({
             }; border-radius: 50%; box-shadow: 0 0 12px ${
         hasAvailableAirbears ? "#10b981" : "#9ca3af"
       }; animation: ${
-        hasAvailableAirbears ? "pulse 2s ease-in-out infinite" : "none"
+        hasAvailableAirbears ? "map-pulse 2s ease-in-out infinite" : "none"
       };"></div>
             <span style="font-weight: 700; color: ${
               hasAvailableAirbears ? "#047857" : "#4b5563"
-            }; font-size: 15px;">${airbearsAtSpot.length} AirBear${
-        airbearsAtSpot.length !== 1 ? "s" : ""
+            }; font-size: 15px;">${count} AirBear${
+        count !== 1 ? "s" : ""
       } available</span>
           </div>
           ${
@@ -319,19 +310,39 @@ export default function MapView({
         </div>
       `;
 
-      marker.bindPopup(popupContent + bookingButton, {
-        maxWidth: 300,
-        className: "beautiful-popup",
-      });
+      if (marker) {
+        marker.setIcon(icon);
+        marker.setPopupContent(popupContent + bookingButton);
+      } else {
+        marker = L.marker([spot.latitude, spot.longitude], { icon }).addTo(map);
+        marker.bindPopup(popupContent + bookingButton, {
+          maxWidth: 300,
+          className: "beautiful-popup",
+        });
 
-      // Setup click handler for booking
-      marker.on("click", () => {
-        if (onSpotSelect) {
-          onSpotSelect(spot);
+        // Setup click handler for booking
+        marker.on("click", () => {
+          if (onSpotSelect) {
+            onSpotSelect(spot);
+          }
+        });
+
+        markersRef.current.set(markerId, marker);
+      }
+
+      spotLastCountRef.current.set(markerId, count);
+    });
+
+    // Remove old spot markers that are no longer in the spots list
+    markersRef.current.forEach((marker, id) => {
+      if (id.startsWith("spot-")) {
+        const spotId = id.replace("spot-", "");
+        if (!spots.find(s => s.id === spotId)) {
+          marker.remove();
+          markersRef.current.delete(id);
+          spotLastCountRef.current.delete(id);
         }
-      });
-
-      markersRef.current.set(`spot-${spot.id}`, marker);
+      }
     });
   }, [spots, airbears, onSpotSelect, mapLoaded]);
 
@@ -345,6 +356,13 @@ export default function MapView({
     airbears.forEach((airbear) => {
       const markerId = `airbear-${airbear.id}`;
       let marker = markersRef.current.get(markerId);
+      const status = `${airbear.is_available}-${airbear.is_charging}`;
+
+      // Only update position if status hasn't changed
+      if (marker && airbearLastStatusRef.current.get(markerId) === status) {
+        marker.setLatLng([airbear.latitude, airbear.longitude]);
+        return;
+      }
 
       const icon = L.divIcon({
         html: `
@@ -370,7 +388,7 @@ export default function MapView({
               font-size: 24px;
               animation: ${
                 airbear.is_available
-                  ? "pulse-glow 2s ease-in-out infinite"
+                  ? "map-pulse-glow 2s ease-in-out infinite"
                   : "none"
               };
               transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
@@ -404,26 +422,12 @@ export default function MapView({
                 justify-content: center;
                 font-size: 12px;
                 box-shadow: 0 4px 12px rgba(251, 191, 36, 0.6);
-                animation: pulse 1.5s ease-in-out infinite;
+                animation: map-pulse 1.5s ease-in-out infinite;
               ">⚡</div>
             `
                 : ""
             }
           </div>
-          <style>
-            @keyframes pulse {
-              0%, 100% { transform: scale(1); opacity: 1; }
-              50% { transform: scale(1.15); opacity: 0.9; }
-            }
-            @keyframes pulse-glow {
-              0%, 100% { 
-                box-shadow: 0 6px 18px rgba(0,0,0,0.35), 0 0 0 4px rgba(16, 185, 129, 0.25), 0 0 20px rgba(16, 185, 129, 0.4);
-              }
-              50% { 
-                box-shadow: 0 6px 18px rgba(0,0,0,0.35), 0 0 0 6px rgba(16, 185, 129, 0.5), 0 0 30px rgba(16, 185, 129, 0.8);
-              }
-            }
-          </style>
         `,
         className: "bg-transparent border-0",
         iconSize: [48, 48],
@@ -496,6 +500,8 @@ export default function MapView({
         });
         markersRef.current.set(markerId, marker);
       }
+
+      airbearLastStatusRef.current.set(markerId, status);
     });
 
     // Remove markers for airbears that no longer exist
@@ -505,6 +511,7 @@ export default function MapView({
         if (!airbears.find((a) => a.id === airbearId)) {
           marker.remove();
           markersRef.current.delete(id);
+          airbearLastStatusRef.current.delete(id);
         }
       }
     });
@@ -512,6 +519,20 @@ export default function MapView({
 
   return (
     <div className="relative">
+      <style dangerouslySetInnerHTML={{ __html: `
+        @keyframes map-pulse {
+          0%, 100% { transform: scale(1); opacity: 1; }
+          50% { transform: scale(1.15); opacity: 0.9; }
+        }
+        @keyframes map-pulse-glow {
+          0%, 100% {
+            box-shadow: 0 6px 20px rgba(0,0,0,0.3), 0 0 0 3px rgba(16, 185, 129, 0.3), 0 0 20px rgba(16, 185, 129, 0.4);
+          }
+          50% {
+            box-shadow: 0 6px 20px rgba(0,0,0,0.3), 0 0 0 5px rgba(16, 185, 129, 0.6), 0 0 30px rgba(16, 185, 129, 0.8);
+          }
+        }
+      `}} />
       <div
         ref={mapRef}
         className="w-full h-[600px] rounded-xl overflow-hidden shadow-2xl border-4 border-emerald-200/50 bg-gradient-to-br from-emerald-50 to-lime-50"
