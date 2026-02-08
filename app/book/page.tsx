@@ -240,11 +240,11 @@ export default function BookRidePage() {
                       className="w-full text-left p-3 rounded-lg border hover:bg-muted transition-colors focus-visible:ring-2 focus-visible:ring-emerald-500 outline-none"
                       onClick={() => setPickupSpot(spot)}
                     >
-                      <p className="font-medium">{spot.name}</p>
+                      <span className="block font-medium">{spot.name}</span>
                       {spot.description && (
-                        <p className="text-sm text-muted-foreground">
+                        <span className="block text-sm text-muted-foreground">
                           {spot.description}
-                        </p>
+                        </span>
                       )}
                     </button>
                   ))}
@@ -296,11 +296,11 @@ export default function BookRidePage() {
                         className="w-full text-left p-3 rounded-lg border hover:bg-muted transition-colors focus-visible:ring-2 focus-visible:ring-emerald-500 outline-none"
                         onClick={() => setDestinationSpot(spot)}
                       >
-                        <p className="font-medium">{spot.name}</p>
+                        <span className="block font-medium">{spot.name}</span>
                         {spot.description && (
-                          <p className="text-sm text-muted-foreground">
+                          <span className="block text-sm text-muted-foreground">
                             {spot.description}
-                          </p>
+                          </span>
                         )}
                       </button>
                     ))}
