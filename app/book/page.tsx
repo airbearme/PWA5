@@ -6,8 +6,6 @@ import { useAuthContext } from "@/components/auth-provider";
 import { getSupabaseClient } from "@/lib/supabase/client";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
 import { useToast } from "@/hooks/use-toast";
 import { MapPin, Navigation, DollarSign, Clock, ArrowRight, Loader2 } from "lucide-react";
 import Link from "next/link";
@@ -234,10 +232,13 @@ export default function BookRidePage() {
               ) : (
                 <div className={`space-y-2 max-h-60 overflow-y-auto ${booking ? "opacity-50 cursor-not-allowed" : ""}`}>
                   {spots.map((spot) => (
-                    <div
+                    <button
                       key={spot.id}
-                      className="p-3 rounded-lg border hover:bg-muted cursor-pointer transition-colors"
-                      onClick={() => !booking && setPickupSpot(spot)}
+                      type="button"
+                      disabled={booking}
+                      aria-label={`Select ${spot.name} as pickup location`}
+                      className="w-full text-left p-3 rounded-lg border hover:bg-muted transition-colors focus-visible:ring-2 focus-visible:ring-emerald-500 outline-none"
+                      onClick={() => setPickupSpot(spot)}
                     >
                       <p className="font-medium">{spot.name}</p>
                       {spot.description && (
@@ -245,7 +246,7 @@ export default function BookRidePage() {
                           {spot.description}
                         </p>
                       )}
-                    </div>
+                    </button>
                   ))}
                 </div>
               )}
@@ -287,10 +288,13 @@ export default function BookRidePage() {
                   {spots
                     .filter((s) => s.id !== pickupSpot?.id)
                     .map((spot) => (
-                      <div
+                      <button
                         key={spot.id}
-                        className="p-3 rounded-lg border hover:bg-muted cursor-pointer transition-colors"
-                        onClick={() => !booking && setDestinationSpot(spot)}
+                        type="button"
+                        disabled={booking}
+                        aria-label={`Select ${spot.name} as destination location`}
+                        className="w-full text-left p-3 rounded-lg border hover:bg-muted transition-colors focus-visible:ring-2 focus-visible:ring-emerald-500 outline-none"
+                        onClick={() => setDestinationSpot(spot)}
                       >
                         <p className="font-medium">{spot.name}</p>
                         {spot.description && (
@@ -298,7 +302,7 @@ export default function BookRidePage() {
                             {spot.description}
                           </p>
                         )}
-                      </div>
+                      </button>
                     ))}
                 </div>
               )}
