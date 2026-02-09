@@ -1,0 +1,3 @@
+## 2025-05-15 - [Accessible Semantic Refactoring]
+**Learning:** When refactoring interactive `div` elements to semantic `button` elements, avoid adding an `aria-label` if the inner content (like name and description) is already descriptive. Adding an `aria-label` overrides the inner content for screen readers, potentially hiding essential information.
+**Action:** Use semantic `button` elements with `type="button"` and `w-full text-left` to maintain layout, and only use `aria-label` for ambiguous text like "Change". Surgically apply `aria-live="polite"` to dynamic sections to notify users of content updates without being overly verbose.

@@ -227,6 +227,7 @@ export default function BookRidePage() {
                     className="mt-2"
                     onClick={() => setPickupSpot(null)}
                     disabled={booking}
+                    aria-label="Change pickup location"
                   >
                     Change
                   </Button>
@@ -234,10 +235,12 @@ export default function BookRidePage() {
               ) : (
                 <div className={`space-y-2 max-h-60 overflow-y-auto ${booking ? "opacity-50 cursor-not-allowed" : ""}`}>
                   {spots.map((spot) => (
-                    <div
+                    <button
                       key={spot.id}
-                      className="p-3 rounded-lg border hover:bg-muted cursor-pointer transition-colors"
-                      onClick={() => !booking && setPickupSpot(spot)}
+                      type="button"
+                      disabled={booking}
+                      className="w-full text-left p-3 rounded-lg border hover:bg-muted transition-colors focus-visible:ring-2 focus-visible:ring-emerald-500 outline-none"
+                      onClick={() => setPickupSpot(spot)}
                     >
                       <p className="font-medium">{spot.name}</p>
                       {spot.description && (
@@ -245,7 +248,7 @@ export default function BookRidePage() {
                           {spot.description}
                         </p>
                       )}
-                    </div>
+                    </button>
                   ))}
                 </div>
               )}
@@ -278,6 +281,7 @@ export default function BookRidePage() {
                     className="mt-2"
                     onClick={() => setDestinationSpot(null)}
                     disabled={booking}
+                    aria-label="Change destination location"
                   >
                     Change
                   </Button>
@@ -287,10 +291,12 @@ export default function BookRidePage() {
                   {spots
                     .filter((s) => s.id !== pickupSpot?.id)
                     .map((spot) => (
-                      <div
+                      <button
                         key={spot.id}
-                        className="p-3 rounded-lg border hover:bg-muted cursor-pointer transition-colors"
-                        onClick={() => !booking && setDestinationSpot(spot)}
+                        type="button"
+                        disabled={booking}
+                        className="w-full text-left p-3 rounded-lg border hover:bg-muted transition-colors focus-visible:ring-2 focus-visible:ring-emerald-500 outline-none"
+                        onClick={() => setDestinationSpot(spot)}
                       >
                         <p className="font-medium">{spot.name}</p>
                         {spot.description && (
@@ -298,7 +304,7 @@ export default function BookRidePage() {
                             {spot.description}
                           </p>
                         )}
-                      </div>
+                      </button>
                     ))}
                 </div>
               )}
@@ -308,7 +314,7 @@ export default function BookRidePage() {
 
         {/* Ride Summary */}
         {pickupSpot && destinationSpot && (
-          <Card className="mt-6 p-6 hover-lift">
+          <Card className="mt-6 p-6 hover-lift" aria-live="polite">
             <CardHeader>
               <CardTitle>Ride Summary</CardTitle>
             </CardHeader>
