@@ -1,5 +1,13 @@
 // Learn more: https://github.com/testing-library/jest-dom
 import '@testing-library/jest-dom'
+import fetch from 'node-fetch'
+
+if (!global.fetch) {
+  global.fetch = fetch;
+  global.Request = fetch.Request;
+  global.Response = fetch.Response;
+  global.Headers = fetch.Headers;
+}
 
 // Mock Next.js router
 jest.mock('next/navigation', () => ({

@@ -6,13 +6,18 @@
  */
 
 const requiredEnvVars = [
-	"NEXT_PUBLIC_SUPABASE_URL",
-	"NEXT_PUBLIC_SUPABASE_ANON_KEY",
+	"NEXT_PUBLIC_SUPABASE_PWA4_URL",
+	"NEXT_PUBLIC_SUPABASE_PWA4_ANON_KEY",
+	"SUPABASE_PWA4_SERVICE_ROLE_KEY",
 	"STRIPE_SECRET_KEY",
-	"STRIPE_PUBLISHABLE_KEY",
+	"NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY",
 ];
 
-const optionalEnvVars = ["STRIPE_WEBHOOK_SECRET", "NEXT_PUBLIC_SITE_URL"];
+const optionalEnvVars = [
+	"STRIPE_WEBHOOK_SECRET",
+	"NEXT_PUBLIC_SITE_URL",
+	"NODE_ENV",
+];
 
 function validateEnv() {
 	console.log("🔍 Validating environment variables...\n");
