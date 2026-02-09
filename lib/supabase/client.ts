@@ -1,4 +1,5 @@
 import { createBrowserClient } from "@supabase/ssr"
+import { env } from "@/lib/env"
 
 let supabaseClient: ReturnType<typeof createBrowserClient> | null = null
 
@@ -7,30 +8,8 @@ export function getSupabaseClient() {
     return supabaseClient
   }
 
-  const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_PWA4_URL
-  const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_PWA4_ANON_KEY
-
-  if (!supabaseUrl || !supabaseAnonKey) {
-    console.error("❌ Supabase configuration error:", {
-      hasUrl: !!supabaseUrl,
-      hasKey: !!supabaseAnonKey,
-    })
-    throw new Error(
-      "Missing Supabase environment variables. Please set NEXT_PUBLIC_SUPABASE_PWA4_URL and NEXT_PUBLIC_SUPABASE_PWA4_ANON_KEY",
-    )
-  }
-
-  // Validate URL format
-  try {
-    new URL(supabaseUrl)
-  } catch {
-    throw new Error(`Invalid Supabase URL format: ${supabaseUrl}`)
-  }
-
-  // Validate key format (should start with eyJ)
-  if (!supabaseAnonKey.startsWith("eyJ")) {
-    console.warn("⚠️ Supabase anon key format may be incorrect")
-  }
+  const supabaseUrl = env.NEXT_PUBLIC_SUPABASE_PWA4_URL
+  const supabaseAnonKey = env.NEXT_PUBLIC_SUPABASE_PWA4_ANON_KEY
 
   try {
     supabaseClient = createBrowserClient(supabaseUrl, supabaseAnonKey, {
