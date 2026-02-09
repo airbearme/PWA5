@@ -2,7 +2,7 @@
  * Utility Functions Unit Tests
  */
 
-import { describe, it, expect } from '@jest/globals';
+import { describe, it } from '@jest/globals';
 import { cn } from '@/lib/utils';
 
 describe('cn utility', () => {
