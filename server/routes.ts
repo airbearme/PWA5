@@ -7,6 +7,8 @@ import {
 	insertOrderSchema,
 	insertPaymentSchema,
 	insertRideSchema,
+	rideUpdateSchema,
+	updateProfileSchema,
 } from "../shared/schema.js";
 import { storage } from "./storage.js";
 
@@ -111,6 +113,12 @@ export async function registerRoutes(app: Express): Promise<Server> {
 			const userData = profileSchema
 				.extend({ password: z.string().min(6) })
 				.parse(req.body);
+
+			// Security: Prevent registration as admin
+			if (userData.role === "admin") {
+				return res.status(403).json({ message: "Cannot register as admin" });
+			}
+
 			const { data, error } = await supabaseAdmin.auth.admin.createUser({
 				email: userData.email || undefined,
 				password: userData.password,
@@ -207,16 +215,22 @@ export async function registerRoutes(app: Express): Promise<Server> {
 	app.post("/api/auth/sync-profile", async (req, res) => {
 		try {
 			if (!supabaseAdmin) {
-				return res
-					.status(500)
-					.json({
-						message:
-							"Supabase is not configured. Set SUPABASE_URL and SUPABASE_SERVICE_ROLE_KEY.",
-					});
+				return res.status(500).json({
+					message:
+						"Supabase is not configured. Set SUPABASE_URL and SUPABASE_SERVICE_ROLE_KEY.",
+				});
 			}
 
-			const payload = profileSchema.parse(req.body);
-			const profile = await ensureUserProfile(payload);
+			// Security: Use hardened schema to prevent unauthorized role escalation or field updates
+			const payload = z
+				.object({
+					id: z.string().optional(),
+					email: z.string().optional().nullable(),
+				})
+				.merge(updateProfileSchema)
+				.parse(req.body);
+
+			const profile = await ensureUserProfile(payload as any);
 			res.json({ user: profile });
 		} catch (error: any) {
 			res.status(400).json({ message: error.message });
@@ -276,7 +290,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
 	app.patch("/api/rides/:id", async (req, res) => {
 		try {
 			const { id } = req.params;
-			const updates = req.body;
+			// Security: Validate updates using hardened schema to prevent mass assignment
+			const updates = rideUpdateSchema.parse(req.body);
 			const ride = await storage.updateRide(id, updates);
 			res.json(ride);
 		} catch (error: any) {

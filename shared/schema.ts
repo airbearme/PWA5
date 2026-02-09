@@ -214,6 +214,31 @@ export const insertPaymentSchema = createInsertSchema(payments).omit({
 	createdAt: true,
 });
 
+// Security: Hardened schemas for updates to prevent mass assignment
+export const rideUpdateSchema = z
+	.object({
+		status: z
+			.enum(["pending", "accepted", "in_progress", "completed", "cancelled"])
+			.optional(),
+		driverId: z.string().optional().nullable(),
+		airbearId: z.string().optional().nullable(),
+		actualDuration: z.number().optional().nullable(),
+		distance: z.string().optional().nullable(),
+		co2Saved: z.string().optional().nullable(),
+		acceptedAt: z.coerce.date().optional().nullable(),
+		startedAt: z.coerce.date().optional().nullable(),
+		completedAt: z.coerce.date().optional().nullable(),
+	})
+	.strict();
+
+export const updateProfileSchema = z
+	.object({
+		username: z.string().min(1).optional(),
+		fullName: z.string().optional().nullable(),
+		avatarUrl: z.string().optional().nullable(),
+	})
+	.strict();
+
 // Types
 export type User = typeof users.$inferSelect;
 export type InsertUser = z.infer<typeof insertUserSchema>;
