@@ -1,5 +1,22 @@
 // Learn more: https://github.com/testing-library/jest-dom
-import '@testing-library/jest-dom'
+import "@testing-library/jest-dom";
+import { TextEncoder, TextDecoder } from "util";
+import fetch from "node-fetch";
+import { TransformStream } from "node:stream/web";
+
+// Polyfills for Jest environment
+if (typeof global.TextEncoder === "undefined") {
+	global.TextEncoder = TextEncoder;
+}
+if (typeof global.TextDecoder === "undefined") {
+	global.TextDecoder = TextDecoder;
+}
+if (typeof global.fetch === "undefined") {
+	global.fetch = fetch;
+}
+if (typeof global.TransformStream === "undefined") {
+	global.TransformStream = TransformStream;
+}
 
 // Mock Next.js router
 jest.mock('next/navigation', () => ({
