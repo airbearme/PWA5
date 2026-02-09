@@ -8,15 +8,17 @@
 const https = require("https");
 const http = require("http");
 
+const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || "https://airbear.me";
+
 const checks = [
 	{
-		name: "Production Site",
-		url: "https://airbear.me",
+		name: "Site Homepage",
+		url: `${SITE_URL}/`,
 		method: "GET",
 	},
 	{
 		name: "API Health",
-		url: "https://airbear.me/api/health",
+		url: `${SITE_URL}/api/health`,
 		method: "GET",
 	},
 ];
