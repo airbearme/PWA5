@@ -36,8 +36,8 @@ jobs:
       
       - name: Check database connectivity
         env:
-          SUPABASE_URL: ${{ secrets.NEXT_PUBLIC_SUPABASE_URL }}
-          SUPABASE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
+          SUPABASE_URL: ${{ secrets.NEXT_PUBLIC_SUPABASE_PWA4_URL }}
+          SUPABASE_KEY: ${{ secrets.SUPABASE_PWA4_SERVICE_ROLE_KEY }}
         run: |
           node scripts/check-database.js || echo "Database check script not found"
       
@@ -79,6 +79,13 @@ jobs:
           lhci autorun || echo "Lighthouse CI not configured"
       
       - name: Check bundle size
+        env:
+          NEXT_PUBLIC_SUPABASE_PWA4_URL: ${{ secrets.NEXT_PUBLIC_SUPABASE_PWA4_URL }}
+          NEXT_PUBLIC_SUPABASE_PWA4_ANON_KEY: ${{ secrets.NEXT_PUBLIC_SUPABASE_PWA4_ANON_KEY }}
+          SUPABASE_PWA4_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_PWA4_SERVICE_ROLE_KEY }}
+          NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY: ${{ secrets.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY }}
+          STRIPE_SECRET_KEY: ${{ secrets.STRIPE_SECRET_KEY }}
+          NEXT_PUBLIC_SITE_URL: ${{ secrets.NEXT_PUBLIC_SITE_URL || 'https://airbear.me' }}
         run: |
           pnpm run build
           node scripts/check-bundle-size.js || echo "Bundle size check script not found"

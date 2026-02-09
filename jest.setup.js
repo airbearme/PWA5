@@ -1,5 +1,10 @@
 // Learn more: https://github.com/testing-library/jest-dom
 import '@testing-library/jest-dom'
+import { TextEncoder, TextDecoder } from 'util'
+
+// Essential polyfills for JSDOM environment
+global.TextEncoder = TextEncoder
+global.TextDecoder = TextDecoder
 
 // Mock Next.js router
 jest.mock('next/navigation', () => ({
@@ -56,14 +61,40 @@ global.ResizeObserver = class ResizeObserver {
   unobserve() {}
 }
 
-// Suppress console errors in tests (optional)
-// global.console = {
-//   ...console,
-//   error: jest.fn(),
-//   warn: jest.fn(),
-// }
+// React 19 compatibility for tests
+global.IS_REACT_ACT_ENVIRONMENT = true
 
+// Mock global fetch for API tests
+global.fetch = jest.fn().mockImplementation((url) => {
+  const urlString = url.toString();
 
+  if (urlString.includes('/api/health')) {
+    return Promise.resolve({
+      ok: true,
+      status: 200,
+      json: () => Promise.resolve({ status: 'healthy', database: 'connected' }),
+    });
+  }
 
+  if (urlString.includes('/api/stripe/webhook')) {
+    return Promise.resolve({
+      ok: false,
+      status: 400,
+      json: () => Promise.resolve({ error: 'Invalid signature' }),
+    });
+  }
 
+  if (urlString.includes('/api/auth/callback')) {
+    return Promise.resolve({
+      ok: false,
+      status: 302,
+      json: () => Promise.resolve({}),
+    });
+  }
 
+  return Promise.resolve({
+    ok: true,
+    status: 200,
+    json: () => Promise.resolve({}),
+  });
+});
