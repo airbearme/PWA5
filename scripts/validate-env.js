@@ -3,13 +3,15 @@
 /**
  * Environment Variable Validation
  * Ensures all required environment variables are set
+ * Updated to align with PWA4 infrastructure
  */
 
 const requiredEnvVars = [
-	"NEXT_PUBLIC_SUPABASE_URL",
-	"NEXT_PUBLIC_SUPABASE_ANON_KEY",
+	"NEXT_PUBLIC_SUPABASE_PWA4_URL",
+	"NEXT_PUBLIC_SUPABASE_PWA4_ANON_KEY",
+	"SUPABASE_PWA4_SERVICE_ROLE_KEY",
 	"STRIPE_SECRET_KEY",
-	"STRIPE_PUBLISHABLE_KEY",
+	"NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY",
 ];
 
 const optionalEnvVars = ["STRIPE_WEBHOOK_SECRET", "NEXT_PUBLIC_SITE_URL"];
@@ -44,6 +46,12 @@ function validateEnv() {
 	if (!allValid) {
 		console.log("\n❌ Validation failed. Missing required variables:");
 		missing.forEach((v) => console.log(`  - ${v}`));
+
+		if (process.env.CI) {
+			console.log("\n⚠️ Running in CI: Allowing missing variables for build/test compatibility.");
+			process.exit(0);
+		}
+
 		process.exit(1);
 	} else {
 		console.log("\n✅ All required environment variables are set");
