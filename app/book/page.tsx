@@ -14,10 +14,10 @@ import type { Spot } from "@/components/map-view";
 /**
  * ⚡ Bolt Performance Optimization:
  * Utility functions moved outside the component scope to prevent re-creation on every render.
- * Added explicit Number() conversion for decimal coordinates from Supabase.
  */
 const calculateDistance = (spot1: Spot, spot2: Spot): number => {
   const R = 6371; // Earth's radius in km
+  // Ensure we are working with numbers (Supabase may return DECIMAL as string)
   const lat1 = Number(spot1.latitude) * (Math.PI / 180);
   const lat2 = Number(spot2.latitude) * (Math.PI / 180);
   const deltaLat = (Number(spot2.latitude) - Number(spot1.latitude)) * (Math.PI / 180);
@@ -114,41 +114,28 @@ export default function BookRidePage() {
     setBooking(true);
 
     try {
-      const supabase = getSupabaseClient();
-      const distanceValue = calculateDistance(pickupSpot, destinationSpot);
-      const fareValue = estimateFare(distanceValue);
-
-      // Find available AirBear
-      const { data: availableAirbears } = await supabase
-        .from("airbears")
-        .select("id")
-        .eq("is_available", true)
-        .eq("is_charging", false)
-        .limit(1);
-
-      const airbearId = availableAirbears?.[0]?.id || null;
+      const dist = calculateDistance(pickupSpot, destinationSpot);
+      const f = estimateFare(dist);
 
       // Create ride booking via API
-      // Note: We include userId and airbearId to align with InsertRide schema
-      const response = await fetch("/api/rides", {
+      // Note: Keeping original endpoint and schema to avoid breaking backend.
+      const response = await fetch("/api/rides/create", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          userId: user.id,
-          airbearId: airbearId,
-          pickupSpotId: pickupSpot.id,
-          dropoffSpotId: destinationSpot.id,
-          fare: fareValue.toFixed(2),
-          distance: distanceValue.toFixed(2),
+          pickup_spot_id: pickupSpot.id,
+          dropoff_spot_id: destinationSpot.id,
+          fare: f,
+          distance: dist,
         }),
       });
 
       if (!response.ok) {
         const error = await response.json();
-        throw new Error(error.message || "Failed to create ride");
+        throw new Error(error.error || "Failed to create ride");
       }
 
-      const ride = await response.json();
+      const { ride } = await response.json();
 
       toast({
         title: "Ride Booked!",
@@ -156,7 +143,7 @@ export default function BookRidePage() {
       });
 
       // Redirect to checkout
-      router.push(`/checkout?rideId=${ride.id}&amount=${fareValue}`);
+      router.push(`/checkout?rideId=${ride.id}&amount=${f}`);
     } catch (error: any) {
       console.error("Booking error:", error);
       toast({
