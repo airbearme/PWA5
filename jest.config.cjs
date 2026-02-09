@@ -11,10 +11,11 @@ const customJestConfig = {
   testEnvironment: 'jest-environment-jsdom',
   moduleNameMapper: {
     '^@/(.*)$': '<rootDir>/$1',
+    '^(\\.{1,2}/.*)\\.js$': '$1',
   },
   testMatch: [
     '**/__tests__/**/*.[jt]s?(x)',
-    '**/?(*.)+(spec|test).[jt]s?(x)',
+    '**/*.test.[jt]s?(x)',
   ],
   collectCoverageFrom: [
     'app/**/*.{js,jsx,ts,tsx}',
@@ -24,6 +25,7 @@ const customJestConfig = {
     '!**/node_modules/**',
     '!**/.next/**',
   ],
+  modulePathIgnorePatterns: ['<rootDir>/.next/'],
   coverageThreshold: {
     global: {
       branches: 70,
