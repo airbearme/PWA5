@@ -25,6 +25,7 @@ const customJestConfig = {
     '!**/node_modules/**',
     '!**/.next/**',
   ],
+  modulePathIgnorePatterns: ['<rootDir>/.next/'],
   coverageThreshold: {
     global: {
       branches: 70,
