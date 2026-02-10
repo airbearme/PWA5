@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo, useCallback, useRef } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useAuthContext } from "@/components/auth-provider";
 import { getSupabaseClient } from "@/lib/supabase/client";
@@ -12,6 +12,34 @@ import { useToast } from "@/hooks/use-toast";
 import { MapPin, Navigation, DollarSign, Clock, ArrowRight, Loader2 } from "lucide-react";
 import Link from "next/link";
 import type { Spot } from "@/components/map-view";
+
+/**
+ * ⚡ Bolt: Optimized utility functions for distance and fare calculations.
+ * These are moved outside the component to prevent re-creation on every render.
+ * Also added Number() conversion for latitude/longitude for database compatibility.
+ */
+const calculateDistance = (spot1: Spot, spot2: Spot): number => {
+  const R = 6371; // Earth's radius in km
+  const lat1 = Number(spot1.latitude) * (Math.PI / 180);
+  const lat2 = Number(spot2.latitude) * (Math.PI / 180);
+  const deltaLat = (Number(spot2.latitude) - Number(spot1.latitude)) * (Math.PI / 180);
+  const deltaLon = (Number(spot2.longitude) - Number(spot1.longitude)) * (Math.PI / 180);
+
+  const a =
+    Math.sin(deltaLat / 2) * Math.sin(deltaLat / 2) +
+    Math.cos(lat1) *
+      Math.cos(lat2) *
+      Math.sin(deltaLon / 2) *
+      Math.sin(deltaLon / 2);
+  const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+
+  return R * c;
+};
+
+const estimateFare = (_distance: number): number => {
+  // Flat rate $4.00 for all rides
+  return 4.0;
+};
 
 export default function BookRidePage() {
   const { user, loading: authLoading } = useAuthContext();
@@ -30,6 +58,10 @@ export default function BookRidePage() {
     }
   }, [user, authLoading, router]);
 
+  /**
+   * ⚡ Bolt: Decoupled spot fetching from searchParams.
+   * This prevents re-fetching all locations when URL query parameters change.
+   */
   useEffect(() => {
     const loadSpots = async () => {
       try {
@@ -42,13 +74,6 @@ export default function BookRidePage() {
 
         if (error) throw error;
         setSpots(data || []);
-
-        // Check for pickup spot from URL
-        const pickupId = searchParams.get("pickup");
-        if (pickupId && data) {
-          const spot = data.find((s) => s.id === pickupId);
-          if (spot) setPickupSpot(spot);
-        }
       } catch (error) {
         console.error("Error loading spots:", error);
         toast({
@@ -62,32 +87,38 @@ export default function BookRidePage() {
     };
 
     loadSpots();
-  }, [searchParams, toast]);
+  }, [toast]);
 
-  const calculateDistance = (spot1: Spot, spot2: Spot): number => {
-    const R = 6371; // Earth's radius in km
-    const lat1 = spot1.latitude * (Math.PI / 180);
-    const lat2 = spot2.latitude * (Math.PI / 180);
-    const deltaLat = (spot2.latitude - spot1.latitude) * (Math.PI / 180);
-    const deltaLon = (spot2.longitude - spot1.longitude) * (Math.PI / 180);
+  /**
+   * ⚡ Bolt: Separate effect for synchronizing pickup selection from URL.
+   * This handles initial selection and URL reactivity without re-fetching all spots.
+   */
+  useEffect(() => {
+    if (spots.length === 0) return;
 
-    const a =
-      Math.sin(deltaLat / 2) * Math.sin(deltaLat / 2) +
-      Math.cos(lat1) *
-        Math.cos(lat2) *
-        Math.sin(deltaLon / 2) *
-        Math.sin(deltaLon / 2);
-    const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+    const pickupId = searchParams.get("pickup");
+    if (pickupId) {
+      const spot = spots.find((s) => s.id === pickupId);
+      if (spot && !pickupSpot) {
+        setPickupSpot(spot);
+      }
+    }
+  }, [searchParams, spots, pickupSpot]);
 
-    return R * c;
-  };
+  /**
+   * ⚡ Bolt: Memoized distance and fare calculations.
+   */
+  const distance = useMemo(() =>
+    pickupSpot && destinationSpot ? calculateDistance(pickupSpot, destinationSpot) : 0,
+    [pickupSpot, destinationSpot]
+  );
 
-  const estimateFare = (distance: number): number => {
-    // Flat rate $4.00 for all rides
-    return 4.0;
-  };
+  const fare = useMemo(() => estimateFare(distance), [distance]);
 
-  const handleBookRide = async () => {
+  /**
+   * ⚡ Bolt: Memoized booking handler with useCallback.
+   */
+  const handleBookRide = useCallback(async () => {
     if (!pickupSpot || !destinationSpot || !user) {
       toast({
         title: "Missing Information",
@@ -101,8 +132,6 @@ export default function BookRidePage() {
 
     try {
       const supabase = getSupabaseClient();
-      const distance = calculateDistance(pickupSpot, destinationSpot);
-      const fare = estimateFare(distance);
 
       // Find available AirBear
       const { data: availableAirbears } = await supabase
@@ -150,12 +179,7 @@ export default function BookRidePage() {
     } finally {
       setBooking(false);
     }
-  };
-
-  const distance = pickupSpot && destinationSpot
-    ? calculateDistance(pickupSpot, destinationSpot)
-    : 0;
-  const fare = estimateFare(distance);
+  }, [pickupSpot, destinationSpot, user, toast, router, distance, fare]);
 
   if (authLoading || loading) {
     return (
