@@ -92,18 +92,21 @@ export default function BookRidePage() {
   /**
    * ⚡ Bolt: Separate effect for synchronizing pickup selection from URL.
    * This handles initial selection and URL reactivity without re-fetching all spots.
+   * We only update if the URL parameter has changed to a different spot.
    */
+  const lastUrlPickup = useRef<string | null>(null);
   useEffect(() => {
     if (spots.length === 0) return;
 
     const pickupId = searchParams.get("pickup");
-    if (pickupId) {
+    if (pickupId && pickupId !== lastUrlPickup.current) {
       const spot = spots.find((s) => s.id === pickupId);
-      if (spot && !pickupSpot) {
+      if (spot) {
         setPickupSpot(spot);
+        lastUrlPickup.current = pickupId;
       }
     }
-  }, [searchParams, spots, pickupSpot]);
+  }, [searchParams, spots]);
 
   /**
    * ⚡ Bolt: Memoized distance and fare calculations.
