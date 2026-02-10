@@ -10,23 +10,26 @@ describe("AirBear API Health Checks", () => {
 			if (url.endsWith("/api/health")) {
 				return Promise.resolve({
 					status: 200,
+					ok: true,
 					json: () => Promise.resolve({ status: "healthy", database: "connected" }),
-				});
+				} as Response);
 			}
 			if (url.endsWith("/api/stripe/webhook")) {
 				return Promise.resolve({
 					status: 400,
+					ok: false,
 					json: () => Promise.resolve({ error: "No signature" }),
-				});
+				} as Response);
 			}
 			if (url.endsWith("/api/auth/callback")) {
 				return Promise.resolve({
 					status: 302,
+					ok: true,
 					json: () => Promise.resolve({}),
-				});
+				} as Response);
 			}
 			return Promise.reject(new Error("Unknown URL"));
-		}) as jest.Mock;
+		}) as unknown as typeof fetch;
 	});
 
 	const baseUrl = process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000";
