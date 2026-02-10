@@ -390,8 +390,11 @@ export default function BookRidePage() {
 
         {/* Back to Map */}
         <div className="mt-6 text-center">
-          <Button asChild variant="outline">
-            <Link href="/map">Back to Map</Link>
+          <Button asChild variant="outline" className="gap-2 group">
+            <Link href="/map">
+              <ArrowRight className="w-4 h-4 rotate-180 transition-transform group-hover:-translate-x-1" />
+              Back to Map
+            </Link>
           </Button>
         </div>
       </div>
