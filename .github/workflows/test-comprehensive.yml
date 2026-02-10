@@ -17,16 +17,16 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+      - name: Install pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: latest
+
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
           node-version: '20.x'
           cache: 'pnpm'
-
-      - name: Install pnpm
-        uses: pnpm/action-setup@v2
-        with:
-          version: '8'
 
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
@@ -44,16 +44,16 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+      - name: Install pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: latest
+
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
           node-version: '20.x'
           cache: 'pnpm'
-
-      - name: Install pnpm
-        uses: pnpm/action-setup@v2
-        with:
-          version: '8'
 
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
@@ -62,6 +62,8 @@ jobs:
         run: npx playwright install --with-deps
 
       - name: Build application
+        env:
+          SKIP_ENV_VALIDATION: true
         run: pnpm run build
 
       - name: Start server
@@ -80,21 +82,23 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+      - name: Install pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: latest
+
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
           node-version: '20.x'
           cache: 'pnpm'
 
-      - name: Install pnpm
-        uses: pnpm/action-setup@v2
-        with:
-          version: '8'
-
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
 
       - name: Build application
+        env:
+          SKIP_ENV_VALIDATION: true
         run: pnpm run build
 
       - name: Start server
@@ -119,16 +123,16 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+      - name: Install pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: latest
+
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
           node-version: '20.x'
           cache: 'pnpm'
-
-      - name: Install pnpm
-        uses: pnpm/action-setup@v2
-        with:
-          version: '8'
 
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
@@ -158,16 +162,16 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+      - name: Install pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: latest
+
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
           node-version: '20.x'
           cache: 'pnpm'
-
-      - name: Install pnpm
-        uses: pnpm/action-setup@v2
-        with:
-          version: '8'
 
       - name: Install dependencies
         run: pnpm install --frozen-lockfile

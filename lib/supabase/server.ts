@@ -11,10 +11,18 @@ const supabaseEnvSchema = z.object({
     .regex(/^eyJ/, "Invalid Supabase anon key format"),
 })
 
-const env = supabaseEnvSchema.parse({
-  NEXT_PUBLIC_SUPABASE_PWA4_URL: process.env.NEXT_PUBLIC_SUPABASE_PWA4_URL,
-  NEXT_PUBLIC_SUPABASE_PWA4_ANON_KEY: process.env.NEXT_PUBLIC_SUPABASE_PWA4_ANON_KEY,
-})
+// Skip validation during build if SKIP_ENV_VALIDATION is set
+const skipValidation = process.env.SKIP_ENV_VALIDATION === 'true'
+
+const env = skipValidation
+  ? {
+      NEXT_PUBLIC_SUPABASE_PWA4_URL: process.env.NEXT_PUBLIC_SUPABASE_PWA4_URL || 'https://placeholder.supabase.co',
+      NEXT_PUBLIC_SUPABASE_PWA4_ANON_KEY: process.env.NEXT_PUBLIC_SUPABASE_PWA4_ANON_KEY || 'eyJplaceholder',
+    }
+  : supabaseEnvSchema.parse({
+      NEXT_PUBLIC_SUPABASE_PWA4_URL: process.env.NEXT_PUBLIC_SUPABASE_PWA4_URL,
+      NEXT_PUBLIC_SUPABASE_PWA4_ANON_KEY: process.env.NEXT_PUBLIC_SUPABASE_PWA4_ANON_KEY,
+    })
 
 export async function getSupabaseServer() {
   const cookieStore = await cookies()
