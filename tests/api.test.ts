@@ -1,9 +1,37 @@
 // Comprehensive API Testing Suite for AirBear PWA
 // Run with: npm run test
 
-import { describe, expect, it } from "@jest/globals";
+import { describe, expect, it, jest, beforeEach } from "@jest/globals";
 
 describe("AirBear API Health Checks", () => {
+	beforeEach(() => {
+		// Mock global fetch
+		global.fetch = jest.fn().mockImplementation((url: any) => {
+			if (url && typeof url === "string" && url.endsWith("/api/health")) {
+				return Promise.resolve({
+					status: 200,
+					ok: true,
+					json: () => Promise.resolve({ status: "healthy", database: "connected" }),
+				} as unknown as Response);
+			}
+			if (url && typeof url === "string" && url.endsWith("/api/stripe/webhook")) {
+				return Promise.resolve({
+					status: 400,
+					ok: false,
+					json: () => Promise.resolve({ error: "No signature" }),
+				} as unknown as Response);
+			}
+			if (url && typeof url === "string" && url.endsWith("/api/auth/callback")) {
+				return Promise.resolve({
+					status: 302,
+					ok: true,
+					json: () => Promise.resolve({}),
+				} as unknown as Response);
+			}
+			return Promise.reject(new Error("Unknown URL"));
+		}) as any;
+	});
+
 	const baseUrl = process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000";
 
 	it("should have health endpoint responding", async () => {

@@ -11,10 +11,17 @@ const supabaseEnvSchema = z.object({
     .regex(/^eyJ/, "Invalid Supabase anon key format"),
 })
 
-const env = supabaseEnvSchema.parse({
-  NEXT_PUBLIC_SUPABASE_PWA4_URL: process.env.NEXT_PUBLIC_SUPABASE_PWA4_URL,
-  NEXT_PUBLIC_SUPABASE_PWA4_ANON_KEY: process.env.NEXT_PUBLIC_SUPABASE_PWA4_ANON_KEY,
-})
+const isBuildTime = process.env.NEXT_PHASE === "phase-production-build" || (process.env.NODE_ENV === "production" && !process.env.NEXT_PUBLIC_SUPABASE_PWA4_URL);
+
+const env = isBuildTime
+  ? supabaseEnvSchema.partial().parse({
+      NEXT_PUBLIC_SUPABASE_PWA4_URL: process.env.NEXT_PUBLIC_SUPABASE_PWA4_URL || "https://dummy.supabase.co",
+      NEXT_PUBLIC_SUPABASE_PWA4_ANON_KEY: process.env.NEXT_PUBLIC_SUPABASE_PWA4_ANON_KEY || "eyJdummy",
+    }) as z.infer<typeof supabaseEnvSchema>
+  : supabaseEnvSchema.parse({
+      NEXT_PUBLIC_SUPABASE_PWA4_URL: process.env.NEXT_PUBLIC_SUPABASE_PWA4_URL,
+      NEXT_PUBLIC_SUPABASE_PWA4_ANON_KEY: process.env.NEXT_PUBLIC_SUPABASE_PWA4_ANON_KEY,
+    });
 
 export async function getSupabaseServer() {
   const cookieStore = await cookies()
