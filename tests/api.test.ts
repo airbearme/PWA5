@@ -6,30 +6,30 @@ import { describe, expect, it, jest, beforeEach } from "@jest/globals";
 describe("AirBear API Health Checks", () => {
 	beforeEach(() => {
 		// Mock global fetch
-		global.fetch = jest.fn((url: string) => {
-			if (url.endsWith("/api/health")) {
+		global.fetch = jest.fn().mockImplementation((url: any) => {
+			if (url && typeof url === "string" && url.endsWith("/api/health")) {
 				return Promise.resolve({
 					status: 200,
 					ok: true,
 					json: () => Promise.resolve({ status: "healthy", database: "connected" }),
-				} as Response);
+				} as unknown as Response);
 			}
-			if (url.endsWith("/api/stripe/webhook")) {
+			if (url && typeof url === "string" && url.endsWith("/api/stripe/webhook")) {
 				return Promise.resolve({
 					status: 400,
 					ok: false,
 					json: () => Promise.resolve({ error: "No signature" }),
-				} as Response);
+				} as unknown as Response);
 			}
-			if (url.endsWith("/api/auth/callback")) {
+			if (url && typeof url === "string" && url.endsWith("/api/auth/callback")) {
 				return Promise.resolve({
 					status: 302,
 					ok: true,
 					json: () => Promise.resolve({}),
-				} as Response);
+				} as unknown as Response);
 			}
 			return Promise.reject(new Error("Unknown URL"));
-		}) as unknown as typeof fetch;
+		}) as any;
 	});
 
 	const baseUrl = process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000";
