@@ -40,8 +40,6 @@ export async function registerRoutes(app: Express): Promise<Server> {
 		res.json({
 			status: "ok",
 			timestamp: new Date().toISOString(),
-			env: process.env.NODE_ENV,
-			version: "1.2.1",
 		});
 	});
 
@@ -110,6 +108,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
 			const userData = profileSchema
 				.extend({ password: z.string().min(6) })
+				.omit({ role: true }) // Sentinel: Prevent role escalation during registration
 				.parse(req.body);
 			const { data, error } = await supabaseAdmin.auth.admin.createUser({
 				email: userData.email || undefined,
@@ -117,7 +116,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
 				email_confirm: true,
 				user_metadata: {
 					username: userData.username,
-					role: userData.role || "user",
+					role: "user",
 					fullName: userData.fullName,
 				},
 			});
@@ -127,10 +126,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
 				email: userData.email,
 				username: userData.username,
 				fullName: userData.fullName,
-				role:
-					(data.user?.user_metadata?.role as "user" | "driver" | "admin") ||
-					userData.role ||
-					"user",
+				role: "user",
 				avatarUrl: null,
 			});
 
@@ -215,7 +211,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
 					});
 			}
 
-			const payload = profileSchema.parse(req.body);
+			const payload = profileSchema.omit({ role: true }).parse(req.body); // Sentinel: Prevent role escalation during sync
 			const profile = await ensureUserProfile(payload);
 			res.json({ user: profile });
 		} catch (error: any) {
