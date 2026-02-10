@@ -16,7 +16,13 @@ const envSchema = z.object({
   NODE_ENV: z.enum(["development", "production", "test"]),
 })
 
-export const env = envSchema.parse({
+if (process.env.SKIP_ENV_VALIDATION) {
+  console.warn("⚠️ Skipping environment validation")
+}
+
+export const env = process.env.SKIP_ENV_VALIDATION
+  ? ({} as z.infer<typeof envSchema>)
+  : envSchema.parse({
   NEXT_PUBLIC_SUPABASE_PWA4_URL: process.env.NEXT_PUBLIC_SUPABASE_PWA4_URL,
   NEXT_PUBLIC_SUPABASE_PWA4_ANON_KEY: process.env.NEXT_PUBLIC_SUPABASE_PWA4_ANON_KEY,
   SUPABASE_PWA4_SERVICE_ROLE_KEY: process.env.SUPABASE_PWA4_SERVICE_ROLE_KEY,
