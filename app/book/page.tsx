@@ -225,6 +225,7 @@ export default function BookRidePage() {
                     variant="outline"
                     size="sm"
                     className="mt-2"
+                    aria-label="Change pickup location"
                     onClick={() => setPickupSpot(null)}
                     disabled={booking}
                   >
@@ -232,12 +233,14 @@ export default function BookRidePage() {
                   </Button>
                 </div>
               ) : (
-                <div className={`space-y-2 max-h-60 overflow-y-auto ${booking ? "opacity-50 cursor-not-allowed" : ""}`}>
+                <div className={`space-y-2 max-h-60 overflow-y-auto ${booking ? "opacity-50" : ""}`}>
                   {spots.map((spot) => (
-                    <div
+                    <button
                       key={spot.id}
-                      className="p-3 rounded-lg border hover:bg-muted cursor-pointer transition-colors"
-                      onClick={() => !booking && setPickupSpot(spot)}
+                      type="button"
+                      disabled={booking}
+                      className="w-full text-left p-3 rounded-lg border hover:bg-muted focus-visible:ring-2 focus-visible:ring-emerald-500 transition-colors disabled:cursor-not-allowed"
+                      onClick={() => setPickupSpot(spot)}
                     >
                       <p className="font-medium">{spot.name}</p>
                       {spot.description && (
@@ -245,7 +248,7 @@ export default function BookRidePage() {
                           {spot.description}
                         </p>
                       )}
-                    </div>
+                    </button>
                   ))}
                 </div>
               )}
@@ -276,6 +279,7 @@ export default function BookRidePage() {
                     variant="outline"
                     size="sm"
                     className="mt-2"
+                    aria-label="Change destination location"
                     onClick={() => setDestinationSpot(null)}
                     disabled={booking}
                   >
@@ -283,14 +287,16 @@ export default function BookRidePage() {
                   </Button>
                 </div>
               ) : (
-                <div className={`space-y-2 max-h-60 overflow-y-auto ${booking ? "opacity-50 cursor-not-allowed" : ""}`}>
+                <div className={`space-y-2 max-h-60 overflow-y-auto ${booking ? "opacity-50" : ""}`}>
                   {spots
                     .filter((s) => s.id !== pickupSpot?.id)
                     .map((spot) => (
-                      <div
+                      <button
                         key={spot.id}
-                        className="p-3 rounded-lg border hover:bg-muted cursor-pointer transition-colors"
-                        onClick={() => !booking && setDestinationSpot(spot)}
+                        type="button"
+                        disabled={booking}
+                        className="w-full text-left p-3 rounded-lg border hover:bg-muted focus-visible:ring-2 focus-visible:ring-amber-500 transition-colors disabled:cursor-not-allowed"
+                        onClick={() => setDestinationSpot(spot)}
                       >
                         <p className="font-medium">{spot.name}</p>
                         {spot.description && (
@@ -298,7 +304,7 @@ export default function BookRidePage() {
                             {spot.description}
                           </p>
                         )}
-                      </div>
+                      </button>
                     ))}
                 </div>
               )}
@@ -308,7 +314,7 @@ export default function BookRidePage() {
 
         {/* Ride Summary */}
         {pickupSpot && destinationSpot && (
-          <Card className="mt-6 p-6 hover-lift">
+          <Card className="mt-6 p-6 hover-lift animate-in fade-in slide-in-from-bottom-4 duration-500" aria-live="polite">
             <CardHeader>
               <CardTitle>Ride Summary</CardTitle>
             </CardHeader>
@@ -384,12 +390,14 @@ export default function BookRidePage() {
 
         {/* Back to Map */}
         <div className="mt-6 text-center">
-          <Button asChild variant="outline">
-            <Link href="/map">Back to Map</Link>
+          <Button asChild variant="outline" className="gap-2 group">
+            <Link href="/map">
+              <ArrowRight className="w-4 h-4 rotate-180 transition-transform group-hover:-translate-x-1" />
+              Back to Map
+            </Link>
           </Button>
         </div>
       </div>
     </div>
   );
 }
-
