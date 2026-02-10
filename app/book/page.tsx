@@ -9,7 +9,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useToast } from "@/hooks/use-toast";
-import { MapPin, Navigation, DollarSign, Clock, ArrowRight, Loader2, ArrowLeft } from "lucide-react";
+import { MapPin, Navigation, DollarSign, Clock, ArrowRight, Loader2 } from "lucide-react";
 import Link from "next/link";
 import type { Spot } from "@/components/map-view";
 
@@ -225,21 +225,21 @@ export default function BookRidePage() {
                     variant="outline"
                     size="sm"
                     className="mt-2"
+                    aria-label="Change pickup location"
                     onClick={() => setPickupSpot(null)}
                     disabled={booking}
-                    aria-label="Change pickup location"
                   >
                     Change
                   </Button>
                 </div>
               ) : (
-                <div className={`space-y-2 max-h-60 overflow-y-auto ${booking ? "opacity-50 cursor-not-allowed" : ""}`}>
+                <div className={`space-y-2 max-h-60 overflow-y-auto ${booking ? "opacity-50" : ""}`}>
                   {spots.map((spot) => (
                     <button
                       key={spot.id}
                       type="button"
                       disabled={booking}
-                      className="w-full text-left p-3 rounded-lg border hover:bg-muted transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500"
+                      className="w-full text-left p-3 rounded-lg border hover:bg-muted focus-visible:ring-2 focus-visible:ring-emerald-500 transition-colors disabled:cursor-not-allowed"
                       onClick={() => setPickupSpot(spot)}
                     >
                       <p className="font-medium">{spot.name}</p>
@@ -279,15 +279,15 @@ export default function BookRidePage() {
                     variant="outline"
                     size="sm"
                     className="mt-2"
+                    aria-label="Change destination location"
                     onClick={() => setDestinationSpot(null)}
                     disabled={booking}
-                    aria-label="Change destination location"
                   >
                     Change
                   </Button>
                 </div>
               ) : (
-                <div className={`space-y-2 max-h-60 overflow-y-auto ${booking ? "opacity-50 cursor-not-allowed" : ""}`}>
+                <div className={`space-y-2 max-h-60 overflow-y-auto ${booking ? "opacity-50" : ""}`}>
                   {spots
                     .filter((s) => s.id !== pickupSpot?.id)
                     .map((spot) => (
@@ -295,7 +295,7 @@ export default function BookRidePage() {
                         key={spot.id}
                         type="button"
                         disabled={booking}
-                        className="w-full text-left p-3 rounded-lg border hover:bg-muted transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500"
+                        className="w-full text-left p-3 rounded-lg border hover:bg-muted focus-visible:ring-2 focus-visible:ring-amber-500 transition-colors disabled:cursor-not-allowed"
                         onClick={() => setDestinationSpot(spot)}
                       >
                         <p className="font-medium">{spot.name}</p>
@@ -314,10 +314,7 @@ export default function BookRidePage() {
 
         {/* Ride Summary */}
         {pickupSpot && destinationSpot && (
-          <Card
-            className="mt-6 p-6 hover-lift animate-in fade-in slide-in-from-bottom-4 duration-500"
-            aria-live="polite"
-          >
+          <Card className="mt-6 p-6 hover-lift animate-in fade-in slide-in-from-bottom-4 duration-500" aria-live="polite">
             <CardHeader>
               <CardTitle>Ride Summary</CardTitle>
             </CardHeader>
@@ -376,7 +373,7 @@ export default function BookRidePage() {
               <Button
                 onClick={handleBookRide}
                 disabled={booking}
-                className="w-full bg-gradient-to-r from-emerald-500 to-emerald-600 hover:from-emerald-600 hover:to-emerald-700 h-12 text-lg hover-lift ripple-effect"
+                className="w-full bg-gradient-to-r from-emerald-500 to-emerald-600 hover:from-emerald-600 hover:to-emerald-700 h-12 text-lg"
               >
                 {booking ? (
                 <>
@@ -393,11 +390,8 @@ export default function BookRidePage() {
 
         {/* Back to Map */}
         <div className="mt-6 text-center">
-          <Button asChild variant="outline" className="hover-lift">
-            <Link href="/map" className="flex items-center gap-2">
-              <ArrowLeft className="w-4 h-4" />
-              Back to Map
-            </Link>
+          <Button asChild variant="outline">
+            <Link href="/map">Back to Map</Link>
           </Button>
         </div>
       </div>
