@@ -1,5 +1,17 @@
 // Learn more: https://github.com/testing-library/jest-dom
 import '@testing-library/jest-dom'
+import { TextEncoder, TextDecoder } from 'util'
+import fetch from 'node-fetch'
+
+global.TextEncoder = TextEncoder
+global.TextDecoder = TextDecoder
+global.fetch = fetch
+global.IS_REACT_ACT_ENVIRONMENT = true
+
+// Mock react-dom/test-utils for React 19 compatibility
+jest.mock('react-dom/test-utils', () => ({
+  act: (cb) => cb(),
+}))
 
 // Mock Next.js router
 jest.mock('next/navigation', () => ({
