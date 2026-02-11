@@ -6,24 +6,22 @@ import { useAuthContext } from "@/components/auth-provider";
 import { getSupabaseClient } from "@/lib/supabase/client";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 import { useToast } from "@/hooks/use-toast";
 import { MapPin, Navigation, DollarSign, Clock, ArrowRight, Loader2 } from "lucide-react";
 import Link from "next/link";
 import type { Spot } from "@/components/map-view";
 
-// Utility functions moved outside component to prevent re-creation on every render
+/**
+ * Optimized calculation helpers moved outside component to avoid re-creation on every render
+ */
 const calculateDistance = (spot1: Spot, spot2: Spot): number => {
   const R = 6371; // Earth's radius in km
-  // Convert to Number to handle Decimal types returned as strings from database
-  const s1Lat = Number(spot1.latitude);
-  const s1Lon = Number(spot1.longitude);
-  const s2Lat = Number(spot2.latitude);
-  const s2Lon = Number(spot2.longitude);
-
-  const lat1 = s1Lat * (Math.PI / 180);
-  const lat2 = s2Lat * (Math.PI / 180);
-  const deltaLat = (s2Lat - s1Lat) * (Math.PI / 180);
-  const deltaLon = (s2Lon - s1Lon) * (Math.PI / 180);
+  const lat1 = Number(spot1.latitude) * (Math.PI / 180);
+  const lat2 = Number(spot2.latitude) * (Math.PI / 180);
+  const deltaLat = (Number(spot2.latitude) - Number(spot1.latitude)) * (Math.PI / 180);
+  const deltaLon = (Number(spot2.longitude) - Number(spot1.longitude)) * (Math.PI / 180);
 
   const a =
     Math.sin(deltaLat / 2) * Math.sin(deltaLat / 2) +
@@ -51,8 +49,6 @@ export default function BookRidePage() {
   const [destinationSpot, setDestinationSpot] = useState<Spot | null>(null);
   const [loading, setLoading] = useState(true);
   const [booking, setBooking] = useState(false);
-
-  // Track last synced URL pickup to prevent redundant updates
   const lastUrlPickup = useRef<string | null>(null);
 
   useEffect(() => {
@@ -61,7 +57,10 @@ export default function BookRidePage() {
     }
   }, [user, authLoading, router]);
 
-  // Optimized spot fetching: runs only once on mount
+  /**
+   * Performance Optimization: Decoupled initial data fetch from URL parameter synchronization.
+   * This prevents re-fetching the entire spots list when user selection changes the URL.
+   */
   useEffect(() => {
     const loadSpots = async () => {
       try {
@@ -89,16 +88,16 @@ export default function BookRidePage() {
     loadSpots();
   }, [toast]);
 
-  // Separate effect for URL synchronization: handles searchParams updates without re-fetching data
+  /**
+   * Performance Optimization: Separate effect for URL-to-state synchronization
+   */
   useEffect(() => {
-    if (spots.length > 0) {
-      const pickupId = searchParams.get("pickup");
-      if (pickupId && pickupId !== lastUrlPickup.current) {
-        const spot = spots.find((s) => s.id === pickupId);
-        if (spot) {
-          setPickupSpot(spot);
-          lastUrlPickup.current = pickupId;
-        }
+    const pickupId = searchParams.get("pickup");
+    if (pickupId && pickupId !== lastUrlPickup.current && spots.length > 0) {
+      const spot = spots.find((s) => s.id === pickupId);
+      if (spot) {
+        setPickupSpot(spot);
+        lastUrlPickup.current = pickupId;
       }
     }
   }, [searchParams, spots]);
@@ -116,8 +115,19 @@ export default function BookRidePage() {
     setBooking(true);
 
     try {
+      const supabase = getSupabaseClient();
       const distance = calculateDistance(pickupSpot, destinationSpot);
       const fare = estimateFare(distance);
+
+      // Find available AirBear
+      const { data: availableAirbears } = await supabase
+        .from("airbears")
+        .select("id")
+        .eq("is_available", true)
+        .eq("is_charging", false)
+        .limit(1);
+
+      const airbearId = availableAirbears?.[0]?.id || null;
 
       // Create ride booking via API
       const response = await fetch("/api/rides/create", {
@@ -157,11 +167,11 @@ export default function BookRidePage() {
     }
   };
 
-  // Memoized derived values to prevent redundant calculations on every render
+  /**
+   * Performance Optimization: Memoize expensive distance and fare calculations
+   */
   const distance = useMemo(() =>
-    pickupSpot && destinationSpot
-      ? calculateDistance(pickupSpot, destinationSpot)
-      : 0,
+    pickupSpot && destinationSpot ? calculateDistance(pickupSpot, destinationSpot) : 0,
     [pickupSpot, destinationSpot]
   );
 
