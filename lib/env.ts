@@ -17,12 +17,17 @@ const envSchema = z.object({
 })
 
 export const env = envSchema.parse({
-  NEXT_PUBLIC_SUPABASE_PWA4_URL: process.env.NEXT_PUBLIC_SUPABASE_PWA4_URL,
-  NEXT_PUBLIC_SUPABASE_PWA4_ANON_KEY: process.env.NEXT_PUBLIC_SUPABASE_PWA4_ANON_KEY,
-  SUPABASE_PWA4_SERVICE_ROLE_KEY: process.env.SUPABASE_PWA4_SERVICE_ROLE_KEY,
-  NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY: process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY,
-  STRIPE_SECRET_KEY: process.env.STRIPE_SECRET_KEY,
+  NEXT_PUBLIC_SUPABASE_PWA4_URL:
+    process.env.NEXT_PUBLIC_SUPABASE_PWA4_URL || "https://placeholder.supabase.co",
+  NEXT_PUBLIC_SUPABASE_PWA4_ANON_KEY:
+    process.env.NEXT_PUBLIC_SUPABASE_PWA4_ANON_KEY || "eyJplaceholder",
+  SUPABASE_PWA4_SERVICE_ROLE_KEY:
+    process.env.SUPABASE_PWA4_SERVICE_ROLE_KEY || "placeholder",
+  NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY:
+    process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY || "pk_test_placeholder",
+  STRIPE_SECRET_KEY: process.env.STRIPE_SECRET_KEY || "sk_test_placeholder",
   STRIPE_WEBHOOK_SECRET: process.env.STRIPE_WEBHOOK_SECRET,
-  NEXT_PUBLIC_SITE_URL: process.env.NEXT_PUBLIC_SITE_URL,
-  NODE_ENV: process.env.NODE_ENV,
+  NEXT_PUBLIC_SITE_URL:
+    process.env.NEXT_PUBLIC_SITE_URL || "https://airbear.me",
+  NODE_ENV: process.env.NODE_ENV || "development",
 })
