@@ -1,14 +1,11 @@
 name: 🔄 Daily Secret Sync & Health Check
-
 on:
   schedule:
     # Run daily at 3 AM UTC to verify everything is synced
     - cron: '0 3 * * *'
   workflow_dispatch:
-
 env:
   NODE_VERSION: '20.x'
-
 jobs:
   health-check:
     name: 🏥 Health Check
@@ -24,7 +21,6 @@ jobs:
             echo "❌ Production site returned HTTP $response"
             exit 1
           fi
-
       - name: Check health endpoint
         run: |
           echo "Checking API health endpoint..."
@@ -35,7 +31,6 @@ jobs:
           else
             echo "⚠️  Health endpoint may have issues"
           fi
-
       - name: Verify UI assets load
         run: |
           echo "Verifying UI assets..."
@@ -45,20 +40,17 @@ jobs:
           else
             echo "⚠️  CSS may not be loading (HTTP $css_status)"
           fi
-
   sync-verification:
     name: 🔐 Verify Secrets Synced
     runs-on: ubuntu-latest
     steps:
       - name: Install Vercel CLI
-        run: npm install --global vercel@latest
-
+        run: pnpm install --global vercel@latest
       - name: Verify Vercel environment variables
         run: |
           echo "Verifying environment variables in Vercel..."
           vercel env ls production --token="${{ secrets.VERCEL_TOKEN }}" || echo "⚠️  Could not verify (may need manual check)"
         continue-on-error: true
-
       - name: Summary
         run: |
           echo "## 🔄 Daily Sync Summary" >> $GITHUB_STEP_SUMMARY
@@ -71,7 +63,3 @@ jobs:
           echo "- ✅ API health endpoint" >> $GITHUB_STEP_SUMMARY
           echo "- ✅ UI assets loading" >> $GITHUB_STEP_SUMMARY
           echo "- ✅ Vercel secrets verification" >> $GITHUB_STEP_SUMMARY
-
-
-
-

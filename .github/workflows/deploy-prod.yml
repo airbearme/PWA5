@@ -1,7 +1,6 @@
 name: Deploy Prod
 on: { workflow_dispatch: {} }
 jobs:
- deploy:
   runs-on: ubuntu-latest
   environment: production
   steps:

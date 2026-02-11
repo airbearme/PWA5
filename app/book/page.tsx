@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo, useRef } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useAuthContext } from "@/components/auth-provider";
 import { getSupabaseClient } from "@/lib/supabase/client";
@@ -13,6 +13,32 @@ import { MapPin, Navigation, DollarSign, Clock, ArrowRight, Loader2 } from "luci
 import Link from "next/link";
 import type { Spot } from "@/components/map-view";
 
+/**
+ * Optimized calculation helpers moved outside component to avoid re-creation on every render
+ */
+const calculateDistance = (spot1: Spot, spot2: Spot): number => {
+  const R = 6371; // Earth's radius in km
+  const lat1 = Number(spot1.latitude) * (Math.PI / 180);
+  const lat2 = Number(spot2.latitude) * (Math.PI / 180);
+  const deltaLat = (Number(spot2.latitude) - Number(spot1.latitude)) * (Math.PI / 180);
+  const deltaLon = (Number(spot2.longitude) - Number(spot1.longitude)) * (Math.PI / 180);
+
+  const a =
+    Math.sin(deltaLat / 2) * Math.sin(deltaLat / 2) +
+    Math.cos(lat1) *
+      Math.cos(lat2) *
+      Math.sin(deltaLon / 2) *
+      Math.sin(deltaLon / 2);
+  const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+
+  return R * c;
+};
+
+const estimateFare = (_distance: number): number => {
+  // Flat rate $4.00 for all rides
+  return 4.0;
+};
+
 export default function BookRidePage() {
   const { user, loading: authLoading } = useAuthContext();
   const router = useRouter();
@@ -23,6 +49,7 @@ export default function BookRidePage() {
   const [destinationSpot, setDestinationSpot] = useState<Spot | null>(null);
   const [loading, setLoading] = useState(true);
   const [booking, setBooking] = useState(false);
+  const lastUrlPickup = useRef<string | null>(null);
 
   useEffect(() => {
     if (!authLoading && !user) {
@@ -30,6 +57,10 @@ export default function BookRidePage() {
     }
   }, [user, authLoading, router]);
 
+  /**
+   * Performance Optimization: Decoupled initial data fetch from URL parameter synchronization.
+   * This prevents re-fetching the entire spots list when user selection changes the URL.
+   */
   useEffect(() => {
     const loadSpots = async () => {
       try {
@@ -42,13 +73,6 @@ export default function BookRidePage() {
 
         if (error) throw error;
         setSpots(data || []);
-
-        // Check for pickup spot from URL
-        const pickupId = searchParams.get("pickup");
-        if (pickupId && data) {
-          const spot = data.find((s) => s.id === pickupId);
-          if (spot) setPickupSpot(spot);
-        }
       } catch (error) {
         console.error("Error loading spots:", error);
         toast({
@@ -62,30 +86,21 @@ export default function BookRidePage() {
     };
 
     loadSpots();
-  }, [searchParams, toast]);
+  }, [toast]);
 
-  const calculateDistance = (spot1: Spot, spot2: Spot): number => {
-    const R = 6371; // Earth's radius in km
-    const lat1 = spot1.latitude * (Math.PI / 180);
-    const lat2 = spot2.latitude * (Math.PI / 180);
-    const deltaLat = (spot2.latitude - spot1.latitude) * (Math.PI / 180);
-    const deltaLon = (spot2.longitude - spot1.longitude) * (Math.PI / 180);
-
-    const a =
-      Math.sin(deltaLat / 2) * Math.sin(deltaLat / 2) +
-      Math.cos(lat1) *
-        Math.cos(lat2) *
-        Math.sin(deltaLon / 2) *
-        Math.sin(deltaLon / 2);
-    const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
-
-    return R * c;
-  };
-
-  const estimateFare = (distance: number): number => {
-    // Flat rate $4.00 for all rides
-    return 4.0;
-  };
+  /**
+   * Performance Optimization: Separate effect for URL-to-state synchronization
+   */
+  useEffect(() => {
+    const pickupId = searchParams.get("pickup");
+    if (pickupId && pickupId !== lastUrlPickup.current && spots.length > 0) {
+      const spot = spots.find((s) => s.id === pickupId);
+      if (spot) {
+        setPickupSpot(spot);
+        lastUrlPickup.current = pickupId;
+      }
+    }
+  }, [searchParams, spots]);
 
   const handleBookRide = async () => {
     if (!pickupSpot || !destinationSpot || !user) {
@@ -152,10 +167,15 @@ export default function BookRidePage() {
     }
   };
 
-  const distance = pickupSpot && destinationSpot
-    ? calculateDistance(pickupSpot, destinationSpot)
-    : 0;
-  const fare = estimateFare(distance);
+  /**
+   * Performance Optimization: Memoize expensive distance and fare calculations
+   */
+  const distance = useMemo(() =>
+    pickupSpot && destinationSpot ? calculateDistance(pickupSpot, destinationSpot) : 0,
+    [pickupSpot, destinationSpot]
+  );
+
+  const fare = useMemo(() => estimateFare(distance), [distance]);
 
   if (authLoading || loading) {
     return (

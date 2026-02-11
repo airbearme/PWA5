@@ -1,15 +1,12 @@
 name: 🎨 Validate UI/UX & Special Effects
-
 on:
   pull_request:
     branches: [main]
   push:
     branches: [main]
   workflow_dispatch:
-
 env:
   NODE_VERSION: '20.x'
-
 jobs:
   validate-ui:
     name: ✅ Validate UI/UX Effects
@@ -17,21 +14,21 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
-
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 9
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
           node-version: ${{ env.NODE_VERSION }}
-          cache: 'npm'
-
+          cache: 'pnpm'
       - name: Install dependencies
-        run: npm ci
-
+        run: pnpm install --frozen-lockfile
       - name: Validate Core UI Foundation
         run: |
           echo "🎨 Validating Core UI/UX Foundation..."
-          npm run validate:ui || exit 1
-
+          pnpm run validate:ui || exit 1
       - name: Check CSS animations exist
         run: |
           echo "Checking for CSS animation keyframes..."
@@ -41,28 +38,24 @@ jobs:
             echo "❌ pulse-glow animation missing"
             exit 1
           fi
-          
           if grep -q "@keyframes float" app/globals.css; then
             echo "✅ float animation found"
           else
             echo "❌ float animation missing"
             exit 1
           fi
-          
           if grep -q "animate-pulse-glow" app/globals.css; then
             echo "✅ animate-pulse-glow utility found"
           else
             echo "❌ animate-pulse-glow utility missing"
             exit 1
           fi
-          
           if grep -q "animate-float" app/globals.css; then
             echo "✅ animate-float utility found"
           else
             echo "❌ animate-float utility missing"
             exit 1
           fi
-
       - name: Check special effects classes
         run: |
           echo "Checking for special effect classes..."
@@ -74,7 +67,6 @@ jobs:
             "airbear-holographic"
             "airbear-plasma"
           )
-          
           for class in "${required_classes[@]}"; do
             if grep -q "$class" app/globals.css || grep -q "$class" tailwind.config.ts; then
               echo "✅ $class found"
@@ -82,7 +74,6 @@ jobs:
               echo "⚠️  $class not found (may be in components)"
             fi
           done
-
       - name: Validate map component
         run: |
           echo "Checking map component..."
@@ -92,13 +83,11 @@ jobs:
             echo "❌ Map component missing"
             exit 1
           fi
-          
           if grep -q "leaflet" components/map-view-beautiful.tsx; then
             echo "✅ Leaflet integration found"
           else
             echo "⚠️  Leaflet integration may be missing"
           fi
-
       - name: Check dark mode configuration
         run: |
           echo "Checking dark mode configuration..."
@@ -108,13 +97,11 @@ jobs:
             echo "❌ Dark mode not configured"
             exit 1
           fi
-          
           if grep -q 'enableSystem={false}' app/layout.tsx; then
             echo "✅ System theme detection disabled"
           else
             echo "⚠️  System theme detection may be enabled"
           fi
-
       - name: Validate mascot presence
         run: |
           echo "Checking AirBear mascot..."
@@ -123,7 +110,6 @@ jobs:
           else
             echo "⚠️  Mascot image may be missing"
           fi
-          
           # Check if mascot is used in key pages
           pages_with_mascot=0
           for file in app/page.tsx app/map/page.tsx app/auth/login/page.tsx app/auth/signup/page.tsx; do
@@ -132,7 +118,6 @@ jobs:
             fi
           done
           echo "✅ Mascot found in $pages_with_mascot key pages"
-
       - name: Summary
         run: |
           echo "## 🎨 UI/UX Validation Summary" >> $GITHUB_STEP_SUMMARY
@@ -144,4 +129,3 @@ jobs:
           echo "✅ **Mascot**: Validated" >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
           echo "All UI/UX components are properly configured!" >> $GITHUB_STEP_SUMMARY
-
