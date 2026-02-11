@@ -18,7 +18,7 @@ export async function GET() {
         database: dbError ? "unhealthy" : "healthy",
         api: "healthy",
       },
-      version: process.env.NEXT_PUBLIC_APP_VERSION || "1.0.0",
+      // Sentinel: Stripped version to prevent information leakage.
       ...(dbError && { error: dbError.message }),
     };
 
