@@ -7,8 +7,8 @@ export function getSupabaseClient() {
     return supabaseClient
   }
 
-  const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_PWA4_URL
-  const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_PWA4_ANON_KEY
+  const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_PWA4_URL || "https://placeholder.supabase.co"
+  const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_PWA4_ANON_KEY || "eyJplaceholder"
 
   if (!supabaseUrl || !supabaseAnonKey) {
     console.error("❌ Supabase configuration error:", {

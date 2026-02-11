@@ -9,7 +9,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useToast } from "@/hooks/use-toast";
-import { MapPin, Navigation, DollarSign, Clock, ArrowRight, Loader2 } from "lucide-react";
+import { MapPin, Navigation, DollarSign, Clock, ArrowRight, ArrowLeft, Loader2 } from "lucide-react";
 import Link from "next/link";
 import type { Spot } from "@/components/map-view";
 
@@ -227,7 +227,6 @@ export default function BookRidePage() {
                     className="mt-2"
                     onClick={() => setPickupSpot(null)}
                     disabled={booking}
-                    aria-label="Change pickup location"
                   >
                     Change
                   </Button>
@@ -280,7 +279,6 @@ export default function BookRidePage() {
                     className="mt-2"
                     onClick={() => setDestinationSpot(null)}
                     disabled={booking}
-                    aria-label="Change destination"
                   >
                     Change
                   </Button>
