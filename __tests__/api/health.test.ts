@@ -9,7 +9,7 @@ jest.mock('next/server', () => ({
   NextResponse: {
     json: jest.fn((data: any, options?: any) => ({
       json: () => Promise.resolve(data),
-      status: options?.status || 200,
+      status: (options as any)?.status || 200,
     })),
   },
 }));
