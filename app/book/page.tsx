@@ -9,7 +9,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useToast } from "@/hooks/use-toast";
-import { MapPin, Navigation, DollarSign, Clock, ArrowRight, Loader2 } from "lucide-react";
+import { MapPin, Navigation, DollarSign, Clock, ArrowRight, ArrowLeft, Loader2 } from "lucide-react";
 import Link from "next/link";
 import type { Spot } from "@/components/map-view";
 
@@ -234,18 +234,19 @@ export default function BookRidePage() {
               ) : (
                 <div className={`space-y-2 max-h-60 overflow-y-auto ${booking ? "opacity-50 cursor-not-allowed" : ""}`}>
                   {spots.map((spot) => (
-                    <div
+                    <button
                       key={spot.id}
-                      className="p-3 rounded-lg border hover:bg-muted cursor-pointer transition-colors"
+                      type="button"
+                      className="w-full text-left p-3 rounded-lg border hover:bg-muted focus-visible:ring-2 focus-visible:ring-emerald-500 transition-colors"
                       onClick={() => !booking && setPickupSpot(spot)}
                     >
-                      <p className="font-medium">{spot.name}</p>
+                      <span className="block font-medium">{spot.name}</span>
                       {spot.description && (
-                        <p className="text-sm text-muted-foreground">
+                        <span className="block text-sm text-muted-foreground">
                           {spot.description}
-                        </p>
+                        </span>
                       )}
-                    </div>
+                    </button>
                   ))}
                 </div>
               )}
@@ -287,18 +288,19 @@ export default function BookRidePage() {
                   {spots
                     .filter((s) => s.id !== pickupSpot?.id)
                     .map((spot) => (
-                      <div
+                      <button
                         key={spot.id}
-                        className="p-3 rounded-lg border hover:bg-muted cursor-pointer transition-colors"
+                        type="button"
+                        className="w-full text-left p-3 rounded-lg border hover:bg-muted focus-visible:ring-2 focus-visible:ring-amber-500 transition-colors"
                         onClick={() => !booking && setDestinationSpot(spot)}
                       >
-                        <p className="font-medium">{spot.name}</p>
+                        <span className="block font-medium">{spot.name}</span>
                         {spot.description && (
-                          <p className="text-sm text-muted-foreground">
+                          <span className="block text-sm text-muted-foreground">
                             {spot.description}
-                          </p>
+                          </span>
                         )}
-                      </div>
+                      </button>
                     ))}
                 </div>
               )}
@@ -308,7 +310,7 @@ export default function BookRidePage() {
 
         {/* Ride Summary */}
         {pickupSpot && destinationSpot && (
-          <Card className="mt-6 p-6 hover-lift">
+          <Card className="mt-6 p-6 hover-lift" aria-live="polite">
             <CardHeader>
               <CardTitle>Ride Summary</CardTitle>
             </CardHeader>
@@ -385,7 +387,10 @@ export default function BookRidePage() {
         {/* Back to Map */}
         <div className="mt-6 text-center">
           <Button asChild variant="outline">
-            <Link href="/map">Back to Map</Link>
+            <Link href="/map" className="flex items-center gap-2">
+              <ArrowLeft className="w-4 h-4" />
+              Back to Map
+            </Link>
           </Button>
         </div>
       </div>
