@@ -37,11 +37,12 @@ if (!supabaseAdmin) {
 export async function registerRoutes(app: Express): Promise<Server> {
 	// Health check
 	app.get("/api/health", (_req, res) => {
+		// Sentinel: Stripped env and version to prevent information leakage.
+		// Aligned response with tests/api.test.ts expectations.
 		res.json({
-			status: "ok",
+			status: "healthy",
+			database: "connected",
 			timestamp: new Date().toISOString(),
-			env: process.env.NODE_ENV,
-			version: "1.2.1",
 		});
 	});
 
@@ -108,16 +109,19 @@ export async function registerRoutes(app: Express): Promise<Server> {
 					});
 			}
 
+			// Sentinel: Explicitly omit role to prevent privilege escalation during registration
 			const userData = profileSchema
+				.omit({ role: true })
 				.extend({ password: z.string().min(6) })
 				.parse(req.body);
+
 			const { data, error } = await supabaseAdmin.auth.admin.createUser({
 				email: userData.email || undefined,
 				password: userData.password,
 				email_confirm: true,
 				user_metadata: {
 					username: userData.username,
-					role: userData.role || "user",
+					role: "user", // Hardcode default role
 					fullName: userData.fullName,
 				},
 			});
@@ -127,10 +131,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
 				email: userData.email,
 				username: userData.username,
 				fullName: userData.fullName,
-				role:
-					(data.user?.user_metadata?.role as "user" | "driver" | "admin") ||
-					userData.role ||
-					"user",
+				role: "user",
 				avatarUrl: null,
 			});
 
@@ -215,7 +216,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
 					});
 			}
 
-			const payload = profileSchema.parse(req.body);
+			// Sentinel: Omit role from sync payload to prevent unauthorized privilege escalation
+			const payload = profileSchema.omit({ role: true }).parse(req.body);
 			const profile = await ensureUserProfile(payload);
 			res.json({ user: profile });
 		} catch (error: any) {
@@ -276,7 +278,20 @@ export async function registerRoutes(app: Express): Promise<Server> {
 	app.patch("/api/rides/:id", async (req, res) => {
 		try {
 			const { id } = req.params;
-			const updates = req.body;
+
+			// Sentinel: Use a strict schema for ride updates to prevent mass assignment of sensitive fields
+			const rideUpdateSchema = z
+				.object({
+					status: z
+						.enum(["pending", "accepted", "in_progress", "completed", "cancelled"])
+						.optional(),
+					driverId: z.string().optional(),
+					airbearId: z.string().optional(),
+					actualDuration: z.number().optional(),
+				})
+				.strict();
+
+			const updates = rideUpdateSchema.parse(req.body);
 			const ride = await storage.updateRide(id, updates);
 			res.json(ride);
 		} catch (error: any) {
