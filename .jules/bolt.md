@@ -1,0 +1,3 @@
+## 2025-05-14 - Optimizing Hook Dependency Management in Book Page
+**Learning:** In the `app/book/page.tsx` component, a monolithic `useEffect` hook was causing redundant data fetching and re-renders because it was re-triggering whenever the `spots` array changed, even if the primary goal was just to sync the selected spot from the URL. Splitting the logic into two separate effects—one for fetching data and one for syncing state—allows for more granular control and prevents unnecessary network calls or state updates.
+**Action:** Always decouple data fetching from URL/state synchronization in React components. Use `useMemo` for derived values (like distance/fare) that depend on state to avoid expensive recalculations on every render cycle.
