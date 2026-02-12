@@ -5,8 +5,8 @@
  * Validates security headers are properly configured
  */
 
-const https = require("https");
-const http = require("http");
+import https from "https";
+import http from "http";
 
 const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || "https://airbear.me";
 
