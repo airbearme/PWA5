@@ -3,6 +3,7 @@
  */
 
 import { describe, it, expect, jest } from '@jest/globals';
+import '@testing-library/jest-dom/jest-globals';
 import { render, screen } from '@testing-library/react';
 import { ErrorBoundary } from '@/components/error-boundary';
 
@@ -14,6 +15,16 @@ jest.mock('@/lib/error-logger', () => ({
 }));
 
 describe('ErrorBoundary', () => {
+  let consoleSpy: any;
+
+  beforeEach(() => {
+    consoleSpy = jest.spyOn(console, 'error').mockImplementation(() => {});
+  });
+
+  afterEach(() => {
+    consoleSpy.mockRestore();
+  });
+
   it('renders children when there is no error', () => {
     render(
       <ErrorBoundary>

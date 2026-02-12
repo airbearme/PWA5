@@ -8,7 +8,7 @@ AirBear is a revolutionary solar-powered ride-sharing platform featuring eco-fri
 
 ### 🌟 **Triple Role System**
 - **👨‍💼 Admin**: Fleet analytics, system monitoring, revenue tracking
-- **🚗 Driver**: AirBear management, inventory control, ride confirmations  
+- **🚗 Driver**: AirBear management, inventory control, ride confirmations
 - **👤 User**: Booking rides, shopping mobile bodega, viewing eco-impact
 
 ### 🎯 **Exclusive CEO T-Shirt Promo**
@@ -25,7 +25,7 @@ AirBear is a revolutionary solar-powered ride-sharing platform featuring eco-fri
 
 ### 🎨 **Stunning Visual Effects**
 - **Spinning Wheels**: Fire, neon, holographic, plasma effects
-- **Solar Animations**: God rays, prism spectrums, solar winds  
+- **Solar Animations**: God rays, prism spectrums, solar winds
 - **Eco Particles**: Floating leaves, fireflies, clean air breezes
 - **Motion Effects**: 3D tilts, ripples, glitches, vortexes, morphs
 - **Performance**: 60fps optimized, low-power mode support
@@ -33,7 +33,7 @@ AirBear is a revolutionary solar-powered ride-sharing platform featuring eco-fri
 ## 🚀 **AirBear Slogans**
 
 - *"AirBear flair, ride without a care—solar power in the air!"*
-- *"Glide with AirBear, eco-rides so rare!"*  
+- *"Glide with AirBear, eco-rides so rare!"*
 - *"Buy the tee, ride for free—AirBear's eco-key!"*
 
 ## 📱 Progressive Web App (PWA)
@@ -53,7 +53,7 @@ AirBear is a revolutionary solar-powered ride-sharing platform featuring eco-fri
 - **TanStack Query** for data management
 - **Wouter** for lightweight routing
 
-### Backend  
+### Backend
 - **Node.js** with Express
 - **TypeScript** for type safety
 - **Drizzle ORM** with PostgreSQL
@@ -68,7 +68,7 @@ AirBear is a revolutionary solar-powered ride-sharing platform featuring eco-fri
 ## 🌍 Environmental Impact
 
 - **🌱 Zero Emissions**: 100% solar-powered fleet
-- **📊 CO₂ Tracking**: Real-time environmental impact metrics  
+- **📊 CO₂ Tracking**: Real-time environmental impact metrics
 - **♻️ Sustainable Materials**: Eco-friendly vehicle components
 - **🏆 Green Rewards**: Eco-points and sustainability challenges
 
@@ -79,7 +79,7 @@ AirBear is a revolutionary solar-powered ride-sharing platform featuring eco-fri
 - **🥇 Gold**: Premium website placement + AirBear LED banners
 - **💎 Platinum**: Full integration + AirBear screen advertisements
 
-### 💰 **Revenue Streams**  
+### 💰 **Revenue Streams**
 - Ride booking fees
 - Mobile bodega commissions
 - CEO t-shirt exclusive sales
@@ -89,7 +89,7 @@ AirBear is a revolutionary solar-powered ride-sharing platform featuring eco-fri
 ## 📥 Installation & Setup
 
 ### Prerequisites
-- Node.js 18+ 
+- Node.js 18+
 - npm or yarn
 - Modern web browser
 
@@ -121,7 +121,7 @@ STRIPE_WEBHOOK_SECRET=whsec_...
 # Database (Optional - uses in-memory for development)
 DATABASE_URL=postgresql://...
 
-# API Configuration  
+# API Configuration
 NODE_ENV=production
 PORT=5000
 \`\`\`
@@ -148,7 +148,7 @@ npx serve dist -p 3000
 ## 📊 Analytics & Monitoring
 
 - **Real-Time Fleet Status**: Live AirBear locations and availability
-- **Revenue Tracking**: Detailed earnings and transaction analytics  
+- **Revenue Tracking**: Detailed earnings and transaction analytics
 - **User Engagement**: Ride patterns, popular routes, user retention
 - **Environmental Metrics**: CO₂ saved, solar energy generated
 - **Performance Monitoring**: App speed, error tracking, user experience
@@ -162,7 +162,7 @@ npx serve dist -p 3000
 
 ## 🤝 Contributing
 
-We welcome contributions to make AirBear even better! 
+We welcome contributions to make AirBear even better!
 
 ### Development Workflow
 1. Fork the repository
@@ -180,7 +180,7 @@ We welcome contributions to make AirBear even better!
 ## 📞 Support & Contact
 
 - **🌐 Website**: [airbear.app](https://airbear.app)
-- **📧 Email**: support@airbear.app  
+- **📧 Email**: support@airbear.app
 - **🐦 Twitter**: [@AirBearEco](https://twitter.com/AirBearEco)
 - **💬 Discord**: [AirBear Community](https://discord.gg/airbear)
 
