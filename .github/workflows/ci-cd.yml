@@ -145,6 +145,9 @@ jobs:
 
       - name: Re-run build after repair
         run: pnpm run build || echo "Build still failing after repair"
+        env:
+          NEXT_PUBLIC_SUPABASE_PWA4_URL: ${{ secrets.NEXT_PUBLIC_SUPABASE_PWA4_URL || 'https://placeholder.supabase.co' }}
+          NEXT_PUBLIC_SUPABASE_PWA4_ANON_KEY: ${{ secrets.NEXT_PUBLIC_SUPABASE_PWA4_ANON_KEY || 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.placeholder' }}
 
   # Deploy to Vercel
   deploy:
