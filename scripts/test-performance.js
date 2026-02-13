@@ -5,9 +5,12 @@
  * Tests application performance using Lighthouse
  */
 
-const { execSync } = require("child_process");
-const https = require("https");
-const http = require("http");
+import { execSync } from "child_process";
+import https from "https";
+import http from "http";
+import fs from "fs";
+import { createRequire } from "module";
+const require = createRequire(import.meta.url);
 
 const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || "http://localhost:3000";
 
