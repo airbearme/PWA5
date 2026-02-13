@@ -212,7 +212,7 @@ export default function BookRidePage() {
             </CardHeader>
             <CardContent className="space-y-2">
               {pickupSpot ? (
-                <div className="p-4 bg-emerald-50 dark:bg-emerald-900/20 rounded-lg border-2 border-emerald-200 dark:border-emerald-800">
+                <div className="p-4 bg-emerald-50 dark:bg-emerald-900/20 rounded-lg border-2 border-emerald-200 dark:border-emerald-800 animate-in fade-in slide-in-from-bottom-2">
                   <p className="font-semibold text-emerald-900 dark:text-emerald-100">
                     {pickupSpot.name}
                   </p>
@@ -227,6 +227,7 @@ export default function BookRidePage() {
                     className="mt-2"
                     onClick={() => setPickupSpot(null)}
                     disabled={booking}
+                    aria-label="Change pickup location"
                   >
                     Change
                   </Button>
@@ -234,10 +235,13 @@ export default function BookRidePage() {
               ) : (
                 <div className={`space-y-2 max-h-60 overflow-y-auto ${booking ? "opacity-50 cursor-not-allowed" : ""}`}>
                   {spots.map((spot) => (
-                    <div
+                    <button
+                      type="button"
                       key={spot.id}
-                      className="p-3 rounded-lg border hover:bg-muted cursor-pointer transition-colors"
+                      className="w-full text-left p-3 rounded-lg border hover:bg-muted hover-lift transition-all focus-visible:ring-2 focus-visible:ring-emerald-500 outline-none"
                       onClick={() => !booking && setPickupSpot(spot)}
+                      disabled={booking}
+                      aria-label={`Select ${spot.name} as pickup location`}
                     >
                       <p className="font-medium">{spot.name}</p>
                       {spot.description && (
@@ -245,7 +249,7 @@ export default function BookRidePage() {
                           {spot.description}
                         </p>
                       )}
-                    </div>
+                    </button>
                   ))}
                 </div>
               )}
@@ -263,7 +267,7 @@ export default function BookRidePage() {
             </CardHeader>
             <CardContent className="space-y-2">
               {destinationSpot ? (
-                <div className="p-4 bg-amber-50 dark:bg-amber-900/20 rounded-lg border-2 border-amber-200 dark:border-amber-800">
+                <div className="p-4 bg-amber-50 dark:bg-amber-900/20 rounded-lg border-2 border-amber-200 dark:border-amber-800 animate-in fade-in slide-in-from-bottom-2">
                   <p className="font-semibold text-amber-900 dark:text-amber-100">
                     {destinationSpot.name}
                   </p>
@@ -278,6 +282,7 @@ export default function BookRidePage() {
                     className="mt-2"
                     onClick={() => setDestinationSpot(null)}
                     disabled={booking}
+                    aria-label="Change destination"
                   >
                     Change
                   </Button>
@@ -287,10 +292,13 @@ export default function BookRidePage() {
                   {spots
                     .filter((s) => s.id !== pickupSpot?.id)
                     .map((spot) => (
-                      <div
+                      <button
+                        type="button"
                         key={spot.id}
-                        className="p-3 rounded-lg border hover:bg-muted cursor-pointer transition-colors"
+                        className="w-full text-left p-3 rounded-lg border hover:bg-muted hover-lift transition-all focus-visible:ring-2 focus-visible:ring-amber-500 outline-none"
                         onClick={() => !booking && setDestinationSpot(spot)}
+                        disabled={booking}
+                        aria-label={`Select ${spot.name} as destination`}
                       >
                         <p className="font-medium">{spot.name}</p>
                         {spot.description && (
@@ -298,7 +306,7 @@ export default function BookRidePage() {
                             {spot.description}
                           </p>
                         )}
-                      </div>
+                      </button>
                     ))}
                 </div>
               )}
@@ -308,7 +316,7 @@ export default function BookRidePage() {
 
         {/* Ride Summary */}
         {pickupSpot && destinationSpot && (
-          <Card className="mt-6 p-6 hover-lift">
+          <Card className="mt-6 p-6 hover-lift animate-in fade-in slide-in-from-bottom-4 duration-500">
             <CardHeader>
               <CardTitle>Ride Summary</CardTitle>
             </CardHeader>

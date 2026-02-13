@@ -1,6 +1,14 @@
 // Learn more: https://github.com/testing-library/jest-dom
 import '@testing-library/jest-dom'
 
+// Add fetch polyfill for Node.js environments if missing
+if (typeof fetch === 'undefined' && typeof globalThis.fetch !== 'undefined') {
+  global.fetch = globalThis.fetch;
+  global.Request = globalThis.Request;
+  global.Response = globalThis.Response;
+  global.Headers = globalThis.Headers;
+}
+
 // Mock Next.js router
 jest.mock('next/navigation', () => ({
   useRouter() {

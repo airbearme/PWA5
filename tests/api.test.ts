@@ -6,6 +6,14 @@ import { describe, expect, it } from "@jest/globals";
 describe("AirBear API Health Checks", () => {
 	const baseUrl = process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000";
 
+	// Use globalThis.fetch if available (Node 18+)
+	const fetch = (typeof globalThis !== 'undefined' && globalThis.fetch) || (typeof window !== 'undefined' && window.fetch);
+
+	if (!fetch) {
+		it.skip("API tests skipped because fetch is not defined in this environment", () => {});
+		return;
+	}
+
 	it("should have health endpoint responding", async () => {
 		const response = await fetch(`${baseUrl}/api/health`);
 		expect(response.status).toBe(200);
