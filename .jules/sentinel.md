@@ -9,8 +9,3 @@
 **Vulnerability:** Health check endpoints exposed `env` (environment) and `version` details.
 **Learning:** Exposing system internals can aid attackers in reconnaissance by identifying specific software versions with known vulnerabilities or distinguishing between staging and production environments.
 **Prevention:** Strip all non-essential metadata from public health check responses. Keep it limited to `status` and `timestamp`.
-
-## 2025-05-15 - Hardened CI/CD Workflow with pnpm
-**Vulnerability:** Inconsistent dependency management and outdated artifact actions in CI could lead to supply chain risks or failed security checks.
-**Learning:** GitHub Actions must be correctly ordered: `pnpm/action-setup` must precede `actions/setup-node` when using `cache: pnpm`. Using pinned major versions for pnpm ensures environment parity.
-**Prevention:** Standardize all workflows to use `pnpm` exclusively, use the latest stable versions of core actions (e.g., `@v4`), and enforce `--frozen-lockfile` to ensure predictable builds.

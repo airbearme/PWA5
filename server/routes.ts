@@ -53,7 +53,6 @@ export async function registerRoutes(app: Express): Promise<Server> {
 		avatarUrl: z.string().optional().nullable(),
 	});
 
-	// Use this schema for public-facing profile updates to prevent role escalation
 	const publicProfileSchema = profileSchema.omit({ role: true });
 
 	const ensureUserProfile = async (payload: z.infer<typeof profileSchema>) => {
@@ -127,7 +126,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
 			if (!data.user) throw new Error("User creation failed");
 
 			const profile = await ensureUserProfile({
-				id: data.user.id, // Must pass Supabase ID to link profiles
+				id: data.user.id, // Pass Supabase UUID for linking
 				email: userData.email,
 				username: userData.username,
 				fullName: userData.fullName,
@@ -216,9 +215,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
 					});
 			}
 
-			// Use publicProfileSchema to prevent role escalation during sync
+			// Use publicProfileSchema to prevent role escalation
 			const payload = publicProfileSchema.parse(req.body);
-			// Explicitly set role to undefined to satisfy type and ensure no role update
 			const profile = await ensureUserProfile({ ...payload, role: undefined });
 			res.json({ user: profile });
 		} catch (error: any) {
