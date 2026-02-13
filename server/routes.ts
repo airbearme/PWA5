@@ -218,8 +218,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
 			// Use publicProfileSchema to prevent role escalation during sync
 			const payload = publicProfileSchema.parse(req.body);
-			// Type cast to satisfy ensureUserProfile while keeping role omitted from input
-			const profile = await ensureUserProfile(payload as z.infer<typeof profileSchema>);
+			// Explicitly set role to undefined to satisfy type and ensure no role update
+			const profile = await ensureUserProfile({ ...payload, role: undefined });
 			res.json({ user: profile });
 		} catch (error: any) {
 			res.status(400).json({ message: error.message });
