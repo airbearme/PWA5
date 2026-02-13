@@ -30,6 +30,7 @@ export default function BookRidePage() {
     }
   }, [user, authLoading, router]);
 
+  // Fetch spots once on mount
   useEffect(() => {
     const loadSpots = async () => {
       try {
@@ -42,13 +43,6 @@ export default function BookRidePage() {
 
         if (error) throw error;
         setSpots(data || []);
-
-        // Check for pickup spot from URL
-        const pickupId = searchParams.get("pickup");
-        if (pickupId && data) {
-          const spot = data.find((s) => s.id === pickupId);
-          if (spot) setPickupSpot(spot);
-        }
       } catch (error) {
         console.error("Error loading spots:", error);
         toast({
@@ -62,7 +56,16 @@ export default function BookRidePage() {
     };
 
     loadSpots();
-  }, [searchParams, toast]);
+  }, [toast]);
+
+  // Sync pickup spot from URL when spots are loaded or search params change
+  useEffect(() => {
+    const pickupId = searchParams.get("pickup");
+    if (pickupId && spots.length > 0) {
+      const spot = spots.find((s) => s.id === pickupId);
+      if (spot) setPickupSpot(spot);
+    }
+  }, [searchParams, spots]);
 
   const calculateDistance = (spot1: Spot, spot2: Spot): number => {
     const R = 6371; // Earth's radius in km
@@ -100,19 +103,8 @@ export default function BookRidePage() {
     setBooking(true);
 
     try {
-      const supabase = getSupabaseClient();
       const distance = calculateDistance(pickupSpot, destinationSpot);
       const fare = estimateFare(distance);
-
-      // Find available AirBear
-      const { data: availableAirbears } = await supabase
-        .from("airbears")
-        .select("id")
-        .eq("is_available", true)
-        .eq("is_charging", false)
-        .limit(1);
-
-      const airbearId = availableAirbears?.[0]?.id || null;
 
       // Create ride booking via API
       const response = await fetch("/api/rides/create", {

@@ -1,0 +1,3 @@
+## 2025-05-15 - Redundant Client-Side Fetching in Booking Flow
+**Learning:** Found that `app/book/page.tsx` was re-fetching the entire list of spots from the database every time search parameters changed, even if the data was already present. Additionally, a serial database query for available AirBears was being performed on the client side but the result was never used in the subsequent ride creation request.
+**Action:** Decouple data fetching from state/URL synchronization by splitting `useEffect` hooks. Remove unused client-side database queries that should be handled by the server-side API to reduce latency and network overhead.
