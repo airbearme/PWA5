@@ -1,3 +1,4 @@
+/** @jest-environment node */
 // Comprehensive API Testing Suite for AirBear PWA
 // Run with: npm run test
 
