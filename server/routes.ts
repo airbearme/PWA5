@@ -40,8 +40,6 @@ export async function registerRoutes(app: Express): Promise<Server> {
 		res.json({
 			status: "ok",
 			timestamp: new Date().toISOString(),
-			env: process.env.NODE_ENV,
-			version: "1.2.1",
 		});
 	});
 
@@ -54,6 +52,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
 		role: z.enum(["user", "driver", "admin"]).optional(),
 		avatarUrl: z.string().optional().nullable(),
 	});
+
+	// Use this schema for public-facing profile updates to prevent role escalation
+	const publicProfileSchema = profileSchema.omit({ role: true });
 
 	const ensureUserProfile = async (payload: z.infer<typeof profileSchema>) => {
 		// Try lookup by ID first, then email
@@ -108,7 +109,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
 					});
 			}
 
-			const userData = profileSchema
+			const userData = publicProfileSchema
 				.extend({ password: z.string().min(6) })
 				.parse(req.body);
 			const { data, error } = await supabaseAdmin.auth.admin.createUser({
@@ -117,20 +118,20 @@ export async function registerRoutes(app: Express): Promise<Server> {
 				email_confirm: true,
 				user_metadata: {
 					username: userData.username,
-					role: userData.role || "user",
+					role: "user", // Hardcode role to prevent escalation
 					fullName: userData.fullName,
 				},
 			});
 
 			if (error) throw error;
+			if (!data.user) throw new Error("User creation failed");
+
 			const profile = await ensureUserProfile({
+				id: data.user.id, // Must pass Supabase ID to link profiles
 				email: userData.email,
 				username: userData.username,
 				fullName: userData.fullName,
-				role:
-					(data.user?.user_metadata?.role as "user" | "driver" | "admin") ||
-					userData.role ||
-					"user",
+				role: "user", // Hardcode role to prevent escalation
 				avatarUrl: null,
 			});
 
@@ -215,8 +216,10 @@ export async function registerRoutes(app: Express): Promise<Server> {
 					});
 			}
 
-			const payload = profileSchema.parse(req.body);
-			const profile = await ensureUserProfile(payload);
+			// Use publicProfileSchema to prevent role escalation during sync
+			const payload = publicProfileSchema.parse(req.body);
+			// Type cast to satisfy ensureUserProfile while keeping role omitted from input
+			const profile = await ensureUserProfile(payload as z.infer<typeof profileSchema>);
 			res.json({ user: profile });
 		} catch (error: any) {
 			res.status(400).json({ message: error.message });
