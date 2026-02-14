@@ -14,7 +14,7 @@ const customJestConfig = {
   },
   testMatch: [
     '**/__tests__/**/*.[jt]s?(x)',
-    '**/?(*.)+(spec|test).[jt]s?(x)',
+    '**/?(*.)+test.[jt]s?(x)', // Exclude .spec.ts files (Playwright)
   ],
   collectCoverageFrom: [
     'app/**/*.{js,jsx,ts,tsx}',

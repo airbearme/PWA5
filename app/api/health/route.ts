@@ -18,8 +18,7 @@ export async function GET() {
         database: dbError ? "unhealthy" : "healthy",
         api: "healthy",
       },
-      version: process.env.NEXT_PUBLIC_APP_VERSION || "1.0.0",
-      ...(dbError && { error: dbError.message }),
+      // Hardened: version and detailed error messages removed to prevent info leakage
     };
 
     const statusCode = dbError ? 503 : 200;
