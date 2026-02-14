@@ -72,7 +72,7 @@ jobs:
         run: pnpm run build
 
       - name: Upload build artifacts
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: build-files
           path: .next
@@ -145,6 +145,9 @@ jobs:
 
       - name: Re-run build after repair
         run: pnpm run build || echo "Build still failing after repair"
+        env:
+          NEXT_PUBLIC_SUPABASE_PWA4_URL: https://placeholder.supabase.co
+          NEXT_PUBLIC_SUPABASE_PWA4_ANON_KEY: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.placeholder
 
   # Deploy to Vercel
   deploy:
