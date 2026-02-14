@@ -241,7 +241,7 @@ export default function BookRidePage() {
                       className="w-full text-left p-3 rounded-lg border hover:bg-muted transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
                       onClick={() => !booking && setPickupSpot(spot)}
                       disabled={booking}
-                      aria-label={`Select ${spot.name} as pickup location`}
+                      aria-label={`Select ${spot.name}${spot.description ? `, ${spot.description}` : ""} as pickup location`}
                     >
                       <span className="block font-medium">{spot.name}</span>
                       {spot.description && (
@@ -298,7 +298,7 @@ export default function BookRidePage() {
                         className="w-full text-left p-3 rounded-lg border hover:bg-muted transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
                         onClick={() => !booking && setDestinationSpot(spot)}
                         disabled={booking}
-                        aria-label={`Select ${spot.name} as destination location`}
+                        aria-label={`Select ${spot.name}${spot.description ? `, ${spot.description}` : ""} as destination location`}
                       >
                         <span className="block font-medium">{spot.name}</span>
                         {spot.description && (
