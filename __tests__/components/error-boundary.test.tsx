@@ -21,6 +21,7 @@ describe('ErrorBoundary', () => {
       </ErrorBoundary>
     );
 
+    // @ts-ignore - toBeInTheDocument is added by jest-dom but types are not being picked up
     expect(screen.getByText('Test Content')).toBeInTheDocument();
   });
 
@@ -35,6 +36,7 @@ describe('ErrorBoundary', () => {
       </ErrorBoundary>
     );
 
+    // @ts-ignore - toBeInTheDocument is added by jest-dom but types are not being picked up
     expect(screen.getByText(/Oops! Something went wrong/i)).toBeInTheDocument();
   });
 });

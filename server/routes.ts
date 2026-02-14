@@ -35,13 +35,11 @@ if (!supabaseAdmin) {
 }
 
 export async function registerRoutes(app: Express): Promise<Server> {
-	// Health check
+	// Health check - Hardened to prevent information leakage
 	app.get("/api/health", (_req, res) => {
 		res.json({
 			status: "ok",
 			timestamp: new Date().toISOString(),
-			env: process.env.NODE_ENV,
-			version: "1.2.1",
 		});
 	});
 
@@ -54,6 +52,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
 		role: z.enum(["user", "driver", "admin"]).optional(),
 		avatarUrl: z.string().optional().nullable(),
 	});
+
+	// Public schema for registration and sync - omits role to prevent mass assignment
+	const publicProfileSchema = profileSchema.omit({ role: true });
 
 	const ensureUserProfile = async (payload: z.infer<typeof profileSchema>) => {
 		// Try lookup by ID first, then email
@@ -108,16 +109,18 @@ export async function registerRoutes(app: Express): Promise<Server> {
 					});
 			}
 
-			const userData = profileSchema
+			// Use publicProfileSchema to prevent mass assignment of 'role'
+			const userData = publicProfileSchema
 				.extend({ password: z.string().min(6) })
 				.parse(req.body);
+
 			const { data, error } = await supabaseAdmin.auth.admin.createUser({
 				email: userData.email || undefined,
 				password: userData.password,
 				email_confirm: true,
 				user_metadata: {
 					username: userData.username,
-					role: userData.role || "user",
+					role: "user", // Strictly force to 'user' for public registration
 					fullName: userData.fullName,
 				},
 			});
@@ -127,10 +130,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
 				email: userData.email,
 				username: userData.username,
 				fullName: userData.fullName,
-				role:
-					(data.user?.user_metadata?.role as "user" | "driver" | "admin") ||
-					userData.role ||
-					"user",
+				role: "user", // Strictly force to 'user' for public registration
 				avatarUrl: null,
 			});
 
@@ -215,7 +215,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
 					});
 			}
 
-			const payload = profileSchema.parse(req.body);
+			// Use publicProfileSchema to prevent unauthorized role escalation
+			const payload = publicProfileSchema.parse(req.body);
 			const profile = await ensureUserProfile(payload);
 			res.json({ user: profile });
 		} catch (error: any) {
