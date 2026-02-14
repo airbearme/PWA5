@@ -227,6 +227,7 @@ export default function BookRidePage() {
                     className="mt-2"
                     onClick={() => setPickupSpot(null)}
                     disabled={booking}
+                    aria-label={`Change pickup location from ${pickupSpot.name}`}
                   >
                     Change
                   </Button>
@@ -234,18 +235,21 @@ export default function BookRidePage() {
               ) : (
                 <div className={`space-y-2 max-h-60 overflow-y-auto ${booking ? "opacity-50 cursor-not-allowed" : ""}`}>
                   {spots.map((spot) => (
-                    <div
+                    <button
                       key={spot.id}
-                      className="p-3 rounded-lg border hover:bg-muted cursor-pointer transition-colors"
+                      type="button"
+                      className="w-full text-left p-3 rounded-lg border hover:bg-muted transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
                       onClick={() => !booking && setPickupSpot(spot)}
+                      disabled={booking}
+                      aria-label={`Select ${spot.name} as pickup location`}
                     >
-                      <p className="font-medium">{spot.name}</p>
+                      <span className="block font-medium">{spot.name}</span>
                       {spot.description && (
-                        <p className="text-sm text-muted-foreground">
+                        <span className="block text-sm text-muted-foreground">
                           {spot.description}
-                        </p>
+                        </span>
                       )}
-                    </div>
+                    </button>
                   ))}
                 </div>
               )}
@@ -278,6 +282,7 @@ export default function BookRidePage() {
                     className="mt-2"
                     onClick={() => setDestinationSpot(null)}
                     disabled={booking}
+                    aria-label={`Change destination from ${destinationSpot.name}`}
                   >
                     Change
                   </Button>
@@ -287,18 +292,21 @@ export default function BookRidePage() {
                   {spots
                     .filter((s) => s.id !== pickupSpot?.id)
                     .map((spot) => (
-                      <div
+                      <button
                         key={spot.id}
-                        className="p-3 rounded-lg border hover:bg-muted cursor-pointer transition-colors"
+                        type="button"
+                        className="w-full text-left p-3 rounded-lg border hover:bg-muted transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
                         onClick={() => !booking && setDestinationSpot(spot)}
+                        disabled={booking}
+                        aria-label={`Select ${spot.name} as destination location`}
                       >
-                        <p className="font-medium">{spot.name}</p>
+                        <span className="block font-medium">{spot.name}</span>
                         {spot.description && (
-                          <p className="text-sm text-muted-foreground">
+                          <span className="block text-sm text-muted-foreground">
                             {spot.description}
-                          </p>
+                          </span>
                         )}
-                      </div>
+                      </button>
                     ))}
                 </div>
               )}
@@ -308,7 +316,7 @@ export default function BookRidePage() {
 
         {/* Ride Summary */}
         {pickupSpot && destinationSpot && (
-          <Card className="mt-6 p-6 hover-lift">
+          <Card className="mt-6 p-6 hover-lift animate-in fade-in slide-in-from-bottom-4 duration-500">
             <CardHeader>
               <CardTitle>Ride Summary</CardTitle>
             </CardHeader>
