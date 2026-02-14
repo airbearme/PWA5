@@ -56,6 +56,14 @@ global.ResizeObserver = class ResizeObserver {
   unobserve() {}
 }
 
+// Polyfill fetch for Node.js environment
+if (typeof fetch === 'undefined' && typeof globalThis.fetch !== 'undefined') {
+  global.fetch = globalThis.fetch;
+  global.Request = globalThis.Request;
+  global.Response = globalThis.Response;
+  global.Headers = globalThis.Headers;
+}
+
 // Suppress console errors in tests (optional)
 // global.console = {
 //   ...console,
