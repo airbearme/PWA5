@@ -135,6 +135,9 @@
 	"devDependencies": {
 		"@playwright/test": "^1.49.1",
 		"@tailwindcss/typography": "^0.5.15",
+		"@testing-library/jest-dom": "^6.6.3",
+		"@testing-library/react": "^16.2.0",
+		"jest-environment-jsdom": "^29.7.0",
 		"@types/express": "^5.0.0",
 		"@types/leaflet": "^1.9.15",
 		"@types/minimatch": "^5.1.2",
