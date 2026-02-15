@@ -7,6 +7,7 @@ import {
   useTransform,
   useSpring,
 } from "framer-motion";
+import Image from "next/image";
 import AirbearWheel from "@/components/airbear-wheel";
 
 export default function FloatingMascot() {
@@ -35,7 +36,8 @@ export default function FloatingMascot() {
   return (
     <motion.a
       href="/"
-      className="fixed bottom-6 right-6 z-50"
+      className="group fixed bottom-6 right-6 z-50 focus-visible:ring-2 focus-visible:ring-emerald-400 focus-visible:ring-offset-2 rounded-full outline-none"
+      aria-label="Return to home page"
       style={{
         translateX: followX,
         translateY: followY,
@@ -44,7 +46,7 @@ export default function FloatingMascot() {
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.5 }}
     >
-      <div className="group relative">
+      <div className="relative">
         {/* Glowing background circle */}
         <div className="absolute inset-0 bg-emerald-500/20 rounded-full blur-2xl animate-pulse-glow group-hover:bg-emerald-500/40 transition-colors"></div>
         
@@ -56,9 +58,11 @@ export default function FloatingMascot() {
           </div>
           
           {/* Mascot image */}
-          <img
+          <Image
             src="/airbear-mascot.png"
             alt="AirBear Mascot"
+            width={80}
+            height={80}
             className="w-full h-full object-cover rounded-full animate-float"
             style={{ animationDuration: "4s" }}
           />
@@ -66,8 +70,8 @@ export default function FloatingMascot() {
           {/* Pulse ring */}
           <div className="absolute inset-0 rounded-full border-2 border-emerald-400/30 animate-ping"></div>
           
-          {/* Tooltip on hover */}
-          <div className="absolute bottom-full right-0 mb-2 px-3 py-1.5 bg-emerald-600 dark:bg-emerald-700 text-white text-xs font-semibold rounded-lg shadow-lg opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap pointer-events-none">
+          {/* Tooltip on hover & focus */}
+          <div className="absolute bottom-full right-0 mb-2 px-3 py-1.5 bg-emerald-600 dark:bg-emerald-700 text-white text-xs font-semibold rounded-lg shadow-lg opacity-0 group-hover:opacity-100 group-focus-visible:opacity-100 transition-opacity whitespace-nowrap pointer-events-none">
             Go Home 🏠
             <div className="absolute top-full right-4 w-0 h-0 border-l-4 border-r-4 border-t-4 border-transparent border-t-emerald-600 dark:border-t-emerald-700"></div>
           </div>
