@@ -40,8 +40,6 @@ export async function registerRoutes(app: Express): Promise<Server> {
 		res.json({
 			status: "ok",
 			timestamp: new Date().toISOString(),
-			env: process.env.NODE_ENV,
-			version: "1.2.1",
 		});
 	});
 
@@ -54,6 +52,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
 		role: z.enum(["user", "driver", "admin"]).optional(),
 		avatarUrl: z.string().optional().nullable(),
 	});
+
+	// Public schema for user-facing routes (no role assignment)
+	const publicProfileSchema = profileSchema.omit({ role: true });
 
 	const ensureUserProfile = async (payload: z.infer<typeof profileSchema>) => {
 		// Try lookup by ID first, then email
@@ -108,7 +109,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
 					});
 			}
 
-			const userData = profileSchema
+			// Use publicProfileSchema to prevent role escalation during registration
+			const userData = publicProfileSchema
 				.extend({ password: z.string().min(6) })
 				.parse(req.body);
 			const { data, error } = await supabaseAdmin.auth.admin.createUser({
@@ -117,7 +119,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
 				email_confirm: true,
 				user_metadata: {
 					username: userData.username,
-					role: userData.role || "user",
+					role: "user",
 					fullName: userData.fullName,
 				},
 			});
@@ -129,7 +131,6 @@ export async function registerRoutes(app: Express): Promise<Server> {
 				fullName: userData.fullName,
 				role:
 					(data.user?.user_metadata?.role as "user" | "driver" | "admin") ||
-					userData.role ||
 					"user",
 				avatarUrl: null,
 			});
@@ -215,7 +216,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
 					});
 			}
 
-			const payload = profileSchema.parse(req.body);
+			// Use publicProfileSchema to prevent role escalation during profile sync
+			const payload = publicProfileSchema.parse(req.body);
 			const profile = await ensureUserProfile(payload);
 			res.json({ user: profile });
 		} catch (error: any) {
