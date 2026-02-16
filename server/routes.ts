@@ -1,5 +1,5 @@
 import { createClient as createSupabaseAdminClient } from "@supabase/supabase-js";
-import type { Express } from "express";
+import type { Express, NextFunction, Request, Response } from "express";
 import { createServer, type Server } from "http";
 import Stripe from "stripe";
 import { z } from "zod";
@@ -35,13 +35,11 @@ if (!supabaseAdmin) {
 }
 
 export async function registerRoutes(app: Express): Promise<Server> {
-	// Health check
+	// Health check - hardened to prevent info leakage
 	app.get("/api/health", (_req, res) => {
 		res.json({
-			status: "ok",
+			status: "healthy",
 			timestamp: new Date().toISOString(),
-			env: process.env.NODE_ENV,
-			version: "1.2.1",
 		});
 	});
 
@@ -54,6 +52,28 @@ export async function registerRoutes(app: Express): Promise<Server> {
 		role: z.enum(["user", "driver", "admin"]).optional(),
 		avatarUrl: z.string().optional().nullable(),
 	});
+
+	// Middleware to verify Supabase JWT
+	const withAuth = async (req: Request, res: Response, next: NextFunction) => {
+		if (!supabaseAdmin) {
+			return res.status(500).json({ message: "Auth service unavailable" });
+		}
+		const token = req.headers.authorization?.split(" ")[1];
+		if (!token) {
+			return res.status(401).json({ message: "Authentication required" });
+		}
+
+		const {
+			data: { user },
+			error,
+		} = await supabaseAdmin.auth.getUser(token);
+		if (error || !user) {
+			return res.status(401).json({ message: "Invalid or expired token" });
+		}
+
+		(req as any).user = user;
+		next();
+	};
 
 	const ensureUserProfile = async (payload: z.infer<typeof profileSchema>) => {
 		// Try lookup by ID first, then email
@@ -204,18 +224,23 @@ export async function registerRoutes(app: Express): Promise<Server> {
 		}
 	});
 
-	app.post("/api/auth/sync-profile", async (req, res) => {
+	app.post("/api/auth/sync-profile", withAuth, async (req, res) => {
 		try {
 			if (!supabaseAdmin) {
-				return res
-					.status(500)
-					.json({
-						message:
-							"Supabase is not configured. Set SUPABASE_URL and SUPABASE_SERVICE_ROLE_KEY.",
-					});
+				return res.status(500).json({
+					message:
+						"Supabase is not configured. Set SUPABASE_URL and SUPABASE_SERVICE_ROLE_KEY.",
+				});
 			}
 
 			const payload = profileSchema.parse(req.body);
+
+			// Sentinel: Verify that the user is only syncing their own profile
+			const authUser = (req as any).user;
+			if (authUser && payload.id && authUser.id !== payload.id) {
+				return res.status(403).json({ message: "Forbidden: Cannot sync another user's profile" });
+			}
+
 			const profile = await ensureUserProfile(payload);
 			res.json({ user: profile });
 		} catch (error: any) {
@@ -263,9 +288,22 @@ export async function registerRoutes(app: Express): Promise<Server> {
 		}
 	});
 
-	app.get("/api/rides/user/:userId", async (req, res) => {
+	app.get("/api/rides/user/:userId", withAuth, async (req, res) => {
 		try {
 			const { userId } = req.params;
+			const authUser = (req as any).user;
+
+			// Sentinel: IDOR Protection - Only allow users to see their own rides or admins to see all
+			if (
+				authUser &&
+				authUser.id !== userId &&
+				authUser.user_metadata?.role !== "admin"
+			) {
+				return res
+					.status(403)
+					.json({ message: "Forbidden: Access to other users' rides is denied" });
+			}
+
 			const rides = await storage.getRidesByUser(userId);
 			res.json(rides);
 		} catch (error: any) {
@@ -315,9 +353,22 @@ export async function registerRoutes(app: Express): Promise<Server> {
 		}
 	});
 
-	app.get("/api/orders/user/:userId", async (req, res) => {
+	app.get("/api/orders/user/:userId", withAuth, async (req, res) => {
 		try {
 			const { userId } = req.params;
+			const authUser = (req as any).user;
+
+			// Sentinel: IDOR Protection
+			if (
+				authUser &&
+				authUser.id !== userId &&
+				authUser.user_metadata?.role !== "admin"
+			) {
+				return res
+					.status(403)
+					.json({ message: "Forbidden: Access to other users' orders is denied" });
+			}
+
 			const orders = await storage.getOrdersByUser(userId);
 			res.json(orders);
 		} catch (error: any) {

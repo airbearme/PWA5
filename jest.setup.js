@@ -1,6 +1,16 @@
 // Learn more: https://github.com/testing-library/jest-dom
 import '@testing-library/jest-dom'
 
+// Polyfill fetch
+if (!global.fetch) {
+  const fetch = require('node-fetch');
+  global.fetch = fetch;
+  globalThis.fetch = fetch;
+  global.Headers = fetch.Headers;
+  global.Request = fetch.Request;
+  global.Response = fetch.Response;
+}
+
 // Mock Next.js router
 jest.mock('next/navigation', () => ({
   useRouter() {
