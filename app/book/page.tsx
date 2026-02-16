@@ -30,6 +30,9 @@ export default function BookRidePage() {
     }
   }, [user, authLoading, router]);
 
+  // ⚡ Bolt: Decouple data fetching from URL synchronization.
+  // This prevents redundant database calls when search parameters change.
+  // One hook fetches all spots once on mount.
   useEffect(() => {
     const loadSpots = async () => {
       try {
@@ -42,13 +45,6 @@ export default function BookRidePage() {
 
         if (error) throw error;
         setSpots(data || []);
-
-        // Check for pickup spot from URL
-        const pickupId = searchParams.get("pickup");
-        if (pickupId && data) {
-          const spot = data.find((s) => s.id === pickupId);
-          if (spot) setPickupSpot(spot);
-        }
       } catch (error) {
         console.error("Error loading spots:", error);
         toast({
@@ -62,7 +58,18 @@ export default function BookRidePage() {
     };
 
     loadSpots();
-  }, [searchParams, toast]);
+  }, [toast]);
+
+  // A separate hook synchronizes the pickup spot from URL parameters when spots are loaded or searchParams change.
+  useEffect(() => {
+    if (spots.length > 0) {
+      const pickupId = searchParams.get("pickup");
+      if (pickupId) {
+        const spot = spots.find((s) => s.id === pickupId);
+        if (spot) setPickupSpot(spot);
+      }
+    }
+  }, [searchParams, spots]);
 
   const calculateDistance = (spot1: Spot, spot2: Spot): number => {
     const R = 6371; // Earth's radius in km
