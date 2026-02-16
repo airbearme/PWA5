@@ -18,7 +18,6 @@ export async function GET() {
         database: dbError ? "unhealthy" : "healthy",
         api: "healthy",
       },
-      ...(dbError && { error: dbError.message }),
     };
 
     const statusCode = dbError ? 503 : 200;
@@ -29,7 +28,6 @@ export async function GET() {
       {
         status: "unhealthy",
         timestamp: new Date().toISOString(),
-        error: error.message,
       },
       { status: 503 }
     );
