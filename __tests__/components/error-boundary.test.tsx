@@ -14,6 +14,15 @@ jest.mock('@/lib/error-logger', () => ({
 }));
 
 describe('ErrorBoundary', () => {
+  beforeEach(() => {
+    // Suppress console.error for handled errors in React 19 tests
+    jest.spyOn(console, 'error').mockImplementation(() => {});
+  });
+
+  afterEach(() => {
+    jest.restoreAllMocks();
+  });
+
   it('renders children when there is no error', () => {
     render(
       <ErrorBoundary>
