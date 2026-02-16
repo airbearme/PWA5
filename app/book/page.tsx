@@ -234,10 +234,12 @@ export default function BookRidePage() {
               ) : (
                 <div className={`space-y-2 max-h-60 overflow-y-auto ${booking ? "opacity-50 cursor-not-allowed" : ""}`}>
                   {spots.map((spot) => (
-                    <div
+                    <button
                       key={spot.id}
-                      className="p-3 rounded-lg border hover:bg-muted cursor-pointer transition-colors"
+                      type="button"
+                      className="w-full text-left p-3 rounded-lg border hover:bg-muted transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
                       onClick={() => !booking && setPickupSpot(spot)}
+                      aria-label={`${spot.name}${spot.description ? `: ${spot.description}` : ""}`}
                     >
                       <p className="font-medium">{spot.name}</p>
                       {spot.description && (
@@ -245,7 +247,7 @@ export default function BookRidePage() {
                           {spot.description}
                         </p>
                       )}
-                    </div>
+                    </button>
                   ))}
                 </div>
               )}
@@ -287,10 +289,12 @@ export default function BookRidePage() {
                   {spots
                     .filter((s) => s.id !== pickupSpot?.id)
                     .map((spot) => (
-                      <div
+                      <button
                         key={spot.id}
-                        className="p-3 rounded-lg border hover:bg-muted cursor-pointer transition-colors"
+                        type="button"
+                        className="w-full text-left p-3 rounded-lg border hover:bg-muted transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
                         onClick={() => !booking && setDestinationSpot(spot)}
+                        aria-label={`${spot.name}${spot.description ? `: ${spot.description}` : ""}`}
                       >
                         <p className="font-medium">{spot.name}</p>
                         {spot.description && (
@@ -298,7 +302,7 @@ export default function BookRidePage() {
                             {spot.description}
                           </p>
                         )}
-                      </div>
+                      </button>
                     ))}
                 </div>
               )}
