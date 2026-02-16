@@ -1,5 +1,6 @@
 import { QueryClient, QueryFunction } from "@tanstack/react-query";
 import { mockApi } from '@/lib/mock-api';
+import { getSupabaseClient } from './supabase-client';
 
 const USE_MOCK_API = import.meta.env.VITE_USE_MOCK_API === 'true';
 
@@ -24,9 +25,17 @@ export async function apiRequest(
     }
   }
 
+  const supabase = getSupabaseClient();
+  const session = supabase ? (await supabase.auth.getSession()).data.session : null;
+
+  const headers: Record<string, string> = data ? { "Content-Type": "application/json" } : {};
+  if (session?.access_token) {
+    headers["Authorization"] = `Bearer ${session.access_token}`;
+  }
+
   const res = await fetch(url, {
     method,
-    headers: data ? { "Content-Type": "application/json" } : {},
+    headers,
     body: data ? JSON.stringify(data) : undefined,
     credentials: "include",
   });
@@ -41,7 +50,16 @@ export const getQueryFn: <T>(options: {
 }) => QueryFunction<T> =
   ({ on401: unauthorizedBehavior }) =>
     async ({ queryKey }) => {
+      const supabase = getSupabaseClient();
+      const session = supabase ? (await supabase.auth.getSession()).data.session : null;
+
+      const headers: Record<string, string> = {};
+      if (session?.access_token) {
+        headers["Authorization"] = `Bearer ${session.access_token}`;
+      }
+
       const res = await fetch(queryKey.join("/") as string, {
+        headers,
         credentials: "include",
       });
 
