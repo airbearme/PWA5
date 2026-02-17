@@ -38,10 +38,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
 	// Health check
 	app.get("/api/health", (_req, res) => {
 		res.json({
-			status: "ok",
+			status: "healthy",
 			timestamp: new Date().toISOString(),
-			env: process.env.NODE_ENV,
-			version: "1.2.1",
 		});
 	});
 
@@ -54,6 +52,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
 		role: z.enum(["user", "driver", "admin"]).optional(),
 		avatarUrl: z.string().optional().nullable(),
 	});
+
+	// Use publicProfileSchema for user-facing endpoints to prevent mass assignment of 'role'
+	const publicProfileSchema = profileSchema.omit({ role: true });
 
 	const ensureUserProfile = async (payload: z.infer<typeof profileSchema>) => {
 		// Try lookup by ID first, then email
@@ -108,16 +109,16 @@ export async function registerRoutes(app: Express): Promise<Server> {
 					});
 			}
 
-			const userData = profileSchema
+			const userData = publicProfileSchema
 				.extend({ password: z.string().min(6) })
 				.parse(req.body);
-			const { data, error } = await supabaseAdmin.auth.admin.createUser({
+			const { error } = await supabaseAdmin.auth.admin.createUser({
 				email: userData.email || undefined,
 				password: userData.password,
 				email_confirm: true,
 				user_metadata: {
 					username: userData.username,
-					role: userData.role || "user",
+					role: "user", // Default to 'user' for new registrations
 					fullName: userData.fullName,
 				},
 			});
@@ -127,10 +128,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
 				email: userData.email,
 				username: userData.username,
 				fullName: userData.fullName,
-				role:
-					(data.user?.user_metadata?.role as "user" | "driver" | "admin") ||
-					userData.role ||
-					"user",
+				role: "user", // Prevent unauthorized role assignment during registration
 				avatarUrl: null,
 			});
 
@@ -215,8 +213,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
 					});
 			}
 
-			const payload = profileSchema.parse(req.body);
-			const profile = await ensureUserProfile(payload);
+			const payload = publicProfileSchema.parse(req.body);
+			// Explicitly set role: undefined to preserve existing role during sync
+			const profile = await ensureUserProfile({ ...payload, role: undefined });
 			res.json({ user: profile });
 		} catch (error: any) {
 			res.status(400).json({ message: error.message });
