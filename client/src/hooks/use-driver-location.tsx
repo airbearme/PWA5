@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useRef } from 'react';
 import { useAuth } from '@/hooks/use-auth';
 import { getSupabaseClient } from '@/lib/supabase-client';
 
@@ -20,6 +20,11 @@ export function useDriverLocation(airbearId: string) {
     const [isTracking, setIsTracking] = useState(false);
     const [location, setLocation] = useState<DriverLocation | null>(null);
     const [error, setError] = useState<string | null>(null);
+
+    // Performance: Throttle Supabase updates to once every 5 seconds to reduce network/DB load
+    // while maintaining real-time local UI updates.
+    const lastUpdateRef = useRef<number>(0);
+    const THROTTLE_MS = 5000;
 
     useEffect(() => {
         // Only track if user is a driver
@@ -57,25 +62,31 @@ export function useDriverLocation(airbearId: string) {
                     setLocation(newLocation);
                     setError(null);
 
-                    // Update airbear position in Supabase
-                    try {
-                        const { error: updateError } = await supabase
-                            .from('airbears')
-                            .update({
-                                latitude: newLocation.latitude,
-                                longitude: newLocation.longitude,
-                                heading: newLocation.heading,
-                                updated_at: new Date().toISOString(),
-                            })
-                            .eq('id', airbearId);
+                    // Performance optimization: Throttle Supabase updates
+                    const now = Date.now();
+                    if (now - lastUpdateRef.current >= THROTTLE_MS) {
+                        lastUpdateRef.current = now;
 
-                        if (updateError) {
-                            console.error('Failed to update airbear location:', updateError);
-                            setError(updateError.message);
+                        // Update airbear position in Supabase
+                        try {
+                            const { error: updateError } = await supabase
+                                .from('airbears')
+                                .update({
+                                    latitude: newLocation.latitude,
+                                    longitude: newLocation.longitude,
+                                    heading: newLocation.heading,
+                                    updated_at: new Date().toISOString(),
+                                })
+                                .eq('id', airbearId);
+
+                            if (updateError) {
+                                console.error('Failed to update airbear location:', updateError);
+                                setError(updateError.message);
+                            }
+                        } catch (err: any) {
+                            console.error('Location update error:', err);
+                            setError(err.message);
                         }
-                    } catch (err: any) {
-                        console.error('Location update error:', err);
-                        setError(err.message);
                     }
                 },
                 (err) => {
