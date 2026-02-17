@@ -88,7 +88,7 @@ jobs:
           NEXT_PUBLIC_SITE_URL: ${{ secrets.NEXT_PUBLIC_SITE_URL || 'https://airbear.me' }}
         run: |
           pnpm run build
-          node scripts/check-bundle-size.js || echo "Bundle size check script not found"
+          node scripts/check-bundle-size.cjs || echo "Bundle size check script not found"
 
   security-scan:
     name: Security Scanning
