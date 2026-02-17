@@ -36,7 +36,7 @@ check_dependencies() {
         missing=1
     fi
     
-    if ! command -v npm &> /dev/null; then
+    if ! command -v pnpm &> /dev/null; then
         echo -e "${RED}❌ npm not found${NC}"
         missing=1
     fi

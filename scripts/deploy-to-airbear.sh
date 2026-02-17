@@ -8,7 +8,7 @@ echo "========================================"
 # Check if vercel CLI is installed
 if ! command -v vercel &> /dev/null; then
     echo "❌ Vercel CLI not found. Installing..."
-    npm i -g vercel
+    npm install -g vercel
 fi
 
 # Verify environment variables
@@ -31,11 +31,11 @@ done
 
 # Run type check
 echo "📝 Running type check..."
-npm run type-check
+pnpm run type-check
 
 # Build the application
 echo "🔨 Building application..."
-npm run build
+pnpm run build
 
 # Deploy to production
 echo "🚀 Deploying to production..."

@@ -1,13 +1,7 @@
 {
-	"buildCommand": "npm run build",
+	"buildCommand": "pnpm run build",
 	"framework": "nextjs",
 	"regions": ["iad1"],
-	"rewrites": [
-		{
-			"source": "/(.*)",
-			"destination": "/"
-		}
-	],
 	"headers": [
 		{
 			"source": "/api/(.*)",
