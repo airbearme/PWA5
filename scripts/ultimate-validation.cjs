@@ -5,13 +5,9 @@
  * Runs comprehensive tests for all aspects of the codebase
  */
 
-import { execSync } from "child_process";
-import fs from "fs";
-import path, { dirname } from "path";
-import { fileURLToPath } from "url";
-
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = dirname(__filename);
+const { execSync } = require("child_process");
+const fs = require("fs");
+const path = require("path");
 
 const colors = {
 	reset: "\x1b[0m",
@@ -97,10 +93,10 @@ async function main() {
 
 	// 4. Integration Tests
 	log("\n🔗 Phase 4: Integration Tests", "bright");
-	if (checkFileExists("tests/integration.test.ts")) {
+	if (checkFileExists("__tests__/integration/integration.test.ts")) {
 		runTest(
 			"Integration Tests",
-			"pnpm run test -- tests/integration.test.ts",
+			"pnpm run test -- __tests__/integration/integration.test.ts",
 			false,
 		);
 	} else {
@@ -110,8 +106,8 @@ async function main() {
 
 	// 5. API Tests
 	log("\n🌐 Phase 5: API Tests", "bright");
-	if (checkFileExists("tests/api.test.ts")) {
-		runTest("API Tests", "pnpm run test -- tests/api.test.ts", false);
+	if (checkFileExists("__tests__/api/api.test.ts")) {
+		runTest("API Tests", "pnpm run test -- __tests__/api/api.test.ts", false);
 	} else {
 		log("⚠️  API tests not found", "yellow");
 		results.warnings.push("API Tests");

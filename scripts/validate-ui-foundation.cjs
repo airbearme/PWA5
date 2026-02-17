@@ -5,8 +5,8 @@
  * Ensures all beautiful UI features are permanently present in the codebase
  */
 
-import { readFileSync } from "fs";
-import { join } from "path";
+const { readFileSync } = require("fs");
+const { join } = require("path");
 
 const PROJECT_ROOT = process.cwd();
 
