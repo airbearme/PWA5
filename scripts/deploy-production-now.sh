@@ -20,7 +20,7 @@ NC='\033[0m'
 echo -e "${BLUE}📋 Checking prerequisites...${NC}"
 
 command -v node >/dev/null 2>&1 || { echo -e "${RED}❌ Node.js is required${NC}"; exit 1; }
-command -v npm >/dev/null 2>&1 || { echo -e "${RED}❌ npm is required${NC}"; exit 1; }
+command -v pnpm >/dev/null 2>&1 || { echo -e "${RED}❌ npm is required${NC}"; exit 1; }
 command -v git >/dev/null 2>&1 || { echo -e "${RED}❌ git is required${NC}"; exit 1; }
 
 # Verify dark mode is set
@@ -43,9 +43,9 @@ fi
 # Install dependencies (use pnpm if available, otherwise npm)
 echo -e "${BLUE}📦 Installing dependencies...${NC}"
 if command -v pnpm >/dev/null 2>&1; then
-    pnpm install --frozen-lockfile || npm install
+    pnpm install --frozen-lockfile || pnpm install
 else
-    npm install || echo -e "${YELLOW}⚠️  npm install had issues, continuing...${NC}"
+    pnpm install || echo -e "${YELLOW}⚠️  pnpm install had issues, continuing...${NC}"
 fi
 
 # Type check
@@ -53,7 +53,7 @@ echo -e "${BLUE}🔍 Running type check...${NC}"
 if command -v pnpm >/dev/null 2>&1; then
     pnpm run type-check || echo -e "${YELLOW}⚠️  Type check had issues (continuing anyway)${NC}"
 else
-    npm run type-check || echo -e "${YELLOW}⚠️  Type check had issues (continuing anyway)${NC}"
+    pnpm run type-check || echo -e "${YELLOW}⚠️  Type check had issues (continuing anyway)${NC}"
 fi
 
 # Build
@@ -61,7 +61,7 @@ echo -e "${BLUE}🔨 Building for production...${NC}"
 if command -v pnpm >/dev/null 2>&1; then
     pnpm run build
 else
-    npm run build
+    pnpm run build
 fi
 
 if [ ! -d ".next" ]; then

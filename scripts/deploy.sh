@@ -18,21 +18,21 @@ NC='\033[0m'
 
 # Check if required tools are installed
 command -v node >/dev/null 2>&1 || { echo -e "${RED}❌ Node.js is required${NC}"; exit 1; }
-command -v npm >/dev/null 2>&1 || { echo -e "${RED}❌ npm is required${NC}"; exit 1; }
+command -v pnpm >/dev/null 2>&1 || { echo -e "${RED}❌ npm is required${NC}"; exit 1; }
 command -v git >/dev/null 2>&1 || { echo -e "${RED}❌ git is required${NC}"; exit 1; }
 
 echo -e "${YELLOW}📦 Installing dependencies...${NC}"
-npm install
+pnpm install
 
 echo -e "${YELLOW}🔍 Running type checks...${NC}"
-npm run type-check
+pnpm run type-check
 
 echo -e "${YELLOW}🔨 Building application...${NC}"
-npm run build
+pnpm run build
 
 echo -e "${YELLOW}🧪 Running health checks...${NC}"
 # Add test commands here when implemented
-# npm run test
+# pnpm run test
 
 echo -e "${YELLOW}📤 Committing changes...${NC}"
 git add .

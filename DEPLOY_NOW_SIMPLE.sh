@@ -28,7 +28,7 @@ else
     echo "📤 Vercel CLI not found. Options:"
     echo ""
     echo "Option 1: Install Vercel CLI and deploy"
-    echo "  npm i -g vercel"
+    echo "  pnpm i -g vercel"
     echo "  vercel login"
     echo "  vercel --prod"
     echo ""

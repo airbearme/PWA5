@@ -17,7 +17,7 @@ NC='\033[0m' # No Color
 
 # Step 1: Validate Environment Variables
 echo "📋 Step 1: Validating environment variables..."
-if npm run validate:env; then
+if pnpm run validate:env; then
     echo -e "${GREEN}✅ Environment variables validated${NC}"
 else
     echo -e "${RED}❌ Environment variable validation failed${NC}"
@@ -27,7 +27,7 @@ echo ""
 
 # Step 2: Type Check
 echo "📋 Step 2: Running TypeScript type check..."
-if npm run type-check; then
+if pnpm run type-check; then
     echo -e "${GREEN}✅ Type check passed${NC}"
 else
     echo -e "${RED}❌ Type check failed${NC}"
@@ -37,7 +37,7 @@ echo ""
 
 # Step 3: Lint
 echo "📋 Step 3: Running ESLint..."
-if npm run lint; then
+if pnpm run lint; then
     echo -e "${GREEN}✅ Lint passed${NC}"
 else
     echo -e "${YELLOW}⚠️  Lint has warnings (non-blocking)${NC}"
@@ -46,7 +46,7 @@ echo ""
 
 # Step 4: Build
 echo "📋 Step 4: Building production bundle..."
-if npm run build; then
+if pnpm run build; then
     echo -e "${GREEN}✅ Build successful${NC}"
 else
     echo -e "${RED}❌ Build failed${NC}"
