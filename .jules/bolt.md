@@ -1,3 +1,3 @@
-## 2025-05-15 - Throttling High-Frequency GPS Updates
-**Learning:** Real-time tracking hooks like `useDriverLocation` can trigger excessive network and database load if they update on every `watchPosition` event (which can be several times per second). Implementing a leading-edge throttle using `useRef` and `Date.now()` is a low-complexity, high-impact optimization.
-**Action:** Always check if frequent event listeners (scroll, resize, geolocation, websocket messages) are triggering expensive side effects like database writes or complex state updates, and apply appropriate throttling or debouncing.
+## 2025-05-14 - ESM Compatibility and Throttled Geolocation
+**Learning:** In a project with `"type": "module"`, all CommonJS scripts using `require()` must use the `.cjs` extension to function in Node.js environments. Additionally, high-frequency GPS updates can overwhelm Supabase/PostgreSQL if not throttled, but a leading + trailing edge throttle ensures real-time responsiveness without data loss.
+**Action:** Always check `package.json` for `type: module` before writing utility scripts, and prioritize `pnpm` in CI for better performance.

@@ -14,6 +14,15 @@ jest.mock('@/lib/error-logger', () => ({
 }));
 
 describe('ErrorBoundary', () => {
+  beforeEach(() => {
+    // Suppress console.error in tests for expected errors
+    jest.spyOn(console, 'error').mockImplementation(() => {});
+  });
+
+  afterEach(() => {
+    (console.error as jest.Mock).mockRestore();
+  });
+
   it('renders children when there is no error', () => {
     render(
       <ErrorBoundary>
@@ -21,7 +30,7 @@ describe('ErrorBoundary', () => {
       </ErrorBoundary>
     );
 
-    (expect(screen.getByText('Test Content')) as any).toBeInTheDocument();
+    expect(screen.getByText('Test Content')).toBeInTheDocument();
   });
 
   it('renders error UI when error occurs', () => {
@@ -35,7 +44,7 @@ describe('ErrorBoundary', () => {
       </ErrorBoundary>
     );
 
-    (expect(screen.getByText(/Oops! Something went wrong/i)) as any).toBeInTheDocument();
+    expect(screen.getByText(/Oops! Something went wrong/i)).toBeInTheDocument();
   });
 });
 

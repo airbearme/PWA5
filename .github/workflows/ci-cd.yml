@@ -107,7 +107,7 @@ jobs:
         run: |
           echo "Checking API health..."
           # Add health check script
-          node scripts/health-check.js || echo "Health check script not found"
+          node scripts/health-check.cjs || echo "Health check script not found"
 
       - name: Validate environment variables
         run: |
@@ -141,7 +141,7 @@ jobs:
         run: |
           echo "Attempting auto-repair..."
           pnpm run lint -- --fix || true
-          node scripts/auto-repair.js || echo "Auto-repair script not found"
+          node scripts/auto-repair.cjs || echo "Auto-repair script not found"
 
       - name: Re-run build after repair
         run: pnpm run build || echo "Build still failing after repair"
@@ -176,4 +176,4 @@ jobs:
         if: failure()
         run: |
           echo "Reporting errors to database..."
-          node scripts/report-errors.js || echo "Error reporting script not found"
+          node scripts/report-errors.cjs || echo "Error reporting script not found"

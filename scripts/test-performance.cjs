@@ -49,7 +49,7 @@ async function runPerformanceTests() {
 		console.log(
 			`⚠️  Site ${SITE_URL} is not accessible. Skipping Lighthouse tests.`,
 		);
-		console.log("💡 Start the dev server with: npm run dev");
+		console.log("💡 Start the dev server with: pnpm run dev");
 		process.exit(0);
 	}
 

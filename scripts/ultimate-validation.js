@@ -69,7 +69,7 @@ async function main() {
 
 	// 1. Environment Validation
 	log("\n📋 Phase 1: Environment & Configuration", "bright");
-	runTest("Environment Variables", "node scripts/validate-env.cjs", true);
+	runTest("Environment Variables", "node scripts/validate-env.js", true);
 	runTest("TypeScript Type Check", "pnpm run type-check", true);
 	runTest("ESLint", "pnpm run lint", false);
 
@@ -88,8 +88,8 @@ async function main() {
 
 	// 3. Unit Tests
 	log("\n🔬 Phase 3: Unit Tests", "bright");
-	if (checkFileExists("jest.config.js") || checkFileExists("jest.config.cjs")) {
-		runTest("Jest Unit Tests", "pnpm run test -- --passWithNoTests", false);
+	if (checkFileExists("jest.config.cjs")) {
+		runTest("Jest Unit Tests", "pnpm run test --passWithNoTests", false);
 	} else {
 		log("⚠️  Jest not configured, skipping unit tests", "yellow");
 		results.warnings.push("Unit Tests (Jest not configured)");
@@ -100,7 +100,7 @@ async function main() {
 	if (checkFileExists("tests/integration.test.ts")) {
 		runTest(
 			"Integration Tests",
-			"pnpm run test -- tests/integration.test.ts",
+			"pnpm run test tests/integration.test.ts",
 			false,
 		);
 	} else {
@@ -111,7 +111,7 @@ async function main() {
 	// 5. API Tests
 	log("\n🌐 Phase 5: API Tests", "bright");
 	if (checkFileExists("tests/api.test.ts")) {
-		runTest("API Tests", "pnpm run test -- tests/api.test.ts", false);
+		runTest("API Tests", "pnpm run test tests/api.test.ts", false);
 	} else {
 		log("⚠️  API tests not found", "yellow");
 		results.warnings.push("API Tests");
@@ -122,7 +122,7 @@ async function main() {
 	if (checkFileExists("playwright.config.ts")) {
 		runTest(
 			"Playwright E2E Tests",
-			"pnpm run test:e2e -- --reporter=list",
+			"pnpm run test:e2e --reporter=list",
 			false,
 		);
 	} else {
@@ -133,12 +133,12 @@ async function main() {
 	// Run comprehensive workflow tests
 	runTest(
 		"Complete Workflow Tests",
-		"node scripts/test-complete-workflows.cjs",
+		"node scripts/test-complete-workflows.js",
 		false,
 	);
 	runTest(
 		"Comprehensive E2E Tests",
-		"node scripts/comprehensive-e2e-test.cjs",
+		"node scripts/comprehensive-e2e-test.js",
 		false,
 	);
 
@@ -149,7 +149,7 @@ async function main() {
 
 	// 8. Security Tests
 	log("\n🔒 Phase 8: Security Tests", "bright");
-	runTest("pnpm Audit", "pnpm audit || true", false);
+	runTest("pnpm Audit", "pnpm audit --audit-level=moderate || true", false);
 	runTest("Security Headers", "node scripts/test-security-headers.cjs", false);
 
 	// 9. Accessibility Tests
