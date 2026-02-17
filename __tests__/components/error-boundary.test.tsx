@@ -14,6 +14,15 @@ jest.mock('@/lib/error-logger', () => ({
 }));
 
 describe('ErrorBoundary', () => {
+  beforeEach(() => {
+    // Suppress console.error in tests for expected errors
+    jest.spyOn(console, 'error').mockImplementation(() => {});
+  });
+
+  afterEach(() => {
+    (console.error as jest.Mock).mockRestore();
+  });
+
   it('renders children when there is no error', () => {
     render(
       <ErrorBoundary>

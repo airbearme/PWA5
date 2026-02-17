@@ -13,7 +13,7 @@ console.log("📦 Checking bundle sizes...\n");
 const nextDir = path.join(process.cwd(), ".next");
 
 if (!fs.existsSync(nextDir)) {
-	console.log('⚠️  .next directory not found. Run "npm run build" first.');
+	console.log('⚠️  .next directory not found. Run "pnpm run build" first.');
 	process.exit(0);
 }
 

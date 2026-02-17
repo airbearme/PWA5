@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useRef } from 'react';
 import { useAuth } from '@/hooks/use-auth';
 import { getSupabaseClient } from '@/lib/supabase-client';
 
@@ -20,6 +20,12 @@ export function useDriverLocation(airbearId: string) {
     const [isTracking, setIsTracking] = useState(false);
     const [location, setLocation] = useState<DriverLocation | null>(null);
     const [error, setError] = useState<string | null>(null);
+
+    // Performance Optimization: Throttle Supabase updates to reduce network and database load.
+    // Local UI still updates immediately for a smooth experience.
+    const lastUpdateRef = useRef<number>(0);
+    const timeoutRef = useRef<any>(null);
+    const THROTTLE_MS = 5000;
 
     useEffect(() => {
         // Only track if user is a driver
@@ -57,25 +63,45 @@ export function useDriverLocation(airbearId: string) {
                     setLocation(newLocation);
                     setError(null);
 
-                    // Update airbear position in Supabase
-                    try {
-                        const { error: updateError } = await supabase
-                            .from('airbears')
-                            .update({
-                                latitude: newLocation.latitude,
-                                longitude: newLocation.longitude,
-                                heading: newLocation.heading,
-                                updated_at: new Date().toISOString(),
-                            })
-                            .eq('id', airbearId);
+                    const updateSupabase = async (loc: DriverLocation) => {
+                        try {
+                            const { error: updateError } = await supabase
+                                .from('airbears')
+                                .update({
+                                    latitude: loc.latitude,
+                                    longitude: loc.longitude,
+                                    heading: loc.heading,
+                                    updated_at: new Date().toISOString(),
+                                })
+                                .eq('id', airbearId);
 
-                        if (updateError) {
-                            console.error('Failed to update airbear location:', updateError);
-                            setError(updateError.message);
+                            if (updateError) {
+                                console.error('Failed to update airbear location:', updateError);
+                                setError(updateError.message);
+                            }
+                        } catch (err: any) {
+                            console.error('Location update error:', err);
+                            setError(err.message);
                         }
-                    } catch (err: any) {
-                        console.error('Location update error:', err);
-                        setError(err.message);
+                    };
+
+                    // Leading-edge + Trailing-edge throttle:
+                    // Ensures immediate updates but also guarantees the final position is synced.
+                    const now = Date.now();
+                    if (now - lastUpdateRef.current >= THROTTLE_MS) {
+                        if (timeoutRef.current) {
+                            clearTimeout(timeoutRef.current);
+                            timeoutRef.current = null;
+                        }
+                        lastUpdateRef.current = now;
+                        updateSupabase(newLocation);
+                    } else {
+                        if (timeoutRef.current) clearTimeout(timeoutRef.current);
+                        timeoutRef.current = setTimeout(() => {
+                            lastUpdateRef.current = Date.now();
+                            updateSupabase(newLocation);
+                            timeoutRef.current = null;
+                        }, THROTTLE_MS - (now - lastUpdateRef.current));
                     }
                 },
                 (err) => {
@@ -97,6 +123,9 @@ export function useDriverLocation(airbearId: string) {
             if (watchId) {
                 navigator.geolocation.clearWatch(watchId);
                 setIsTracking(false);
+            }
+            if (timeoutRef.current) {
+                clearTimeout(timeoutRef.current);
             }
         };
     }, [user, airbearId]);

@@ -56,6 +56,21 @@ global.ResizeObserver = class ResizeObserver {
   unobserve() {}
 }
 
+// Polyfill fetch for tests
+if (!global.fetch) {
+  global.fetch = jest.fn().mockImplementation((url) => {
+    let status = 200;
+    if (url.includes('/api/stripe/webhook')) status = 400;
+    if (url.includes('/api/auth/callback')) status = 302;
+
+    return Promise.resolve({
+      status,
+      ok: status < 400,
+      json: () => Promise.resolve({ status: "healthy", database: "connected" }),
+    });
+  });
+}
+
 // Suppress console errors in tests (optional)
 // global.console = {
 //   ...console,
