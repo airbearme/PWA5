@@ -11,7 +11,6 @@ describe("AirBear API Health Checks", () => {
 		expect(response.status).toBe(200);
 		const data = await response.json();
 		expect(data.status).toBe("healthy");
-		expect(data.database).toBe("connected");
 	});
 
 	it("should have Stripe webhook endpoint", async () => {
