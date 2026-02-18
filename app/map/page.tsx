@@ -1,7 +1,6 @@
 "use client";
 
 import { useEffect, useState, useMemo } from "react";
-import Image from "next/image";
 import { useAuthContext } from "@/components/auth-provider";
 import { getSupabaseClient } from "@/lib/supabase/client";
 import { subscribeToAirbearLocations } from "@/lib/supabase/realtime";
@@ -30,28 +29,30 @@ export default function MapPage() {
       try {
         const supabase = getSupabaseClient();
 
-        // Load spots and airbears in parallel for faster initial load
-        const [spotsRes, airbearsRes] = await Promise.all([
-          supabase
-            .from("spots")
-            .select("*")
-            .eq("is_active", true)
-            .order("name"),
-          supabase.from("airbears").select("*"),
-        ]);
+        // Load spots
+        const { data: spotsData, error: spotsError } = await supabase
+          .from("spots")
+          .select("*")
+          .eq("is_active", true)
+          .order("name");
 
-        if (spotsRes.error) {
-          console.error("Error loading spots:", spotsRes.error);
-          throw spotsRes.error;
+        if (spotsError) {
+          console.error("Error loading spots:", spotsError);
+          throw spotsError;
         }
 
-        if (airbearsRes.error) {
-          console.error("Error loading airbears:", airbearsRes.error);
-          throw airbearsRes.error;
+        setSpots(spotsData || []);
+
+        // Load airbears
+        const { data: airbearsData, error: airbearsError } = await supabase
+          .from("airbears")
+          .select("*");
+
+        if (airbearsError) {
+          throw airbearsError;
         }
 
-        setSpots(spotsRes.data || []);
-        setAirbears(airbearsRes.data || []);
+        setAirbears(airbearsData || []);
       } catch (err) {
         console.error("Error loading map data:", err);
         toast({
@@ -88,14 +89,6 @@ export default function MapPage() {
     return airbears.filter((a) => a.is_available && !a.is_charging);
   }, [airbears]);
 
-  // Memoize average battery to prevent redundant calculations on re-renders
-  const avgBattery = useMemo(() => {
-    if (airbears.length === 0) return 0;
-    return Math.round(
-      airbears.reduce((sum, a) => sum + a.battery_level, 0) / airbears.length
-    );
-  }, [airbears]);
-
   // Enable push notifications for airbear availability
   useAirbearNotifications(airbears);
 
@@ -105,12 +98,9 @@ export default function MapPage() {
         <div className="text-center">
           <div className="flex justify-center mb-6">
             <div className="w-32 h-32 rounded-full border-4 border-emerald-400/50 dark:border-emerald-500/50 bg-gradient-to-br from-emerald-500/20 to-lime-500/20 backdrop-blur-sm shadow-2xl hover-lift animate-float overflow-hidden">
-              <Image
+              <img
                 src="/airbear-mascot.png"
                 alt="AirBear Mascot"
-                width={128}
-                height={128}
-                priority
                 className="w-full h-full object-cover rounded-full animate-pulse-glow"
               />
             </div>
@@ -130,12 +120,9 @@ export default function MapPage() {
         <div className="text-center mb-8">
           <div className="flex justify-center mb-4">
             <div className="w-24 h-24 rounded-full border-4 border-emerald-400/50 dark:border-emerald-500/50 bg-gradient-to-br from-emerald-500/20 to-lime-500/20 backdrop-blur-sm shadow-2xl hover-lift animate-float overflow-hidden">
-              <Image
+              <img
                 src="/airbear-mascot.png"
                 alt="AirBear Mascot"
-                width={96}
-                height={96}
-                priority
                 className="w-full h-full object-cover rounded-full animate-pulse-glow"
               />
             </div>
@@ -188,7 +175,13 @@ export default function MapPage() {
               <div>
                 <p className="text-sm text-muted-foreground">Avg Battery</p>
                 <p className="text-2xl font-bold text-blue-600">
-                  {avgBattery}%
+                  {airbears.length > 0
+                    ? Math.round(
+                        airbears.reduce((sum, a) => sum + a.battery_level, 0) /
+                          airbears.length
+                      )
+                    : 0}
+                  %
                 </p>
               </div>
             </div>
