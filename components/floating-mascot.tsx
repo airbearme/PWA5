@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect } from "react";
+import Image from "next/image";
 import {
   motion,
   useMotionValue,
@@ -55,13 +56,21 @@ export default function FloatingMascot() {
             <AirbearWheel size="lg" glowing animated className="opacity-50" />
           </div>
           
-          {/* Mascot image */}
-          <img
-            src="/airbear-mascot.png"
-            alt="AirBear Mascot"
-            className="w-full h-full object-cover rounded-full animate-float"
-            style={{ animationDuration: "4s" }}
-          />
+          {/* ⚡ Bolt: Optimized image loading for the floating mascot.
+              - Replaced standard `<img>` with Next.js `<Image>` component.
+              - Added `priority` to ensure this persistent brand element loads early.
+           */}
+          <div className="relative w-full h-full">
+            <Image
+              src="/airbear-mascot.png"
+              alt="AirBear Mascot"
+              fill
+              priority
+              sizes="80px"
+              className="object-cover rounded-full animate-float"
+              style={{ animationDuration: "4s" }}
+            />
+          </div>
           
           {/* Pulse ring */}
           <div className="absolute inset-0 rounded-full border-2 border-emerald-400/30 animate-ping"></div>
