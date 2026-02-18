@@ -39,9 +39,9 @@
    - **Authorized JavaScript origins**: (leave empty for now)
    - **Authorized redirect URIs**: Add this:
      ```
-     https://fofmrqgcidfenbevayrg.supabase.co/auth/v1/callback
+     https://your-project.supabase.co/auth/v1/callback
      ```
-     (Replace `fofmrqgcidfenbevayrg` with YOUR Supabase project reference)
+     (Replace `your-project` with YOUR Supabase project reference)
    - Click **Create**
 
 5. **Copy Credentials**:
@@ -80,8 +80,8 @@
 1. Go to Supabase Dashboard
 2. Select your project
 3. Go to **Project Settings** → **API**
-4. Your **Project URL** looks like: `https://fofmrqgcidfenbevayrg.supabase.co`
-5. The part before `.supabase.co` is your project reference: `fofmrqgcidfenbevayrg`
+4. Your **Project URL** looks like: `https://your-project.supabase.co`
+5. The part before `.supabase.co` is your project reference: `your-project`
 
 ### Authorized Redirect URI Format:
 
