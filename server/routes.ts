@@ -35,13 +35,11 @@ if (!supabaseAdmin) {
 }
 
 export async function registerRoutes(app: Express): Promise<Server> {
-	// Health check
+	// Health check - Hardened to prevent information leakage
 	app.get("/api/health", (_req, res) => {
 		res.json({
 			status: "ok",
 			timestamp: new Date().toISOString(),
-			env: process.env.NODE_ENV,
-			version: "1.2.1",
 		});
 	});
 

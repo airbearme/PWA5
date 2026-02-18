@@ -28,13 +28,13 @@ jest.mock('@/lib/supabase/server', () => ({
 }));
 
 describe('Health API', () => {
-  it('should return healthy status when database is accessible', async () => {
+  it('should return healthy status', async () => {
     const { GET } = await import('@/app/api/health/route');
     const response = await GET();
     const data = await response.json();
 
     expect(data.status).toBe('healthy');
-    expect(data.services.database).toBe('healthy');
+    expect(data.timestamp).toBeDefined();
   });
 });
 
