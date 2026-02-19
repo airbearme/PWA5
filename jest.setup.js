@@ -63,6 +63,33 @@ global.ResizeObserver = class ResizeObserver {
 //   warn: jest.fn(),
 // }
 
+// Polyfill fetch and common web APIs
+if (!global.fetch) {
+  global.fetch = jest.fn().mockImplementation((url) => {
+    if (url.includes("/api/health")) {
+      return Promise.resolve({
+        ok: true,
+        status: 200,
+        json: () => Promise.resolve({ status: "healthy", timestamp: new Date().toISOString() }),
+      });
+    }
+    if (url.includes("/api/stripe/webhook")) {
+      return Promise.resolve({ status: 400 });
+    }
+    if (url.includes("/api/auth/callback")) {
+      return Promise.resolve({ status: 302 });
+    }
+    return Promise.reject(new Error("Fetch not mocked for " + url));
+  });
+}
+
+if (!global.TextEncoder) {
+  global.TextEncoder = require("util").TextEncoder;
+}
+if (!global.TextDecoder) {
+  global.TextDecoder = require("util").TextDecoder;
+}
+
 
 
 

@@ -1,0 +1,4 @@
+## 2025-05-21 - IDOR and Information Disclosure Hardening
+**Vulnerability:** API routes under `/api` handled by the Express server were unprotected, allowing unauthenticated access to sensitive user data and system information via health check endpoints. Specifically, `/api/rides/user/:userId` and `/api/orders/user/:userId` were vulnerable to Insecure Direct Object Reference (IDOR).
+**Learning:** In a hybrid architecture (Next.js + Express), middleware and security protections must be consistently applied across both layers. Information disclosure in health checks (env, version, db errors) can provide attackers with valuable reconnaissance data.
+**Prevention:** Always implement centralized authentication middleware for API routes and explicitly verify that the authenticated user has permission to access the requested resource. Harden health check endpoints to return only minimal status information.
