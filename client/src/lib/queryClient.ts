@@ -1,7 +1,8 @@
 import { QueryClient, QueryFunction } from "@tanstack/react-query";
-import { mockApi } from '@/lib/mock-api';
+import { mockApi } from "@/lib/mock-api";
+import { getSupabaseClient } from "./supabase-client";
 
-const USE_MOCK_API = import.meta.env.VITE_USE_MOCK_API === 'true';
+const USE_MOCK_API = import.meta.env.VITE_USE_MOCK_API === "true";
 
 async function throwIfResNotOk(res: Response) {
   if (!res.ok) {
@@ -11,11 +12,15 @@ async function throwIfResNotOk(res: Response) {
 }
 
 export async function apiRequest(
-  method: string,
-  url: string,
-  data?: unknown | undefined,
+	method: string,
+	url: string,
+	data?: unknown | undefined,
 ): Promise<Response> {
-  if (USE_MOCK_API) {
+	const supabase = getSupabaseClient();
+	const session = supabase ? (await supabase.auth.getSession()).data.session : null;
+	const token = session?.access_token;
+
+	if (USE_MOCK_API) {
     if (method === 'GET') {
       return mockApi.get(url);
     }
@@ -24,12 +29,15 @@ export async function apiRequest(
     }
   }
 
-  const res = await fetch(url, {
-    method,
-    headers: data ? { "Content-Type": "application/json" } : {},
-    body: data ? JSON.stringify(data) : undefined,
-    credentials: "include",
-  });
+	const res = await fetch(url, {
+		method,
+		headers: {
+			...(data ? { "Content-Type": "application/json" } : {}),
+			...(token ? { Authorization: `Bearer ${token}` } : {}),
+		},
+		body: data ? JSON.stringify(data) : undefined,
+		credentials: "include",
+	});
 
   await throwIfResNotOk(res);
   return res;
@@ -37,13 +45,18 @@ export async function apiRequest(
 
 type UnauthorizedBehavior = "returnNull" | "throw";
 export const getQueryFn: <T>(options: {
-  on401: UnauthorizedBehavior;
+	on401: UnauthorizedBehavior;
 }) => QueryFunction<T> =
-  ({ on401: unauthorizedBehavior }) =>
-    async ({ queryKey }) => {
-      const res = await fetch(queryKey.join("/") as string, {
-        credentials: "include",
-      });
+	({ on401: unauthorizedBehavior }) =>
+	async ({ queryKey }) => {
+		const supabase = getSupabaseClient();
+		const session = supabase ? (await supabase.auth.getSession()).data.session : null;
+		const token = session?.access_token;
+
+		const res = await fetch(queryKey.join("/") as string, {
+			headers: token ? { Authorization: `Bearer ${token}` } : {},
+			credentials: "include",
+		});
 
       if (unauthorizedBehavior === "returnNull" && res.status === 401) {
         return null;

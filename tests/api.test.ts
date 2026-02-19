@@ -9,9 +9,11 @@ describe("AirBear API Health Checks", () => {
 	it("should have health endpoint responding", async () => {
 		const response = await fetch(`${baseUrl}/api/health`);
 		expect(response.status).toBe(200);
-		const data = await response.json();
+		const data = (await response.json()) as any;
 		expect(data.status).toBe("healthy");
-		expect(data.database).toBe("connected");
+		expect(data.timestamp).toBeDefined();
+		// Hardened: database status is no longer exposed at the root
+		expect(data.database).toBeUndefined();
 	});
 
 	it("should have Stripe webhook endpoint", async () => {

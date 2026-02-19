@@ -1,5 +1,5 @@
 import { createClient as createSupabaseAdminClient } from "@supabase/supabase-js";
-import type { Express } from "express";
+import type { Express, NextFunction, Request, Response } from "express";
 import { createServer, type Server } from "http";
 import Stripe from "stripe";
 import { z } from "zod";
@@ -34,14 +34,40 @@ if (!supabaseAdmin) {
 	);
 }
 
+/**
+ * Middleware to verify Supabase JWT and protect routes.
+ * Defense in depth: Ensures request is from a valid authenticated user.
+ */
+const withAuth = async (req: Request, res: Response, next: NextFunction) => {
+	const authHeader = req.headers.authorization;
+	if (!authHeader?.startsWith("Bearer ")) {
+		return res.status(401).json({ message: "Unauthorized: Missing token" });
+	}
+	const token = authHeader.split(" ")[1];
+	if (!supabaseAdmin) {
+		return res.status(500).json({ message: "Auth service unavailable" });
+	}
+	try {
+		const {
+			data: { user },
+			error,
+		} = await supabaseAdmin.auth.getUser(token);
+		if (error || !user) {
+			return res.status(401).json({ message: "Unauthorized: Invalid token" });
+		}
+		(req as any).user = user;
+		next();
+	} catch (err) {
+		return res.status(401).json({ message: "Unauthorized" });
+	}
+};
+
 export async function registerRoutes(app: Express): Promise<Server> {
-	// Health check
+	// Health check (Hardened: only returns status and timestamp)
 	app.get("/api/health", (_req, res) => {
 		res.json({
-			status: "ok",
+			status: "healthy",
 			timestamp: new Date().toISOString(),
-			env: process.env.NODE_ENV,
-			version: "1.2.1",
 		});
 	});
 
@@ -263,9 +289,13 @@ export async function registerRoutes(app: Express): Promise<Server> {
 		}
 	});
 
-	app.get("/api/rides/user/:userId", async (req, res) => {
+	app.get("/api/rides/user/:userId", withAuth, async (req: any, res) => {
 		try {
 			const { userId } = req.params;
+			// IDOR Protection: Ensure user can only access their own rides
+			if (req.user.id !== userId && req.user.user_metadata?.role !== "admin") {
+				return res.status(403).json({ message: "Forbidden: Access denied" });
+			}
 			const rides = await storage.getRidesByUser(userId);
 			res.json(rides);
 		} catch (error: any) {
@@ -315,9 +345,13 @@ export async function registerRoutes(app: Express): Promise<Server> {
 		}
 	});
 
-	app.get("/api/orders/user/:userId", async (req, res) => {
+	app.get("/api/orders/user/:userId", withAuth, async (req: any, res) => {
 		try {
 			const { userId } = req.params;
+			// IDOR Protection: Ensure user can only access their own orders
+			if (req.user.id !== userId && req.user.user_metadata?.role !== "admin") {
+				return res.status(403).json({ message: "Forbidden: Access denied" });
+			}
 			const orders = await storage.getOrdersByUser(userId);
 			res.json(orders);
 		} catch (error: any) {
@@ -583,8 +617,12 @@ export async function registerRoutes(app: Express): Promise<Server> {
 	});
 
 	// Analytics routes (for admin dashboard)
-	app.get("/api/analytics/overview", async (req, res) => {
+	app.get("/api/analytics/overview", withAuth, async (req: any, res) => {
 		try {
+			// Authorization Check: Only admins can view system analytics
+			if (req.user.user_metadata?.role !== "admin") {
+				return res.status(403).json({ message: "Forbidden: Admin only" });
+			}
 			const spots = await storage.getAllSpots();
 			const airbears = await storage.getAllAirbears();
 			const activeAirbears = airbears.filter(

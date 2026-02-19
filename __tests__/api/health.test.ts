@@ -34,7 +34,9 @@ describe('Health API', () => {
     const data = await response.json();
 
     expect(data.status).toBe('healthy');
-    expect(data.services.database).toBe('healthy');
+    expect(data.timestamp).toBeDefined();
+    // Hardened: services details are no longer exposed
+    expect(data.services).toBeUndefined();
   });
 });
 
