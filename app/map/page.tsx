@@ -1,7 +1,6 @@
 "use client";
 
-import { useEffect, useState, useMemo, useCallback } from "react";
-import Image from "next/image";
+import { useEffect, useState, useMemo } from "react";
 import { useAuthContext } from "@/components/auth-provider";
 import { getSupabaseClient } from "@/lib/supabase/client";
 import { subscribeToAirbearLocations } from "@/lib/supabase/realtime";
@@ -30,7 +29,7 @@ export default function MapPage() {
       try {
         const supabase = getSupabaseClient();
 
-        // ⚡ Bolt: Parallelize independent Supabase queries to reduce TTI (Time to Interactive)
+        // ⚡ Bolt: Parallelize independent queries to reduce Time to Interactive (TTI)
         const [spotsResult, airbearsResult] = await Promise.all([
           supabase
             .from("spots")
@@ -40,15 +39,8 @@ export default function MapPage() {
           supabase.from("airbears").select("*"),
         ]);
 
-        if (spotsResult.error) {
-          console.error("Error loading spots:", spotsResult.error);
-          throw spotsResult.error;
-        }
-
-        if (airbearsResult.error) {
-          console.error("Error loading airbears:", airbearsResult.error);
-          throw airbearsResult.error;
-        }
+        if (spotsResult.error) throw spotsResult.error;
+        if (airbearsResult.error) throw airbearsResult.error;
 
         setSpots(spotsResult.data || []);
         setAirbears(airbearsResult.data || []);
@@ -91,26 +83,16 @@ export default function MapPage() {
   // Enable push notifications for airbear availability
   useAirbearNotifications(airbears);
 
-  // ⚡ Bolt: Memoize callback to prevent unnecessary re-renders of the MapComponent
-  const handleSpotSelect = useCallback(
-    (spot: Spot) => {
-      router.push(`/book?pickup=${spot.id}`);
-    },
-    [router],
-  );
-
   if (loading || authLoading) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-emerald-950 via-lime-950 to-amber-950">
         <div className="text-center">
           <div className="flex justify-center mb-6">
-            <div className="w-32 h-32 rounded-full border-4 border-emerald-400/50 dark:border-emerald-500/50 bg-gradient-to-br from-emerald-500/20 to-lime-500/20 backdrop-blur-sm shadow-2xl hover-lift animate-float overflow-hidden relative">
-              <Image
+            <div className="w-32 h-32 rounded-full border-4 border-emerald-400/50 dark:border-emerald-500/50 bg-gradient-to-br from-emerald-500/20 to-lime-500/20 backdrop-blur-sm shadow-2xl hover-lift animate-float overflow-hidden">
+              <img
                 src="/airbear-mascot.png"
                 alt="AirBear Mascot"
-                fill
-                priority
-                className="object-cover rounded-full animate-pulse-glow"
+                className="w-full h-full object-cover rounded-full animate-pulse-glow"
               />
             </div>
           </div>
@@ -128,12 +110,11 @@ export default function MapPage() {
         {/* Header */}
         <div className="text-center mb-8">
           <div className="flex justify-center mb-4">
-            <div className="w-24 h-24 rounded-full border-4 border-emerald-400/50 dark:border-emerald-500/50 bg-gradient-to-br from-emerald-500/20 to-lime-500/20 backdrop-blur-sm shadow-2xl hover-lift animate-float overflow-hidden relative">
-              <Image
+            <div className="w-24 h-24 rounded-full border-4 border-emerald-400/50 dark:border-emerald-500/50 bg-gradient-to-br from-emerald-500/20 to-lime-500/20 backdrop-blur-sm shadow-2xl hover-lift animate-float overflow-hidden">
+              <img
                 src="/airbear-mascot.png"
                 alt="AirBear Mascot"
-                fill
-                className="object-cover rounded-full animate-pulse-glow"
+                className="w-full h-full object-cover rounded-full animate-pulse-glow"
               />
             </div>
           </div>
@@ -203,7 +184,9 @@ export default function MapPage() {
           <MapComponent 
             spots={spots} 
             airbears={airbears}
-            onSpotSelect={handleSpotSelect}
+            onSpotSelect={(spot) => {
+              router.push(`/book?pickup=${spot.id}`);
+            }}
           />
         </Card>
         
