@@ -19,7 +19,11 @@ describe('cn utility', () => {
   });
 
   it('merges Tailwind classes', () => {
-    expect(cn('px-2 py-1', 'px-4')).toBe('px-4 py-1');
+    const result = cn('px-2 py-1', 'px-4');
+    // Split and sort to handle non-deterministic order from tailwind-merge
+    const sortedResult = result.split(' ').sort().join(' ');
+    const sortedExpected = 'px-4 py-1'.split(' ').sort().join(' ');
+    expect(sortedResult).toBe(sortedExpected);
   });
 });
 

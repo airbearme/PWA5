@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState, useMemo } from "react";
+import { useEffect, useState, useMemo, useCallback } from "react";
 import { useAuthContext } from "@/components/auth-provider";
 import { getSupabaseClient } from "@/lib/supabase/client";
 import { subscribeToAirbearLocations } from "@/lib/supabase/realtime";
@@ -29,30 +29,28 @@ export default function MapPage() {
       try {
         const supabase = getSupabaseClient();
 
-        // Load spots
-        const { data: spotsData, error: spotsError } = await supabase
-          .from("spots")
-          .select("*")
-          .eq("is_active", true)
-          .order("name");
+        // Parallelize fetching of spots and airbears to improve TTI
+        const [spotsResponse, airbearsResponse] = await Promise.all([
+          supabase
+            .from("spots")
+            .select("*")
+            .eq("is_active", true)
+            .order("name"),
+          supabase.from("airbears").select("*"),
+        ]);
 
-        if (spotsError) {
-          console.error("Error loading spots:", spotsError);
-          throw spotsError;
+        if (spotsResponse.error) {
+          console.error("Error loading spots:", spotsResponse.error);
+          throw spotsResponse.error;
         }
 
-        setSpots(spotsData || []);
-
-        // Load airbears
-        const { data: airbearsData, error: airbearsError } = await supabase
-          .from("airbears")
-          .select("*");
-
-        if (airbearsError) {
-          throw airbearsError;
+        if (airbearsResponse.error) {
+          console.error("Error loading airbears:", airbearsResponse.error);
+          throw airbearsResponse.error;
         }
 
-        setAirbears(airbearsData || []);
+        setSpots(spotsResponse.data || []);
+        setAirbears(airbearsResponse.data || []);
       } catch (err) {
         console.error("Error loading map data:", err);
         toast({
@@ -88,6 +86,14 @@ export default function MapPage() {
   const availableAirbears = useMemo(() => {
     return airbears.filter((a) => a.is_available && !a.is_charging);
   }, [airbears]);
+
+  // Memoize handleSpotSelect to prevent unnecessary re-renders of MapComponent
+  const handleSpotSelect = useCallback(
+    (spot: Spot) => {
+      router.push(`/book?pickup=${spot.id}`);
+    },
+    [router]
+  );
 
   // Enable push notifications for airbear availability
   useAirbearNotifications(airbears);
@@ -193,9 +199,7 @@ export default function MapPage() {
           <MapComponent 
             spots={spots} 
             airbears={airbears}
-            onSpotSelect={(spot) => {
-              router.push(`/book?pickup=${spot.id}`);
-            }}
+            onSpotSelect={handleSpotSelect}
           />
         </Card>
         
