@@ -1,6 +1,7 @@
 "use client";
 
-import { useEffect, useState, useMemo } from "react";
+import { useEffect, useState, useMemo, useCallback } from "react";
+import Image from "next/image";
 import { useAuthContext } from "@/components/auth-provider";
 import { getSupabaseClient } from "@/lib/supabase/client";
 import { subscribeToAirbearLocations } from "@/lib/supabase/realtime";
@@ -29,30 +30,28 @@ export default function MapPage() {
       try {
         const supabase = getSupabaseClient();
 
-        // Load spots
-        const { data: spotsData, error: spotsError } = await supabase
-          .from("spots")
-          .select("*")
-          .eq("is_active", true)
-          .order("name");
+        // ⚡ Bolt: Parallelize independent Supabase queries to reduce TTI (Time to Interactive)
+        const [spotsResult, airbearsResult] = await Promise.all([
+          supabase
+            .from("spots")
+            .select("*")
+            .eq("is_active", true)
+            .order("name"),
+          supabase.from("airbears").select("*"),
+        ]);
 
-        if (spotsError) {
-          console.error("Error loading spots:", spotsError);
-          throw spotsError;
+        if (spotsResult.error) {
+          console.error("Error loading spots:", spotsResult.error);
+          throw spotsResult.error;
         }
 
-        setSpots(spotsData || []);
-
-        // Load airbears
-        const { data: airbearsData, error: airbearsError } = await supabase
-          .from("airbears")
-          .select("*");
-
-        if (airbearsError) {
-          throw airbearsError;
+        if (airbearsResult.error) {
+          console.error("Error loading airbears:", airbearsResult.error);
+          throw airbearsResult.error;
         }
 
-        setAirbears(airbearsData || []);
+        setSpots(spotsResult.data || []);
+        setAirbears(airbearsResult.data || []);
       } catch (err) {
         console.error("Error loading map data:", err);
         toast({
@@ -92,16 +91,26 @@ export default function MapPage() {
   // Enable push notifications for airbear availability
   useAirbearNotifications(airbears);
 
+  // ⚡ Bolt: Memoize callback to prevent unnecessary re-renders of the MapComponent
+  const handleSpotSelect = useCallback(
+    (spot: Spot) => {
+      router.push(`/book?pickup=${spot.id}`);
+    },
+    [router],
+  );
+
   if (loading || authLoading) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-emerald-950 via-lime-950 to-amber-950">
         <div className="text-center">
           <div className="flex justify-center mb-6">
-            <div className="w-32 h-32 rounded-full border-4 border-emerald-400/50 dark:border-emerald-500/50 bg-gradient-to-br from-emerald-500/20 to-lime-500/20 backdrop-blur-sm shadow-2xl hover-lift animate-float overflow-hidden">
-              <img
+            <div className="w-32 h-32 rounded-full border-4 border-emerald-400/50 dark:border-emerald-500/50 bg-gradient-to-br from-emerald-500/20 to-lime-500/20 backdrop-blur-sm shadow-2xl hover-lift animate-float overflow-hidden relative">
+              <Image
                 src="/airbear-mascot.png"
                 alt="AirBear Mascot"
-                className="w-full h-full object-cover rounded-full animate-pulse-glow"
+                fill
+                priority
+                className="object-cover rounded-full animate-pulse-glow"
               />
             </div>
           </div>
@@ -119,11 +128,12 @@ export default function MapPage() {
         {/* Header */}
         <div className="text-center mb-8">
           <div className="flex justify-center mb-4">
-            <div className="w-24 h-24 rounded-full border-4 border-emerald-400/50 dark:border-emerald-500/50 bg-gradient-to-br from-emerald-500/20 to-lime-500/20 backdrop-blur-sm shadow-2xl hover-lift animate-float overflow-hidden">
-              <img
+            <div className="w-24 h-24 rounded-full border-4 border-emerald-400/50 dark:border-emerald-500/50 bg-gradient-to-br from-emerald-500/20 to-lime-500/20 backdrop-blur-sm shadow-2xl hover-lift animate-float overflow-hidden relative">
+              <Image
                 src="/airbear-mascot.png"
                 alt="AirBear Mascot"
-                className="w-full h-full object-cover rounded-full animate-pulse-glow"
+                fill
+                className="object-cover rounded-full animate-pulse-glow"
               />
             </div>
           </div>
@@ -193,9 +203,7 @@ export default function MapPage() {
           <MapComponent 
             spots={spots} 
             airbears={airbears}
-            onSpotSelect={(spot) => {
-              router.push(`/book?pickup=${spot.id}`);
-            }}
+            onSpotSelect={handleSpotSelect}
           />
         </Card>
         
