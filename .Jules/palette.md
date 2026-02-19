@@ -1,0 +1,3 @@
+## 2025-01-24 - [PWA Install UX & Accessibility]
+**Learning:** Standard browser `alert()` dialogs for PWA installation fallbacks are jarring and disrupt the brand experience. Implementing a themed, in-app instruction set with visual icon cues (Share, Menu, etc.) significantly improves the onboarding flow for non-Chromium users. Additionally, decorative or navigation-focused icons like floating mascots require explicit `aria-label` attributes to be discoverable by screen readers.
+**Action:** Always check for native `alert()` calls in fallback logic and replace them with integrated UI components that guide the user through platform-specific actions. Ensure all floating or fixed navigation elements have descriptive labels.
