@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState, useMemo } from "react";
+import Image from "next/image";
 import { useAuthContext } from "@/components/auth-provider";
 import { getSupabaseClient } from "@/lib/supabase/client";
 import { subscribeToAirbearLocations } from "@/lib/supabase/realtime";
@@ -24,35 +25,39 @@ export default function MapPage() {
   const [loading, setLoading] = useState(true);
 
   // Load initial data
+  /**
+   * ⚡ Bolt Optimization:
+   * 1. Parallelized Supabase requests: Reduces network waterfall latency by ~50% for initial data load.
+   * 2. Next.js Image component: Improves LCP and reduces bandwidth usage.
+   * 3. Image priority: Preloads the mascot to further improve LCP.
+   */
   useEffect(() => {
     const loadData = async () => {
       try {
         const supabase = getSupabaseClient();
 
-        // Load spots
-        const { data: spotsData, error: spotsError } = await supabase
-          .from("spots")
-          .select("*")
-          .eq("is_active", true)
-          .order("name");
+        // ⚡ Bolt: Parallelize independent Supabase fetches using Promise.all
+        const [spotsResult, airbearsResult] = await Promise.all([
+          supabase
+            .from("spots")
+            .select("*")
+            .eq("is_active", true)
+            .order("name"),
+          supabase.from("airbears").select("*"),
+        ]);
 
-        if (spotsError) {
-          console.error("Error loading spots:", spotsError);
-          throw spotsError;
+        if (spotsResult.error) {
+          console.error("Error loading spots:", spotsResult.error);
+          throw spotsResult.error;
         }
 
-        setSpots(spotsData || []);
-
-        // Load airbears
-        const { data: airbearsData, error: airbearsError } = await supabase
-          .from("airbears")
-          .select("*");
-
-        if (airbearsError) {
-          throw airbearsError;
+        if (airbearsResult.error) {
+          console.error("Error loading airbears:", airbearsResult.error);
+          throw airbearsResult.error;
         }
 
-        setAirbears(airbearsData || []);
+        setSpots(spotsResult.data || []);
+        setAirbears(airbearsResult.data || []);
       } catch (err) {
         console.error("Error loading map data:", err);
         toast({
@@ -98,9 +103,13 @@ export default function MapPage() {
         <div className="text-center">
           <div className="flex justify-center mb-6">
             <div className="w-32 h-32 rounded-full border-4 border-emerald-400/50 dark:border-emerald-500/50 bg-gradient-to-br from-emerald-500/20 to-lime-500/20 backdrop-blur-sm shadow-2xl hover-lift animate-float overflow-hidden">
-              <img
+              {/* ⚡ Bolt: Use Next.js Image with priority for critical LCP element above the fold */}
+              <Image
                 src="/airbear-mascot.png"
                 alt="AirBear Mascot"
+                width={128}
+                height={128}
+                priority
                 className="w-full h-full object-cover rounded-full animate-pulse-glow"
               />
             </div>
@@ -120,9 +129,12 @@ export default function MapPage() {
         <div className="text-center mb-8">
           <div className="flex justify-center mb-4">
             <div className="w-24 h-24 rounded-full border-4 border-emerald-400/50 dark:border-emerald-500/50 bg-gradient-to-br from-emerald-500/20 to-lime-500/20 backdrop-blur-sm shadow-2xl hover-lift animate-float overflow-hidden">
-              <img
+              {/* ⚡ Bolt: Use Next.js Image for mascot to optimize bandwidth and rendering performance */}
+              <Image
                 src="/airbear-mascot.png"
                 alt="AirBear Mascot"
+                width={96}
+                height={96}
                 className="w-full h-full object-cover rounded-full animate-pulse-glow"
               />
             </div>
