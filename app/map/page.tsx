@@ -29,30 +29,31 @@ export default function MapPage() {
       try {
         const supabase = getSupabaseClient();
 
-        // Load spots
-        const { data: spotsData, error: spotsError } = await supabase
-          .from("spots")
-          .select("*")
-          .eq("is_active", true)
-          .order("name");
+        // ⚡ Bolt: Parallelize independent Supabase requests to improve TTI
+        // This reduces sequential network round-trips into a single concurrent operation.
+        const [spotsResult, airbearsResult] = await Promise.all([
+          supabase
+            .from("spots")
+            .select("*")
+            .eq("is_active", true)
+            .order("name"),
+          supabase
+            .from("airbears")
+            .select("*")
+        ]);
 
-        if (spotsError) {
-          console.error("Error loading spots:", spotsError);
-          throw spotsError;
+        if (spotsResult.error) {
+          console.error("Error loading spots:", spotsResult.error);
+          throw spotsResult.error;
         }
 
-        setSpots(spotsData || []);
-
-        // Load airbears
-        const { data: airbearsData, error: airbearsError } = await supabase
-          .from("airbears")
-          .select("*");
-
-        if (airbearsError) {
-          throw airbearsError;
+        if (airbearsResult.error) {
+          console.error("Error loading airbears:", airbearsResult.error);
+          throw airbearsResult.error;
         }
 
-        setAirbears(airbearsData || []);
+        setSpots(spotsResult.data || []);
+        setAirbears(airbearsResult.data || []);
       } catch (err) {
         console.error("Error loading map data:", err);
         toast({
