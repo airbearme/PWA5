@@ -6,19 +6,19 @@
 echo "🐻 Adding AirBear PWA environment variables to Vercel..."
 echo "========================================================"
 
-# Array of environment variables to add
+# Array of environment variables to add (Sentinel: Masked hardcoded secrets)
 declare -a env_vars=(
-    "NEXT_PUBLIC_SUPABASE_PWA4_URL=https://fofmrqgcidfenbevayrg.supabase.co"
-    "NEXT_PUBLIC_SUPABASE_PWA4_ANON_KEY=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZvZm1ycWdjaWRmZW5iZXZheXJnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjM2MzQ3MjgsImV4cCI6MjA3OTIxMDcyOH0.Z6m5z1KQGp-cDjBbcdJjUaXIA25C3VD8IlcLge1fWyM"
-    "SUPABASE_PWA4_SERVICE_ROLE_KEY=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZvZm1ycWdjaWRmZW5iZXZheXJnIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc2MzYzNDcyOCwiZXhwIjoyMDc5MjEwNzI4fQ.89Y4IOCpB-Ky1qjTJLmotMBe8RqQyN8bk6Xp5F43MMA"
-    "NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY=pk_live_51RzDHKKPp8gF577PnHEhuO3X7zbzdTe2c25Z02PlMcc5DXAjs4odL16Rtx8cJ8evlUrRAcJYHrR7tFS8P7y4SC7t00lvh2rk7h"
+    "NEXT_PUBLIC_SUPABASE_PWA4_URL=https://your-project.supabase.co"
+    "NEXT_PUBLIC_SUPABASE_PWA4_ANON_KEY=eyJ... (your anon key)"
+    "SUPABASE_PWA4_SERVICE_ROLE_KEY=eyJ... (your service role key)"
+    "NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY=pk_live_... (your publishable key)"
     "STRIPE_SECRET_KEY=sk_live_... (your Stripe secret key)"
-    "STRIPE_WEBHOOK_SECRET=whsec_EupLbUBGL8x5krgISkqfBgLjXpktz5cL"
-    "SUPABASE_URL=https://fofmrqgcidfenbevayrg.supabase.co"
-    "SUPABASE_SERVICE_ROLE_KEY=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZvZm1ycWdjaWRmZW5iZXZheXJnIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc2MzYzNDcyOCwiZXhwIjoyMDc5MjEwNzI4fQ.89Y4IOCpB-Ky1qjTJLmotMBe8RqQyN8bk6Xp5F43MMA"
-    "VITE_SUPABASE_URL=https://fofmrqgcidfenbevayrg.supabase.co"
-    "VITE_SUPABASE_ANON_KEY=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZvZm1ycWdjaWRmZW5iZXZheXJnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjM2MzQ3MjgsImV4cCI6MjA3OTIxMDcyOH0.Z6m5z1KQGp-cDjBbcdJjUaXIA25C3VD8IlcLge1fWyM"
-    "NEXT_PUBLIC_SITE_URL=https://airbear.me"
+    "STRIPE_WEBHOOK_SECRET=whsec_... (your webhook secret)"
+    "SUPABASE_URL=https://your-project.supabase.co"
+    "SUPABASE_SERVICE_ROLE_KEY=eyJ... (your service role key)"
+    "VITE_SUPABASE_URL=https://your-project.supabase.co"
+    "VITE_SUPABASE_ANON_KEY=eyJ... (your anon key)"
+    "NEXT_PUBLIC_SITE_URL=https://your-app.vercel.app"
 )
 
 # Add each environment variable
