@@ -24,7 +24,7 @@
 		"test:accessibility": "node scripts/test-accessibility.cjs",
 		"test:database": "node scripts/test-database.cjs",
 		"test:stripe": "node scripts/test-stripe.cjs",
-		"test:pwa": "node scripts/test-pwa-manifest.js && node scripts/test-service-worker.cjs",
+		"test:pwa": "node scripts/test-pwa-manifest.cjs && node scripts/test-service-worker.cjs",
 		"test:components": "node scripts/test-components.cjs",
 		"test:realtime": "node scripts/test-realtime.cjs",
 		"test:error-logger": "node scripts/test-error-logger.cjs",

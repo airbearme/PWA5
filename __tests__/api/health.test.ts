@@ -1,9 +1,9 @@
-import { GET } from '@/app/api/health/route';
+import { jest, describe, it, expect } from '@jest/globals';
 
-// Mock Next.js
+// Mock Next.js BEFORE importing the route
 jest.mock('next/server', () => ({
   NextResponse: {
-    json: jest.fn((data, options: any) => ({
+    json: jest.fn((data: any, options?: any) => ({
       json: () => Promise.resolve(data),
       status: options?.status || 200,
     })),
@@ -12,7 +12,9 @@ jest.mock('next/server', () => ({
 
 describe('Health API', () => {
   it('returns healthy status', async () => {
-    const response = await GET();
+    // Dynamically import the route to ensure mock is active
+    const { GET } = await import('@/app/api/health/route');
+    const response = (await GET()) as any;
     const data = await response.json();
 
     expect(response.status).toBe(200);

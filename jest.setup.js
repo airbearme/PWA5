@@ -5,6 +5,45 @@ import { TextEncoder, TextDecoder } from 'util'
 global.TextEncoder = TextEncoder
 global.TextDecoder = TextDecoder
 
+// Polyfill Request, Response, Headers for Next.js 15+ testing in JSDOM
+if (!global.Request) {
+  global.Request = class Request {
+    constructor(input, init) {
+      this.input = input
+      this.init = init
+    }
+  }
+}
+
+if (!global.Response) {
+  global.Response = class Response {
+    constructor(body, init) {
+      this.body = body
+      this.init = init
+    }
+    static json(data, init) {
+      return new Response(JSON.stringify(data), {
+        ...init,
+        headers: { 'Content-Type': 'application/json' },
+      })
+    }
+  }
+}
+
+if (!global.Headers) {
+  global.Headers = class Headers {
+    constructor() {
+      this.map = {}
+    }
+    append(key, value) {
+      this.map[key] = value
+    }
+    get(key) {
+      return this.map[key]
+    }
+  }
+}
+
 // Mock Next.js router
 jest.mock('next/navigation', () => ({
   useRouter() {
@@ -59,15 +98,3 @@ global.ResizeObserver = class ResizeObserver {
   observe() {}
   unobserve() {}
 }
-
-// Suppress console errors in tests (optional)
-// global.console = {
-//   ...console,
-//   error: jest.fn(),
-//   warn: jest.fn(),
-// }
-
-
-
-
-

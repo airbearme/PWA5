@@ -5,9 +5,9 @@
  * Tests real user journeys from start to finish
  */
 
-import { createClient } from "@supabase/supabase-js";
-import http from "http";
-import https from "https";
+const { createClient } = require("@supabase/supabase-js");
+const http = require("http");
+const https = require("https");
 
 const SUPABASE_URL = process.env.NEXT_PUBLIC_SUPABASE_URL;
 const SUPABASE_KEY = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
@@ -98,8 +98,7 @@ async function testPaymentWorkflow() {
 	}
 
 	try {
-		const stripeModule = await import("stripe");
-		const Stripe = stripeModule.default || stripeModule;
+		const Stripe = require("stripe");
 		const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
 
 		// Test payment intent creation
