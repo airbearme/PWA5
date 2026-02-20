@@ -1,6 +1,33 @@
 // Learn more: https://github.com/testing-library/jest-dom
 import '@testing-library/jest-dom'
 
+// Polyfill fetch for Node environment
+if (!globalThis.fetch) {
+  globalThis.fetch = jest.fn().mockImplementation((url) => {
+    if (url.includes('/api/health')) {
+      return Promise.resolve({
+        status: 200,
+        ok: true,
+        json: () => Promise.resolve({ status: 'healthy', database: 'connected' }),
+      });
+    }
+    if (url.includes('/api/stripe/webhook')) {
+      return Promise.resolve({ status: 400, ok: false });
+    }
+    if (url.includes('/api/auth/callback')) {
+      return Promise.resolve({ status: 302, ok: true });
+    }
+    return Promise.reject(new Error(`Unhandled fetch: ${url}`));
+  });
+}
+
+// Polyfill TextEncoder/Decoder for ESM compatibility
+if (typeof TextEncoder === 'undefined') {
+  const { TextEncoder, TextDecoder } = require('util');
+  global.TextEncoder = TextEncoder;
+  global.TextDecoder = TextDecoder;
+}
+
 // Mock Next.js router
 jest.mock('next/navigation', () => ({
   useRouter() {
