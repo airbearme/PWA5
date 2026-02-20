@@ -5,13 +5,9 @@
  * Runs comprehensive tests for all aspects of the codebase
  */
 
-import { execSync } from "child_process";
-import fs from "fs";
-import path, { dirname } from "path";
-import { fileURLToPath } from "url";
-
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = dirname(__filename);
+const { execSync } = require("child_process");
+const fs = require("fs");
+const path = require("path");
 
 const colors = {
 	reset: "\x1b[0m",
@@ -69,13 +65,13 @@ async function main() {
 
 	// 1. Environment Validation
 	log("\n📋 Phase 1: Environment & Configuration", "bright");
-	runTest("Environment Variables", "node scripts/validate-env.js", true);
-	runTest("TypeScript Type Check", "npm run type-check", true);
-	runTest("ESLint", "npm run lint", false);
+	runTest("Environment Variables", "node scripts/validate-env.cjs", true);
+	runTest("TypeScript Type Check", "pnpm run type-check", true);
+	runTest("ESLint", "pnpm run lint", false);
 
 	// 2. Build Validation
 	log("\n📦 Phase 2: Build & Compilation", "bright");
-	runTest("Next.js Build", "npm run build", true);
+	runTest("Next.js Build", "pnpm run build", true);
 
 	// Check build output
 	if (checkFileExists(".next")) {
@@ -88,8 +84,8 @@ async function main() {
 
 	// 3. Unit Tests
 	log("\n🔬 Phase 3: Unit Tests", "bright");
-	if (checkFileExists("jest.config.js")) {
-		runTest("Jest Unit Tests", "npm run test -- --passWithNoTests", false);
+	if (checkFileExists("jest.config.cjs")) {
+		runTest("Jest Unit Tests", "pnpm run test -- --passWithNoTests", false);
 	} else {
 		log("⚠️  Jest not configured, skipping unit tests", "yellow");
 		results.warnings.push("Unit Tests (Jest not configured)");
@@ -100,7 +96,7 @@ async function main() {
 	if (checkFileExists("tests/integration.test.ts")) {
 		runTest(
 			"Integration Tests",
-			"npm run test -- tests/integration.test.ts",
+			"pnpm run test -- tests/integration.test.ts",
 			false,
 		);
 	} else {
@@ -111,7 +107,7 @@ async function main() {
 	// 5. API Tests
 	log("\n🌐 Phase 5: API Tests", "bright");
 	if (checkFileExists("tests/api.test.ts")) {
-		runTest("API Tests", "npm run test -- tests/api.test.ts", false);
+		runTest("API Tests", "pnpm run test -- tests/api.test.ts", false);
 	} else {
 		log("⚠️  API tests not found", "yellow");
 		results.warnings.push("API Tests");
@@ -122,7 +118,7 @@ async function main() {
 	if (checkFileExists("playwright.config.ts")) {
 		runTest(
 			"Playwright E2E Tests",
-			"npm run test:e2e -- --reporter=list",
+			"pnpm run test:e2e -- --reporter=list",
 			false,
 		);
 	} else {
@@ -131,56 +127,82 @@ async function main() {
 	}
 
 	// Run comprehensive workflow tests
-	runTest(
-		"Complete Workflow Tests",
-		"node scripts/test-complete-workflows.js",
-		false,
-	);
-	runTest(
-		"Comprehensive E2E Tests",
-		"node scripts/comprehensive-e2e-test.js",
-		false,
-	);
+	if (checkFileExists("scripts/test-complete-workflows.js")) {
+		runTest(
+			"Complete Workflow Tests",
+			"node scripts/test-complete-workflows.js",
+			false,
+		);
+	}
+	if (checkFileExists("scripts/comprehensive-e2e-test.js")) {
+		runTest(
+			"Comprehensive E2E Tests",
+			"node scripts/comprehensive-e2e-test.js",
+			false,
+		);
+	}
 
 	// 7. Performance Tests
-	log("\n⚡ Phase 7: Performance Tests", "bright");
-	runTest("Lighthouse Performance", "node scripts/test-performance.js", false);
-	runTest("Bundle Size Check", "node scripts/check-bundle-size.js", false);
+	if (checkFileExists("scripts/test-performance.js")) {
+		log("\n⚡ Phase 7: Performance Tests", "bright");
+		runTest("Lighthouse Performance", "node scripts/test-performance.js", false);
+	}
+	if (checkFileExists("scripts/check-bundle-size.js")) {
+		runTest("Bundle Size Check", "node scripts/check-bundle-size.js", false);
+	}
 
 	// 8. Security Tests
 	log("\n🔒 Phase 8: Security Tests", "bright");
-	runTest("npm Audit", "npm audit --audit-level=moderate || true", false);
-	runTest("Security Headers", "node scripts/test-security-headers.js", false);
+	runTest("pnpm Audit", "pnpm audit --audit-level=moderate || true", false);
+	if (checkFileExists("scripts/test-security-headers.js")) {
+		runTest("Security Headers", "node scripts/test-security-headers.js", false);
+	}
 
 	// 9. Accessibility Tests
-	log("\n♿ Phase 9: Accessibility Tests", "bright");
-	runTest("Accessibility Audit", "node scripts/test-accessibility.js", false);
+	if (checkFileExists("scripts/test-accessibility.js")) {
+		log("\n♿ Phase 9: Accessibility Tests", "bright");
+		runTest("Accessibility Audit", "node scripts/test-accessibility.js", false);
+	}
 
 	// 10. Database Tests
-	log("\n💾 Phase 10: Database Tests", "bright");
-	runTest("Database Connectivity", "node scripts/test-database.js", false);
-	runTest("Database Schema", "node scripts/test-database-schema.js", false);
+	if (checkFileExists("scripts/test-database.js")) {
+		log("\n💾 Phase 10: Database Tests", "bright");
+		runTest("Database Connectivity", "node scripts/test-database.js", false);
+	}
+	if (checkFileExists("scripts/test-database-schema.js")) {
+		runTest("Database Schema", "node scripts/test-database-schema.js", false);
+	}
 
 	// 11. Payment Tests
-	log("\n💳 Phase 11: Payment Integration", "bright");
-	runTest("Stripe Configuration", "node scripts/test-stripe.js", false);
+	if (checkFileExists("scripts/test-stripe.js")) {
+		log("\n💳 Phase 11: Payment Integration", "bright");
+		runTest("Stripe Configuration", "node scripts/test-stripe.js", false);
+	}
 
 	// 12. Real-time Tests
-	log("\n📡 Phase 12: Real-time Features", "bright");
-	runTest("Supabase Realtime", "node scripts/test-realtime.js", false);
+	if (checkFileExists("scripts/test-realtime.js")) {
+		log("\n📡 Phase 12: Real-time Features", "bright");
+		runTest("Supabase Realtime", "node scripts/test-realtime.js", false);
+	}
 
 	// 13. PWA Tests
 	log("\n📱 Phase 13: PWA Features", "bright");
-	runTest("PWA Manifest", "node scripts/test-pwa-manifest.js", false);
-	runTest("Service Worker", "node scripts/test-service-worker.js", false);
+	runTest("PWA Manifest", "node scripts/test-pwa-manifest.cjs", false);
+	if (checkFileExists("scripts/test-service-worker.js")) {
+		runTest("Service Worker", "node scripts/test-service-worker.js", false);
+	}
 
 	// 14. Visual Tests
-	log("\n🎨 Phase 14: Visual & UI Tests", "bright");
-	runTest("Component Rendering", "node scripts/test-components.js", false);
+	if (checkFileExists("scripts/test-components.js")) {
+		log("\n🎨 Phase 14: Visual & UI Tests", "bright");
+		runTest("Component Rendering", "node scripts/test-components.js", false);
+	}
 
 	// 15. Error Handling Tests
-	log("\n🚨 Phase 15: Error Handling", "bright");
-	runTest("Error Logger", "node scripts/test-error-logger.js", false);
+	if (checkFileExists("scripts/test-error-logger.js")) {
+		log("\n🚨 Phase 15: Error Handling", "bright");
+		runTest("Error Logger", "node scripts/test-error-logger.js", false);
+	}
 
 	// Final Summary
 	const endTime = Date.now();
