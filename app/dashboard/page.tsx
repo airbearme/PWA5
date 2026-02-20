@@ -90,6 +90,7 @@ export default function DashboardPage() {
                 alt="AirBear Mascot"
                 width={128}
                 height={128}
+                priority
                 className="w-full h-full object-cover rounded-full animate-pulse-glow"
               />
             </div>
