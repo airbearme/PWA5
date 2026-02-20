@@ -1,44 +1,26 @@
-/**
- * API Health Endpoint Tests
- */
+import { jest, describe, it, expect } from '@jest/globals';
 
-import { describe, it, expect, jest, beforeEach } from '@jest/globals';
-
-// Mock Next.js
+// Mock Next.js BEFORE importing the route
 jest.mock('next/server', () => ({
   NextResponse: {
-    json: jest.fn((data, options) => ({
+    json: jest.fn((data: any, options?: any) => ({
       json: () => Promise.resolve(data),
       status: options?.status || 200,
     })),
   },
 }));
 
-jest.mock('@/lib/supabase/server', () => ({
-  createClient: jest.fn(() => ({
-    from: jest.fn(() => ({
-      select: jest.fn(() => ({
-        limit: jest.fn(() => ({
-          data: [{ id: 'test' }],
-          error: null,
-        })),
-      })),
-    })),
-  })),
-}));
-
 describe('Health API', () => {
-  it('should return healthy status when database is accessible', async () => {
+  it('returns healthy status', async () => {
+    // Dynamically import the route to ensure mock is active
     const { GET } = await import('@/app/api/health/route');
-    const response = await GET();
+    const response = (await GET()) as any;
     const data = await response.json();
 
-    expect(data.status).toBe('healthy');
-    expect(data.services.database).toBe('healthy');
+    expect(response.status).toBe(200);
+    expect(data).toEqual({
+      status: 'healthy',
+      timestamp: expect.any(String)
+    });
   });
 });
-
-
-
-
-

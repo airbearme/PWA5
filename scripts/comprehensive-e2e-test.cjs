@@ -5,9 +5,9 @@
  * Tests complete user workflows end-to-end
  */
 
-import { execSync } from "child_process";
-import http from "http";
-import https from "https";
+const { execSync } = require("child_process");
+const http = require("http");
+const https = require("https");
 
 const BASE_URL = process.env.NEXT_PUBLIC_SITE_URL || "http://localhost:3000";
 
@@ -80,8 +80,12 @@ async function testUserWorkflows() {
 	console.log("\n5. Testing API health...");
 	const health = await checkEndpoint(`${BASE_URL}/api/health`);
 	if (health.status === 200) {
-		const healthData = JSON.parse(health.body);
-		console.log(`   ✅ Health endpoint: ${healthData.status}`);
+		try {
+			const healthData = JSON.parse(health.body);
+			console.log(`   ✅ Health endpoint: ${healthData.status}`);
+		} catch (e) {
+			console.log("   ⚠️  Health endpoint returned invalid JSON");
+		}
 	} else {
 		console.log("   ⚠️  Health endpoint not accessible");
 	}

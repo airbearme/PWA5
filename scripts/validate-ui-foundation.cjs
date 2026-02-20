@@ -5,8 +5,8 @@
  * Ensures all beautiful UI features are permanently present in the codebase
  */
 
-import { readFileSync } from "fs";
-import { join } from "path";
+const { readFileSync } = require("fs");
+const { join } = require("path");
 
 const PROJECT_ROOT = process.cwd();
 
@@ -207,5 +207,3 @@ if (errors.length === 0 && warnings.length === 0) {
 	console.log("\n📚 See CORE_UI_FOUNDATION.md for required features.");
 	process.exit(errors.length > 0 ? 1 : 0);
 }
-
-

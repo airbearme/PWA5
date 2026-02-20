@@ -2,7 +2,7 @@
 
 import { useEffect, useState, useRef } from "react";
 import { Button } from "@/components/ui/button";
-import { X, Download, Smartphone } from "lucide-react";
+import { X, Download, Smartphone, Share, MoreVertical } from "lucide-react";
 import AirbearWheel from "@/components/airbear-wheel";
 
 interface BeforeInstallPromptEvent extends Event {
@@ -15,6 +15,7 @@ export default function PWAInstallPrompt() {
     useState<BeforeInstallPromptEvent | null>(null);
   const [showPrompt, setShowPrompt] = useState(false);
   const [isInstalled, setIsInstalled] = useState(false);
+  const [showInstructions, setShowInstructions] = useState(false);
 
   // Use refs to track state without causing re-renders
   const deferredPromptRef = useRef<BeforeInstallPromptEvent | null>(null);
@@ -88,13 +89,7 @@ export default function PWAInstallPrompt() {
       setDeferredPrompt(null);
     } else {
       // Fallback for iOS/Safari
-      // Show instructions
-      alert(
-        "To install AirBear:\n\n" +
-          "iOS Safari: Tap Share → Add to Home Screen\n\n" +
-          "Android Chrome: Tap Menu → Install App\n\n" +
-          "Desktop: Look for install icon in address bar"
-      );
+      setShowInstructions(true);
     }
   };
 
@@ -128,38 +123,76 @@ export default function PWAInstallPrompt() {
             <X className="h-4 w-4 text-muted-foreground" />
           </button>
 
-          {/* Content */}
-          <div className="flex items-start gap-4 mb-4">
-            <div className="p-3 rounded-full bg-gradient-to-br from-emerald-500 to-lime-500 shadow-lg animate-pulse-glow">
-              <Smartphone className="h-6 w-6 text-white" />
-            </div>
-            <div className="flex-1">
-              <h3 className="text-lg font-bold text-foreground mb-1">
-                Install AirBear
-              </h3>
-              <p className="text-sm text-muted-foreground">
-                Get the full app experience with offline access and faster
-                loading!
-              </p>
-            </div>
-          </div>
+          {!showInstructions ? (
+            <>
+              {/* Content */}
+              <div className="flex items-start gap-4 mb-4">
+                <div className="p-3 rounded-full bg-gradient-to-br from-emerald-500 to-lime-500 shadow-lg animate-pulse-glow">
+                  <Smartphone className="h-6 w-6 text-white" />
+                </div>
+                <div className="flex-1">
+                  <h3 className="text-lg font-bold text-foreground mb-1">
+                    Install AirBear
+                  </h3>
+                  <p className="text-sm text-muted-foreground">
+                    Get the full app experience with offline access and faster
+                    loading!
+                  </p>
+                </div>
+              </div>
 
-          {/* Install button */}
-          <Button
-            onClick={handleInstall}
-            className="w-full eco-gradient text-white hover-lift ripple-effect animate-neon-glow shadow-lg"
-          >
-            <Download className="mr-2 h-4 w-4" />
-            Install Now
-          </Button>
+              {/* Install button */}
+              <Button
+                onClick={handleInstall}
+                className="w-full eco-gradient text-white hover-lift ripple-effect animate-neon-glow shadow-lg"
+              >
+                <Download className="mr-2 h-4 w-4" />
+                Install Now
+              </Button>
 
-          {/* Dismiss link */}
-          <button
-            onClick={handleDismiss}
-            className="w-full mt-2 text-xs text-center text-muted-foreground hover:text-foreground transition-colors"
-          >
-            Maybe later
-          </button>
+              {/* Dismiss link */}
+              <button
+                onClick={handleDismiss}
+                className="w-full mt-2 text-xs text-center text-muted-foreground hover:text-foreground transition-colors"
+              >
+                Maybe later
+              </button>
+            </>
+          ) : (
+            <div className="space-y-4 animate-in fade-in zoom-in-95 duration-300">
+              <h3 className="text-lg font-bold text-foreground mb-2">How to Install</h3>
+
+              <div className="space-y-4">
+                <div className="flex items-center gap-3 bg-white/5 p-2 rounded-lg border border-white/10">
+                  <div className="p-2 bg-emerald-500/20 rounded-md">
+                    <Share className="h-4 w-4 text-emerald-400" />
+                  </div>
+                  <div className="text-sm">
+                    <span className="font-semibold block text-emerald-400">iOS Safari</span>
+                    <span className="text-muted-foreground text-xs">Tap Share then &quot;Add to Home Screen&quot;</span>
+                  </div>
+                </div>
+
+                <div className="flex items-center gap-3 bg-white/5 p-2 rounded-lg border border-white/10">
+                  <div className="p-2 bg-amber-500/20 rounded-md">
+                    <MoreVertical className="h-4 w-4 text-amber-400" />
+                  </div>
+                  <div className="text-sm">
+                    <span className="font-semibold block text-amber-400">Android Chrome</span>
+                    <span className="text-muted-foreground text-xs">Tap Menu then &quot;Install App&quot;</span>
+                  </div>
+                </div>
+              </div>
+
+              <Button
+                onClick={() => setShowInstructions(false)}
+                variant="outline"
+                className="w-full border-emerald-500/50 text-emerald-400 hover:bg-emerald-500/10"
+              >
+                Got it
+              </Button>
+            </div>
+          )}
         </div>
       </div>
     </div>
