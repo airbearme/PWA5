@@ -1,0 +1,19 @@
+
+> airbear-pwa@2.0.0 dev /app
+> next dev
+
+ ⚠ Port 3000 is in use, trying 3001 instead.
+ ⚠ Port 3001 is in use, trying 3002 instead.
+   ▲ Next.js 15.1.11
+   - Local:        http://localhost:3002
+   - Network:      http://192.168.0.2:3002
+
+ ✓ Starting...
+ ✓ Ready in 4.2s
+ ○ Compiling /middleware ...
+ ✓ Compiled /middleware in 780ms (148 modules)
+ ○ Compiling /auth/login ...
+ ✓ Compiled /auth/login in 11.2s (1553 modules)
+ ⚠ Unsupported metadata themeColor is configured in metadata export in /auth/login. Please move it to viewport export instead.
+Read more: https://nextjs.org/docs/app/api-reference/functions/generate-viewport
+ GET /auth/login?redirect=%2Fdriver 200 in 13038ms
