@@ -6,10 +6,11 @@ const conn = new Client();
 
 // Configuration
 const config = {
-  host: 'access-5018328928.webspace-host.com',
+  // Sentinel: Removed hardcoded host and credentials.
+  host: process.env.IONOS_SFTP_HOST || 'your-sftp-host',
   port: 22,
-  username: 'a2096159',
-  password: 'Danknugs420420',
+  username: process.env.IONOS_SFTP_USER || 'your-sftp-username',
+  password: process.env.IONOS_SFTP_PASSWORD || 'your-sftp-password',
   localDir: path.join(__dirname, 'dist', 'public'),
   remoteDir: '/public_html'
 };

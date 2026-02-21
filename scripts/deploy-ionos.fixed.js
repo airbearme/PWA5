@@ -19,7 +19,7 @@ const IONOS_CONFIG = {
 	password:
 		process.env.IONOS_SFTP_PASSWORD ||
 		process.env.IONOS_FTP_PASSWORD ||
-		"Yaa7Rih^_gpej+-",
+		"your-sftp-password", // Sentinel: Removed hardcoded password
 	port: 22,
 	remoteBase: "/public_html", // Changed from '/' to '/public_html'
 };

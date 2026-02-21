@@ -5,9 +5,11 @@ import path from "path";
 import SftpClient from "ssh2-sftp-client";
 
 const CONFIG = {
-	host: "access-5018328928.webspace-host.com",
-	username: "a2096159",
-	password: "Danknugs420420",
+	// Sentinel: Removed hardcoded host and credentials.
+	// Use environment variables (IONOS_SFTP_HOST, IONOS_SFTP_USER, IONOS_SFTP_PASSWORD) instead.
+	host: process.env.IONOS_SFTP_HOST || "your-sftp-host",
+	username: process.env.IONOS_SFTP_USER || "your-sftp-username",
+	password: process.env.IONOS_SFTP_PASSWORD || "your-sftp-password",
 	port: 22,
 };
 

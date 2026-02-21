@@ -7,9 +7,10 @@ import SftpClient from "ssh2-sftp-client";
 dotenv.config();
 
 const IONOS_CONFIG = {
-	host: process.env.IONOS_SFTP_HOST || "access-5018328928.webspace-host.com",
-	username: process.env.IONOS_SFTP_USER || "a2096159",
-	password: process.env.IONOS_SFTP_PASSWORD || "Yaa7Rih^_gpej+-",
+	// Sentinel: Removed hardcoded host and credentials.
+	host: process.env.IONOS_SFTP_HOST || "your-sftp-host",
+	username: process.env.IONOS_SFTP_USER || "your-sftp-username",
+	password: process.env.IONOS_SFTP_PASSWORD || "your-sftp-password",
 	port: 22,
 };
 
