@@ -9,6 +9,13 @@ on:
 
 env:
   NODE_VERSION: "20.x"
+  NEXT_PUBLIC_SUPABASE_PWA4_URL: https://placeholder.supabase.co
+  NEXT_PUBLIC_SUPABASE_PWA4_ANON_KEY: eyJplaceholder
+  SUPABASE_PWA4_SERVICE_ROLE_KEY: eyJplaceholder
+  NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY: pk_test_placeholder
+  STRIPE_SECRET_KEY: sk_test_placeholder
+  NEXT_PUBLIC_SITE_URL: https://airbear.me
+  NODE_ENV: test
 
 jobs:
   # Lint and Type Check
@@ -18,16 +25,16 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: latest
+
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
           node-version: ${{ env.NODE_VERSION }}
           cache: "pnpm"
-
-      - name: Setup pnpm
-        uses: pnpm/action-setup@v4
-        with:
-          version: latest
 
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
@@ -46,16 +53,16 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: latest
+
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
           node-version: ${{ env.NODE_VERSION }}
           cache: "pnpm"
-
-      - name: Setup pnpm
-        uses: pnpm/action-setup@v4
-        with:
-          version: latest
 
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
@@ -72,7 +79,7 @@ jobs:
         run: pnpm run build
 
       - name: Upload build artifacts
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: build-files
           path: .next
@@ -86,16 +93,16 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: latest
+
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
           node-version: ${{ env.NODE_VERSION }}
           cache: "pnpm"
-
-      - name: Setup pnpm
-        uses: pnpm/action-setup@v4
-        with:
-          version: latest
 
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
@@ -123,16 +130,16 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: latest
+
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
           node-version: ${{ env.NODE_VERSION }}
           cache: "pnpm"
-
-      - name: Setup pnpm
-        uses: pnpm/action-setup@v4
-        with:
-          version: latest
 
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
