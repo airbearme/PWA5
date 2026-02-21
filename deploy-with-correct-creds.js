@@ -5,11 +5,11 @@ import fs from 'fs';
 import path from 'path';
 import SftpClient from 'ssh2-sftp-client';
 
-// Using the correct credentials from FileZilla
+// Sentinel: Removed hardcoded host and credentials.
 const IONOS_CONFIG = {
-  host: 'access-5018328928.webspace-host.com',
-  username: 'a2096159',
-  password: 'Danknugs420420',  // Correct password from FileZilla
+  host: process.env.IONOS_SFTP_HOST || 'your-sftp-host',
+  username: process.env.IONOS_SFTP_USER || 'your-sftp-username',
+  password: process.env.IONOS_SFTP_PASSWORD || 'your-sftp-password',
   port: 22,
   remoteBase: '/public_html',  // Try public_html first
   localDist: 'dist/public'

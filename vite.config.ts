@@ -72,16 +72,16 @@ export default defineConfig({
 		}),
 	],
 	define: {
+		// Sentinel: Removed hardcoded secrets to prevent leakage.
+		// Use environment variables (VITE_STRIPE_PUBLIC_KEY, SUPABASE_URL, VITE_SUPABASE_ANON_KEY) instead.
 		"import.meta.env.VITE_STRIPE_PUBLIC_KEY": JSON.stringify(
-			process.env.VITE_STRIPE_PUBLIC_KEY ||
-				"pk_live_51RzDHKKPp8gF577PnHEhuO3X7zbzdTe2c25Z02PlMcc5DXAjs4odL16Rtx8cJ8evlUrRAcJYHrR7tFS8P7y4SC7t00lvh2rk7h",
+			process.env.VITE_STRIPE_PUBLIC_KEY || "your-stripe-public-key",
 		),
 		"import.meta.env.VITE_SUPABASE_URL": JSON.stringify(
-			process.env.SUPABASE_URL || "https://fofmrqgcidfenbevayrg.supabase.co",
+			process.env.SUPABASE_URL || "https://your-project.supabase.co",
 		),
 		"import.meta.env.VITE_SUPABASE_ANON_KEY": JSON.stringify(
-			process.env.VITE_SUPABASE_ANON_KEY ||
-				"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZvZm1ycWdjaWRmZW5iZXZheXJnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjM2MzQ3MjgsImV4cCI6MjA3OTIxMDcyOH0.Z6m5z1KQGp-cDjBbcdJjUaXIA25C3VD8IlcLge1fWyM",
+			process.env.VITE_SUPABASE_ANON_KEY || "your-supabase-anon-key",
 		),
 		"import.meta.env.VITE_USE_MOCK_API": JSON.stringify("false"),
 		__APP_VERSION__: JSON.stringify(Date.now().toString()),

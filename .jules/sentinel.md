@@ -1,0 +1,4 @@
+## 2025-05-15 - Hardcoded Secrets in Utility and Deployment Scripts
+**Vulnerability:** Critical secrets including Supabase Service Role keys, Stripe public keys, and SFTP passwords were found hardcoded in multiple utility and deployment scripts.
+**Learning:** Development and test scripts (like `scripts/test-purple-zebra-live.js` or `scripts/create-test-page.js`) often escape standard security reviews and can become a significant source of secret leakage if they contain hardcoded credentials for "convenience" or "quick testing".
+**Prevention:** Enforce a strict policy of using environment variables with safe placeholders (e.g., `your-password`) for ALL scripts, regardless of their perceived criticality or lifecycle. Use `.env.local` for local development and repository-level secrets for CI/CD.
