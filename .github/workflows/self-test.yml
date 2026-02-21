@@ -7,6 +7,15 @@ on:
   push:
     branches: [main]
 
+env:
+  NEXT_PUBLIC_SUPABASE_PWA4_URL: https://placeholder.supabase.co
+  NEXT_PUBLIC_SUPABASE_PWA4_ANON_KEY: eyJplaceholder
+  SUPABASE_PWA4_SERVICE_ROLE_KEY: eyJplaceholder
+  NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY: pk_test_placeholder
+  STRIPE_SECRET_KEY: sk_test_placeholder
+  NEXT_PUBLIC_SITE_URL: https://airbear.me
+  NODE_ENV: test
+
 jobs:
   health-check:
     name: Application Health Check
