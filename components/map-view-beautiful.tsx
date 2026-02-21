@@ -1,6 +1,7 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState, memo } from "react";
+import Image from "next/image";
 import type { AirbearLocation } from "@/lib/supabase/realtime";
 import type { Database } from "@/lib/types/database";
 
@@ -12,7 +13,7 @@ interface MapViewProps {
   onSpotSelect?: (spot: Spot) => void;
 }
 
-export default function MapView({
+function MapView({
   spots,
   airbears,
   onSpotSelect,
@@ -22,6 +23,15 @@ export default function MapView({
   const markersRef = useRef<Map<string, any>>(new Map());
   const LeafletRef = useRef<any>(null);
   const [mapLoaded, setMapLoaded] = useState(false);
+
+  // Use refs for callbacks and data used in window helpers to avoid map re-initialization
+  const spotsRef = useRef(spots);
+  const onSpotSelectRef = useRef(onSpotSelect);
+
+  useEffect(() => {
+    spotsRef.current = spots;
+    onSpotSelectRef.current = onSpotSelect;
+  }, [spots, onSpotSelect]);
 
   useEffect(() => {
     if (!mapRef.current || mapInstanceRef.current) {
@@ -107,11 +117,11 @@ export default function MapView({
         setMapLoaded(true);
         
         // Setup global booking function
-        if (typeof window !== "undefined" && onSpotSelect) {
+        if (typeof window !== "undefined") {
           (window as any).selectSpotForBooking = (spotId: string) => {
-            const spot = spots.find(s => s.id === spotId);
-            if (spot) {
-              onSpotSelect(spot);
+            const spot = spotsRef.current.find(s => s.id === spotId);
+            if (spot && onSpotSelectRef.current) {
+              onSpotSelectRef.current(spot);
             }
           };
         }
@@ -133,7 +143,7 @@ export default function MapView({
         mapInstanceRef.current = null;
       }
     };
-  }, []);
+  }, []); // Only run once on mount
 
   useEffect(() => {
     if (!mapInstanceRef.current || !LeafletRef.current || !mapLoaded) return;
@@ -326,14 +336,14 @@ export default function MapView({
 
       // Setup click handler for booking
       marker.on("click", () => {
-        if (onSpotSelect) {
-          onSpotSelect(spot);
+        if (onSpotSelectRef.current) {
+          onSpotSelectRef.current(spot);
         }
       });
 
       markersRef.current.set(`spot-${spot.id}`, marker);
     });
-  }, [spots, airbears, onSpotSelect, mapLoaded]);
+  }, [spots, airbears, mapLoaded]);
 
   useEffect(() => {
     if (!mapInstanceRef.current || !LeafletRef.current || !mapLoaded) return;
@@ -521,11 +531,12 @@ export default function MapView({
         <div className="absolute inset-0 flex items-center justify-center bg-gradient-to-br from-emerald-950/50 to-lime-950/50 dark:from-emerald-950/50 dark:to-lime-950/50 rounded-xl z-10 backdrop-blur-sm">
           <div className="text-center">
             <div className="flex justify-center mb-4">
-              <div className="w-24 h-24 rounded-full border-4 border-emerald-400/50 dark:border-emerald-500/50 bg-gradient-to-br from-emerald-500/20 to-lime-500/20 backdrop-blur-sm shadow-2xl hover-lift animate-float overflow-hidden">
-                <img
+              <div className="w-24 h-24 rounded-full border-4 border-emerald-400/50 dark:border-emerald-500/50 bg-gradient-to-br from-emerald-500/20 to-lime-500/20 backdrop-blur-sm shadow-2xl hover-lift animate-float overflow-hidden relative">
+                <Image
                   src="/airbear-mascot.png"
                   alt="AirBear Mascot"
-                  className="w-full h-full object-cover rounded-full animate-pulse-glow"
+                  fill
+                  className="object-cover rounded-full animate-pulse-glow"
                 />
               </div>
             </div>
@@ -538,3 +549,5 @@ export default function MapView({
     </div>
   );
 }
+
+export default memo(MapView);
