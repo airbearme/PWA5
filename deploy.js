@@ -9,7 +9,7 @@ const config = {
   host: 'access-5018328928.webspace-host.com',
   port: 22,
   username: 'a2096159',
-  password: 'Danknugs420420',
+  password: process.env.IONOS_SFTP_PASSWORD,
   localDir: path.join(__dirname, 'dist', 'public'),
   remoteDir: '/public_html'
 };

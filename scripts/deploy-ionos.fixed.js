@@ -18,8 +18,7 @@ const IONOS_CONFIG = {
 		process.env.IONOS_SFTP_USER || process.env.IONOS_FTP_USER || "a2096159",
 	password:
 		process.env.IONOS_SFTP_PASSWORD ||
-		process.env.IONOS_FTP_PASSWORD ||
-		"Yaa7Rih^_gpej+-",
+		process.env.IONOS_FTP_PASSWORD,
 	port: 22,
 	remoteBase: "/public_html", // Changed from '/' to '/public_html'
 };
