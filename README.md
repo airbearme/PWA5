@@ -12,7 +12,7 @@ Production-ready Next.js PWA for sustainable rideshare services with integrated 
 - 🎨 **Special Effects** - Glass morphism, holographic text, plasma flows, solar rays
 - 🌙 **Dark Mode** - Permanently enabled by default
 - 🐻 **Animated Mascot** - AirBear mascot with floating animations
-- 🎯 **Validated** - Run `pnpm run validate:ui` to verify all features
+- 🎯 **Validated** - Run `npm run validate:ui` to verify all features
 
 **See:** `CORE_UI_FOUNDATION.md` and `README_UI_FOUNDATION.md` for complete documentation.
 
@@ -41,7 +41,7 @@ Production-ready Next.js PWA for sustainable rideshare services with integrated 
 ### Prerequisites
 
 - Node.js 20.x or higher
-- pnpm (recommended)
+- npm or pnpm
 - Supabase account
 - Stripe account
 
@@ -55,7 +55,7 @@ Production-ready Next.js PWA for sustainable rideshare services with integrated 
 
 2. **Install dependencies**
    ```bash
-   pnpm install
+   npm install
    ```
 
 3. **Set up environment variables**
@@ -66,12 +66,12 @@ Production-ready Next.js PWA for sustainable rideshare services with integrated 
 
 4. **Validate environment variables**
    ```bash
-   pnpm run validate:env
+   npm run validate:env
    ```
 
 5. **Start development server**
    ```bash
-   pnpm run dev
+   npm run dev
    ```
 
 6. **Open http://localhost:3000**
@@ -118,38 +118,38 @@ Add these secrets in GitHub repository settings:
 
 ```bash
 # Development
-pnpm run dev              # Start development server
-pnpm run build            # Build for production
-pnpm run start            # Start production server
+npm run dev              # Start development server
+npm run build            # Build for production
+npm run start            # Start production server
 
 # Validation
-pnpm run validate:env    # Validate environment variables
-pnpm run type-check       # TypeScript type checking
-pnpm run lint             # ESLint
+npm run validate:env    # Validate environment variables
+npm run type-check       # TypeScript type checking
+npm run lint             # ESLint
 
 # Testing (Comprehensive Suite)
-pnpm run test             # Run all Jest tests
-pnpm run test:unit        # Run unit tests only
-pnpm run test:integration # Run integration tests
-pnpm run test:e2e         # Run Playwright E2E tests
-pnpm run test:performance # Run Lighthouse performance audit
-pnpm run test:security    # Check security headers
-pnpm run test:accessibility # Run accessibility audit
-pnpm run test:database    # Test database connectivity
-pnpm run test:stripe      # Validate Stripe configuration
-pnpm run test:pwa         # Test PWA features
-pnpm run test:all         # Run all automated tests
-pnpm run test:validate    # 🚀 Ultimate validation (runs everything)
+npm run test             # Run all Jest tests
+npm run test:unit        # Run unit tests only
+npm run test:integration # Run integration tests
+npm run test:e2e         # Run Playwright E2E tests
+npm run test:performance # Run Lighthouse performance audit
+npm run test:security    # Check security headers
+npm run test:accessibility # Run accessibility audit
+npm run test:database    # Test database connectivity
+npm run test:stripe      # Validate Stripe configuration
+npm run test:pwa         # Test PWA features
+npm run test:all         # Run all automated tests
+npm run test:validate    # 🚀 Ultimate validation (runs everything)
 
 # Setup
-pnpm run setup:testing    # Install all testing dependencies
+npm run setup:testing    # Install all testing dependencies
 
 # Deployment
-pnpm run deploy           # Deploy to Vercel
-pnpm run deploy:production  # Production deployment
+npm run deploy           # Deploy to Vercel
+npm run deploy:production  # Production deployment
 
 # Auto-Deploy Setup (GitHub Actions)
-pnpm run setup:secrets    # Guide for setting up GitHub secrets
+npm run setup:secrets    # Guide for setting up GitHub secrets
 # See: SETUP_GITHUB_SECRETS.md and AUTO_DEPLOY_SETUP.md
 ```
 
@@ -170,7 +170,7 @@ This project includes a **comprehensive testing suite** covering all aspects:
 
 **Run ultimate validation:**
 ```bash
-pnpm run test:validate
+npm run test:validate
 ```
 
 See `TESTING_COMPREHENSIVE.md` for complete testing documentation.
@@ -203,14 +203,14 @@ See `TESTING_COMPREHENSIVE.md` for complete testing documentation.
 3. Deploy automatically via GitHub Actions or manually:
 
 ```bash
-pnpm run deploy:vercel
+npm run deploy:vercel
 ```
 
 ### Manual Deployment
 
 ```bash
-pnpm run build
-pnpm run start
+npm run build
+npm run start
 ```
 
 ## Contributing

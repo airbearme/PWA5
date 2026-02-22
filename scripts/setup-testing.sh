@@ -8,7 +8,7 @@ echo "🧪 Setting up comprehensive testing suite..."
 # Install testing dependencies
 echo "📦 Installing testing dependencies..."
 
-pnpm add -D \
+npm install --save-dev \
   @testing-library/react @testing-library/jest-dom @testing-library/user-event \
   @testing-library/react-hooks \
   jest jest-environment-jsdom @jest/globals \
@@ -47,14 +47,14 @@ chmod +x scripts/*.sh
 echo "✅ Testing setup complete!"
 echo ""
 echo "📋 Available test commands:"
-echo "  pnpm run test              # Run unit tests"
-echo "  pnpm run test:integration  # Run integration tests"
-echo "  pnpm run test:e2e          # Run E2E tests"
-echo "  pnpm run test:performance  # Run performance tests"
-echo "  pnpm run test:security     # Run security tests"
-echo "  pnpm run test:accessibility # Run accessibility tests"
-echo "  pnpm run test:all          # Run all tests"
-echo "  pnpm run test:validate     # Ultimate validation"
+echo "  npm run test              # Run unit tests"
+echo "  npm run test:integration  # Run integration tests"
+echo "  npm run test:e2e          # Run E2E tests"
+echo "  npm run test:performance  # Run performance tests"
+echo "  npm run test:security     # Run security tests"
+echo "  npm run test:accessibility # Run accessibility tests"
+echo "  npm run test:all          # Run all tests"
+echo "  npm run test:validate     # Ultimate validation"
 
 
 
