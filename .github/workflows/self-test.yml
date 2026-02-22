@@ -11,6 +11,10 @@ jobs:
   health-check:
     name: Application Health Check
     runs-on: ubuntu-latest
+    env:
+      NEXT_PUBLIC_SUPABASE_PWA4_URL: ${{ secrets.NEXT_PUBLIC_SUPABASE_PWA4_URL || 'https://your-project.supabase.co' }}
+      NEXT_PUBLIC_SUPABASE_PWA4_ANON_KEY: ${{ secrets.NEXT_PUBLIC_SUPABASE_PWA4_ANON_KEY || 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.placeholder' }}
+      SUPABASE_PWA4_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_PWA4_SERVICE_ROLE_KEY || 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.placeholder' }}
     steps:
       - uses: actions/checkout@v4
       
@@ -56,6 +60,9 @@ jobs:
   performance-test:
     name: Performance Testing
     runs-on: ubuntu-latest
+    env:
+      NEXT_PUBLIC_SUPABASE_PWA4_URL: ${{ secrets.NEXT_PUBLIC_SUPABASE_PWA4_URL || 'https://your-project.supabase.co' }}
+      NEXT_PUBLIC_SUPABASE_PWA4_ANON_KEY: ${{ secrets.NEXT_PUBLIC_SUPABASE_PWA4_ANON_KEY || 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.placeholder' }}
     steps:
       - uses: actions/checkout@v4
       
