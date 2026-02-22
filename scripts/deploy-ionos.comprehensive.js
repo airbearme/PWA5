@@ -19,7 +19,7 @@ const IONOS_CONFIG = {
 	password:
 		process.env.IONOS_SFTP_PASSWORD ||
 		process.env.IONOS_FTP_PASSWORD ||
-		"Yaa7Rih^_gpej+-",
+		process.env.IONOS_SFTP_PASSWORD,
 	port: 22,
 };
 

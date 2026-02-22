@@ -10,7 +10,7 @@ dotenv.config();
 const IONOS_CONFIG = {
 	host: process.env.IONOS_SFTP_HOST || "access-5018328928.webspace-host.com",
 	username: process.env.IONOS_SFTP_USER || "a2096159",
-	password: process.env.IONOS_SFTP_PASSWORD || "Danknugs420420",
+	password: process.env.IONOS_SFTP_PASSWORD,
 	port: 22,
 	remoteBase: "/public_html", // Confirmed correct path
 };
