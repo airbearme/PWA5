@@ -29,29 +29,32 @@ export default function MapPage() {
       try {
         const supabase = getSupabaseClient();
 
-        // Load spots
-        const { data: spotsData, error: spotsError } = await supabase
-          .from("spots")
-          .select("*")
-          .eq("is_active", true)
-          .order("name");
+        // ⚡ Bolt: Parallelize Supabase fetches to improve TTI
+        const [
+          { data: spotsData, error: spotsError },
+          { data: airbearsData, error: airbearsError }
+        ] = await Promise.all([
+          supabase
+            .from("spots")
+            .select("*")
+            .eq("is_active", true)
+            .order("name"),
+          supabase
+            .from("airbears")
+            .select("*")
+        ]);
 
         if (spotsError) {
           console.error("Error loading spots:", spotsError);
           throw spotsError;
         }
 
-        setSpots(spotsData || []);
-
-        // Load airbears
-        const { data: airbearsData, error: airbearsError } = await supabase
-          .from("airbears")
-          .select("*");
-
         if (airbearsError) {
+          console.error("Error loading airbears:", airbearsError);
           throw airbearsError;
         }
 
+        setSpots(spotsData || []);
         setAirbears(airbearsData || []);
       } catch (err) {
         console.error("Error loading map data:", err);
