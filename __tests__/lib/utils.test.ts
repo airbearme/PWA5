@@ -24,8 +24,3 @@ describe('cn utility', () => {
     expect(result.split(' ').sort().join(' ')).toBe('px-4 py-1'.split(' ').sort().join(' '));
   });
 });
-
-
-
-
-
