@@ -56,12 +56,41 @@ global.ResizeObserver = class ResizeObserver {
   unobserve() {}
 }
 
-// Suppress console errors in tests (optional)
-// global.console = {
-//   ...console,
-//   error: jest.fn(),
-//   warn: jest.fn(),
-// }
+// Polyfill fetch and other browser globals for Node.js environment
+if (typeof globalThis.fetch === 'undefined') {
+  globalThis.fetch = jest.fn().mockImplementation((url) => {
+    if (url.includes('/api/health')) {
+      return Promise.resolve({
+        ok: true,
+        status: 200,
+        json: () => Promise.resolve({ status: 'healthy', database: 'connected' }),
+      });
+    }
+    if (url.includes('/api/stripe/webhook')) {
+      return Promise.resolve({
+        ok: false,
+        status: 400,
+      });
+    }
+    if (url.includes('/api/auth/callback')) {
+      return Promise.resolve({
+        ok: true,
+        status: 302,
+      });
+    }
+    return Promise.resolve({
+      ok: true,
+      status: 200,
+      json: () => Promise.resolve({}),
+    });
+  });
+}
+
+if (typeof globalThis.TextEncoder === 'undefined') {
+  const { TextEncoder, TextDecoder } = require('util');
+  globalThis.TextEncoder = TextEncoder;
+  globalThis.TextDecoder = TextDecoder;
+}
 
 
 

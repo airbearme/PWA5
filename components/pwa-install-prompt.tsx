@@ -2,7 +2,7 @@
 
 import { useEffect, useState, useRef } from "react";
 import { Button } from "@/components/ui/button";
-import { X, Download, Smartphone } from "lucide-react";
+import { X, Download, Smartphone, Share, ArrowLeft } from "lucide-react";
 import AirbearWheel from "@/components/airbear-wheel";
 
 interface BeforeInstallPromptEvent extends Event {
@@ -15,6 +15,7 @@ export default function PWAInstallPrompt() {
     useState<BeforeInstallPromptEvent | null>(null);
   const [showPrompt, setShowPrompt] = useState(false);
   const [isInstalled, setIsInstalled] = useState(false);
+  const [showInstructions, setShowInstructions] = useState(false);
 
   // Use refs to track state without causing re-renders
   const deferredPromptRef = useRef<BeforeInstallPromptEvent | null>(null);
@@ -87,14 +88,7 @@ export default function PWAInstallPrompt() {
       }
       setDeferredPrompt(null);
     } else {
-      // Fallback for iOS/Safari
-      // Show instructions
-      alert(
-        "To install AirBear:\n\n" +
-          "iOS Safari: Tap Share → Add to Home Screen\n\n" +
-          "Android Chrome: Tap Menu → Install App\n\n" +
-          "Desktop: Look for install icon in address bar"
-      );
+      setShowInstructions(true);
     }
   };
 
@@ -108,9 +102,10 @@ export default function PWAInstallPrompt() {
   }
 
   return (
-    <div className="fixed bottom-4 left-4 right-4 md:left-auto md:right-4 md:w-96 z-50 animate-in slide-in-from-bottom-5 duration-500">
-      <div className="glass-morphism border-2 border-emerald-400/50 rounded-2xl p-6 shadow-2xl relative overflow-hidden">
-        {/* Background gradient */}
+    <div className="fixed bottom-4 left-4 right-4 md:left-auto md:right-4 md:w-96 z-50 animate-in slide-in-from-bottom-5 duration-500" aria-live="polite">
+      <div className="glass-morphism border-2 border-emerald-500/30 rounded-2xl p-6 shadow-2xl relative overflow-hidden backdrop-blur-xl">
+        {/* Background gradient & Dark overlay for contrast */}
+        <div className="absolute inset-0 bg-black/40 pointer-events-none"></div>
         <div className="absolute inset-0 bg-gradient-to-br from-emerald-900/20 via-lime-900/10 to-amber-900/20 pointer-events-none"></div>
 
         {/* Spinning wheel decoration */}
@@ -129,29 +124,25 @@ export default function PWAInstallPrompt() {
           </button>
 
           {/* Content */}
-          <div className="flex items-start gap-4 mb-4">
-            <div className="p-3 rounded-full bg-gradient-to-br from-emerald-500 to-lime-500 shadow-lg animate-pulse-glow">
-              <Smartphone className="h-6 w-6 text-white" />
+          {!showInstructions ? (
+            <div className="flex flex-col gap-4">
+              <div className="flex items-center gap-4">
+                <div className="p-3 rounded-full bg-emerald-500 shadow-[0_0_15px_rgba(16,185,129,0.5)]"><Smartphone className="h-6 w-6 text-white" /></div>
+                <div>
+                  <h3 className="text-lg font-bold text-white mb-0.5">Install AirBear</h3>
+                  <p className="text-sm text-emerald-50/80">Add to home screen for the best experience!</p>
+                </div>
+              </div>
+              <Button onClick={handleInstall} className="w-full bg-emerald-500 hover:bg-emerald-400 text-white font-bold h-11 rounded-xl shadow-lg transition-all"><Download className="mr-2 h-4 w-4" /> Install Now</Button>
             </div>
-            <div className="flex-1">
-              <h3 className="text-lg font-bold text-foreground mb-1">
-                Install AirBear
-              </h3>
-              <p className="text-sm text-muted-foreground">
-                Get the full app experience with offline access and faster
-                loading!
-              </p>
+          ) : (
+            <div className="flex flex-col gap-3 py-1 text-white">
+              <h3 className="text-lg font-bold">How to Install</h3>
+              <p className="text-sm flex items-center gap-2">1. Tap <Share className="h-4 w-4 text-emerald-400" /> in Safari</p>
+              <p className="text-sm">2. Tap <span className="text-emerald-400 font-medium">&quot;Add to Home Screen&quot;</span></p>
+              <Button onClick={() => setShowInstructions(false)} variant="ghost" size="sm" className="mt-1 text-emerald-400 hover:text-emerald-300 hover:bg-white/5 h-8"><ArrowLeft className="h-4 w-4 mr-1" /> Back</Button>
             </div>
-          </div>
-
-          {/* Install button */}
-          <Button
-            onClick={handleInstall}
-            className="w-full eco-gradient text-white hover-lift ripple-effect animate-neon-glow shadow-lg"
-          >
-            <Download className="mr-2 h-4 w-4" />
-            Install Now
-          </Button>
+          )}
 
           {/* Dismiss link */}
           <button
