@@ -2,7 +2,7 @@
 
 import { useEffect, useState, useRef } from "react";
 import { Button } from "@/components/ui/button";
-import { X, Download, Smartphone } from "lucide-react";
+import { X, Download, Smartphone, Share, SquarePlus, ArrowLeft } from "lucide-react";
 import AirbearWheel from "@/components/airbear-wheel";
 
 interface BeforeInstallPromptEvent extends Event {
@@ -15,6 +15,7 @@ export default function PWAInstallPrompt() {
     useState<BeforeInstallPromptEvent | null>(null);
   const [showPrompt, setShowPrompt] = useState(false);
   const [isInstalled, setIsInstalled] = useState(false);
+  const [showInstructions, setShowInstructions] = useState(false);
 
   // Use refs to track state without causing re-renders
   const deferredPromptRef = useRef<BeforeInstallPromptEvent | null>(null);
@@ -87,14 +88,7 @@ export default function PWAInstallPrompt() {
       }
       setDeferredPrompt(null);
     } else {
-      // Fallback for iOS/Safari
-      // Show instructions
-      alert(
-        "To install AirBear:\n\n" +
-          "iOS Safari: Tap Share → Add to Home Screen\n\n" +
-          "Android Chrome: Tap Menu → Install App\n\n" +
-          "Desktop: Look for install icon in address bar"
-      );
+      setShowInstructions(true);
     }
   };
 
@@ -103,8 +97,32 @@ export default function PWAInstallPrompt() {
     localStorage.setItem("pwa-install-dismissed", "true");
   };
 
-  if (!showPrompt || isInstalled) {
-    return null;
+  if (!showPrompt || isInstalled) return null;
+
+  if (showInstructions) {
+    return (
+      <div className="fixed inset-0 z-[60] flex items-center justify-center bg-black/60 p-4 backdrop-blur-sm" onClick={() => setShowInstructions(false)}>
+        <div className="w-full max-w-sm glass-morphism border-2 border-emerald-400/30 rounded-2xl p-6 shadow-2xl" onClick={(e) => e.stopPropagation()}>
+          <div className="flex items-center justify-between mb-4">
+            <h3 className="text-xl font-bold text-foreground">Install Guide</h3>
+            <button onClick={() => setShowInstructions(false)} className="p-1 rounded-full hover:bg-white/10" aria-label="Close">
+              <ArrowLeft className="h-5 w-5" />
+            </button>
+          </div>
+          <div className="space-y-4">
+            <div className="flex items-center gap-4">
+              <div className="p-2 rounded-lg bg-emerald-500/20"><Share className="h-5 w-5 text-emerald-400" /></div>
+              <p className="text-sm">Tap the <span className="font-bold">Share</span> button in Safari</p>
+            </div>
+            <div className="flex items-center gap-4">
+              <div className="p-2 rounded-lg bg-emerald-500/20"><SquarePlus className="h-5 w-5 text-emerald-400" /></div>
+              <p className="text-sm">Select <span className="font-bold">Add to Home Screen</span></p>
+            </div>
+          </div>
+          <Button onClick={() => setShowInstructions(false)} className="w-full mt-6 eco-gradient text-white">Got it</Button>
+        </div>
+      </div>
+    );
   }
 
   return (
