@@ -2,7 +2,8 @@
  * Error Boundary Component Tests
  */
 
-import { describe, it, expect, jest } from '@jest/globals';
+import { describe, it, jest } from '@jest/globals';
+import '@testing-library/jest-dom';
 import { render, screen } from '@testing-library/react';
 import { ErrorBoundary } from '@/components/error-boundary';
 

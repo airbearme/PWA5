@@ -1,5 +1,5 @@
 import { createClient as createSupabaseAdminClient } from "@supabase/supabase-js";
-import type { Express } from "express";
+import type { Express, NextFunction, Request, Response } from "express";
 import { createServer, type Server } from "http";
 import Stripe from "stripe";
 import { z } from "zod";
@@ -33,6 +33,15 @@ if (!supabaseAdmin) {
 		"⚠️ Supabase admin client not configured. Set SUPABASE_URL and SUPABASE_SERVICE_ROLE_KEY for live auth.",
 	);
 }
+
+const withAuth = async (req: Request, res: Response, next: NextFunction) => {
+	const token = req.headers.authorization?.split(" ")[1];
+	if (!token || !supabaseAdmin) return res.status(401).json({ message: "Unauthorized" });
+	const { data: { user }, error } = await supabaseAdmin.auth.getUser(token);
+	if (error || !user) return res.status(401).json({ message: "Unauthorized" });
+	(req as any).user = user;
+	next();
+};
 
 export async function registerRoutes(app: Express): Promise<Server> {
 	// Health check
@@ -204,19 +213,15 @@ export async function registerRoutes(app: Express): Promise<Server> {
 		}
 	});
 
-	app.post("/api/auth/sync-profile", async (req, res) => {
+	app.post("/api/auth/sync-profile", withAuth, async (req, res) => {
 		try {
-			if (!supabaseAdmin) {
-				return res
-					.status(500)
-					.json({
-						message:
-							"Supabase is not configured. Set SUPABASE_URL and SUPABASE_SERVICE_ROLE_KEY.",
-					});
-			}
-
-			const payload = profileSchema.parse(req.body);
-			const profile = await ensureUserProfile(payload);
+			const user = (req as any).user;
+			const profile = await ensureUserProfile({
+				...profileSchema.parse(req.body),
+				id: user.id,
+				email: user.email,
+				role: user.app_metadata?.role || user.user_metadata?.role || "user",
+			});
 			res.json({ user: profile });
 		} catch (error: any) {
 			res.status(400).json({ message: error.message });
