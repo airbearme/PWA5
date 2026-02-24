@@ -20,33 +20,21 @@ jobs:
   validate-env:
     name: ✅ Validate Environment Variables
     runs-on: ubuntu-latest
-    env:
-      NEXT_PUBLIC_SUPABASE_PWA4_URL: ${{ secrets.NEXT_PUBLIC_SUPABASE_PWA4_URL || 'https://placeholder.supabase.co' }}
-      NEXT_PUBLIC_SUPABASE_PWA4_ANON_KEY: ${{ secrets.NEXT_PUBLIC_SUPABASE_PWA4_ANON_KEY || 'eyJplaceholder' }}
-      SUPABASE_PWA4_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_PWA4_SERVICE_ROLE_KEY || 'placeholder' }}
-      NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY: ${{ secrets.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY || 'pk_test_placeholder' }}
-      STRIPE_SECRET_KEY: ${{ secrets.STRIPE_SECRET_KEY || 'sk_test_placeholder' }}
-      NEXT_PUBLIC_SITE_URL: ${{ secrets.NEXT_PUBLIC_SITE_URL || 'https://airbear.me' }}
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
-
-      - name: Setup pnpm
-        uses: pnpm/action-setup@v4
-        with:
-          version: latest
 
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
           node-version: ${{ env.NODE_VERSION }}
-          cache: 'pnpm'
+          cache: 'npm'
 
       - name: Install dependencies
-        run: pnpm install --frozen-lockfile
+        run: npm ci
 
       - name: Validate environment variables
-        run: pnpm run validate:env
+        run: npm run validate:env
         env:
           NEXT_PUBLIC_SUPABASE_PWA4_URL: ${{ secrets.NEXT_PUBLIC_SUPABASE_PWA4_URL }}
           NEXT_PUBLIC_SUPABASE_PWA4_ANON_KEY: ${{ secrets.NEXT_PUBLIC_SUPABASE_PWA4_ANON_KEY }}
@@ -57,7 +45,7 @@ jobs:
           NEXT_PUBLIC_SITE_URL: ${{ secrets.NEXT_PUBLIC_SITE_URL || 'https://airbear.me' }}
 
       - name: Check Supabase configuration
-        run: pnpm run check:supabase
+        run: npm run check:supabase
         env:
           NEXT_PUBLIC_SUPABASE_PWA4_URL: ${{ secrets.NEXT_PUBLIC_SUPABASE_PWA4_URL }}
           NEXT_PUBLIC_SUPABASE_PWA4_ANON_KEY: ${{ secrets.NEXT_PUBLIC_SUPABASE_PWA4_ANON_KEY }}
@@ -69,44 +57,32 @@ jobs:
     runs-on: ubuntu-latest
     needs: validate-env
     if: github.event.inputs.skip_tests != 'true'
-    env:
-      NEXT_PUBLIC_SUPABASE_PWA4_URL: ${{ secrets.NEXT_PUBLIC_SUPABASE_PWA4_URL || 'https://placeholder.supabase.co' }}
-      NEXT_PUBLIC_SUPABASE_PWA4_ANON_KEY: ${{ secrets.NEXT_PUBLIC_SUPABASE_PWA4_ANON_KEY || 'eyJplaceholder' }}
-      SUPABASE_PWA4_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_PWA4_SERVICE_ROLE_KEY || 'placeholder' }}
-      NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY: ${{ secrets.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY || 'pk_test_placeholder' }}
-      STRIPE_SECRET_KEY: ${{ secrets.STRIPE_SECRET_KEY || 'sk_test_placeholder' }}
-      NEXT_PUBLIC_SITE_URL: ${{ secrets.NEXT_PUBLIC_SITE_URL || 'https://airbear.me' }}
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
-
-      - name: Setup pnpm
-        uses: pnpm/action-setup@v4
-        with:
-          version: latest
 
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
           node-version: ${{ env.NODE_VERSION }}
-          cache: 'pnpm'
+          cache: 'npm'
 
       - name: Install dependencies
-        run: pnpm install --frozen-lockfile
+        run: npm ci
 
       - name: Run type check
-        run: pnpm run type-check
+        run: npm run type-check
 
       - name: Run linting
-        run: pnpm run lint
+        run: npm run lint
         continue-on-error: true
 
       - name: Run unit tests
-        run: pnpm run test:unit
+        run: npm run test:unit
         continue-on-error: true
 
       - name: Test database connectivity
-        run: pnpm run test:database
+        run: npm run test:database
         env:
           NEXT_PUBLIC_SUPABASE_PWA4_URL: ${{ secrets.NEXT_PUBLIC_SUPABASE_PWA4_URL }}
           NEXT_PUBLIC_SUPABASE_PWA4_ANON_KEY: ${{ secrets.NEXT_PUBLIC_SUPABASE_PWA4_ANON_KEY }}
@@ -114,7 +90,7 @@ jobs:
         continue-on-error: true
 
       - name: Test Stripe configuration
-        run: pnpm run test:stripe
+        run: npm run test:stripe
         env:
           NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY: ${{ secrets.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY }}
           STRIPE_SECRET_KEY: ${{ secrets.STRIPE_SECRET_KEY }}
@@ -125,34 +101,21 @@ jobs:
     name: 🔨 Build Application
     runs-on: ubuntu-latest
     needs: [validate-env, test]
-    env:
-      NEXT_PUBLIC_SUPABASE_PWA4_URL: ${{ secrets.NEXT_PUBLIC_SUPABASE_PWA4_URL || 'https://placeholder.supabase.co' }}
-      NEXT_PUBLIC_SUPABASE_PWA4_ANON_KEY: ${{ secrets.NEXT_PUBLIC_SUPABASE_PWA4_ANON_KEY || 'eyJplaceholder' }}
-      SUPABASE_PWA4_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_PWA4_SERVICE_ROLE_KEY || 'placeholder' }}
-      NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY: ${{ secrets.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY || 'pk_test_placeholder' }}
-      STRIPE_SECRET_KEY: ${{ secrets.STRIPE_SECRET_KEY || 'sk_test_placeholder' }}
-      NEXT_PUBLIC_SITE_URL: ${{ secrets.NEXT_PUBLIC_SITE_URL || 'https://airbear.me' }}
-      NODE_ENV: production
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
-
-      - name: Setup pnpm
-        uses: pnpm/action-setup@v4
-        with:
-          version: latest
 
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
           node-version: ${{ env.NODE_VERSION }}
-          cache: 'pnpm'
+          cache: 'npm'
 
       - name: Install dependencies
-        run: pnpm install --frozen-lockfile
+        run: npm ci
 
       - name: Build application
-        run: pnpm run build
+        run: npm run build
         env:
           NEXT_PUBLIC_SUPABASE_PWA4_URL: ${{ secrets.NEXT_PUBLIC_SUPABASE_PWA4_URL }}
           NEXT_PUBLIC_SUPABASE_PWA4_ANON_KEY: ${{ secrets.NEXT_PUBLIC_SUPABASE_PWA4_ANON_KEY }}
@@ -178,30 +141,18 @@ jobs:
     environment:
       name: production
       url: https://airbear.me
-    env:
-      NEXT_PUBLIC_SUPABASE_PWA4_URL: ${{ secrets.NEXT_PUBLIC_SUPABASE_PWA4_URL || 'https://placeholder.supabase.co' }}
-      NEXT_PUBLIC_SUPABASE_PWA4_ANON_KEY: ${{ secrets.NEXT_PUBLIC_SUPABASE_PWA4_ANON_KEY || 'eyJplaceholder' }}
-      SUPABASE_PWA4_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_PWA4_SERVICE_ROLE_KEY || 'placeholder' }}
-      NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY: ${{ secrets.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY || 'pk_test_placeholder' }}
-      STRIPE_SECRET_KEY: ${{ secrets.STRIPE_SECRET_KEY || 'sk_test_placeholder' }}
-      NEXT_PUBLIC_SITE_URL: ${{ secrets.NEXT_PUBLIC_SITE_URL || 'https://airbear.me' }}
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
-
-      - name: Setup pnpm
-        uses: pnpm/action-setup@v4
-        with:
-          version: latest
 
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
           node-version: ${{ env.NODE_VERSION }}
-          cache: 'pnpm'
+          cache: 'npm'
 
       - name: Install Vercel CLI
-        run: pnpm add -g vercel@latest
+        run: npm install --global vercel@latest
 
       - name: Pull Vercel Environment Information
         id: vercel-env
@@ -272,30 +223,18 @@ jobs:
     runs-on: ubuntu-latest
     needs: verify
     if: github.ref == 'refs/heads/main'
-    env:
-      NEXT_PUBLIC_SUPABASE_PWA4_URL: ${{ secrets.NEXT_PUBLIC_SUPABASE_PWA4_URL || 'https://placeholder.supabase.co' }}
-      NEXT_PUBLIC_SUPABASE_PWA4_ANON_KEY: ${{ secrets.NEXT_PUBLIC_SUPABASE_PWA4_ANON_KEY || 'eyJplaceholder' }}
-      SUPABASE_PWA4_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_PWA4_SERVICE_ROLE_KEY || 'placeholder' }}
-      NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY: ${{ secrets.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY || 'pk_test_placeholder' }}
-      STRIPE_SECRET_KEY: ${{ secrets.STRIPE_SECRET_KEY || 'sk_test_placeholder' }}
-      NEXT_PUBLIC_SITE_URL: ${{ secrets.NEXT_PUBLIC_SITE_URL || 'https://airbear.me' }}
     steps:
-      - name: Setup pnpm
-        uses: pnpm/action-setup@v4
-        with:
-          version: latest
-
       - name: Install Vercel CLI
-        run: pnpm add -g vercel@latest
+        run: npm install --global vercel@latest
 
       - name: Sync environment variables to Vercel
         run: |
-          vercel env add NEXT_PUBLIC_SUPABASE_PWA4_URL production <<< "${{ secrets.NEXT_PUBLIC_SUPABASE_PWA4_URL || 'https://placeholder.supabase.co' }}" || echo "Variable may already exist"
-          vercel env add NEXT_PUBLIC_SUPABASE_PWA4_ANON_KEY production <<< "${{ secrets.NEXT_PUBLIC_SUPABASE_PWA4_ANON_KEY || 'eyJplaceholder' }}" || echo "Variable may already exist"
-          vercel env add SUPABASE_PWA4_SERVICE_ROLE_KEY production <<< "${{ secrets.SUPABASE_PWA4_SERVICE_ROLE_KEY || 'placeholder' }}" || echo "Variable may already exist"
-          vercel env add NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY production <<< "${{ secrets.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY || 'pk_test_placeholder' }}" || echo "Variable may already exist"
-          vercel env add STRIPE_SECRET_KEY production <<< "${{ secrets.STRIPE_SECRET_KEY || 'sk_test_placeholder' }}" || echo "Variable may already exist"
-          vercel env add STRIPE_WEBHOOK_SECRET production <<< "${{ secrets.STRIPE_WEBHOOK_SECRET || 'whsec_placeholder' }}" || echo "Variable may already exist"
+          vercel env add NEXT_PUBLIC_SUPABASE_PWA4_URL production <<< "${{ secrets.NEXT_PUBLIC_SUPABASE_PWA4_URL }}" || echo "Variable may already exist"
+          vercel env add NEXT_PUBLIC_SUPABASE_PWA4_ANON_KEY production <<< "${{ secrets.NEXT_PUBLIC_SUPABASE_PWA4_ANON_KEY }}" || echo "Variable may already exist"
+          vercel env add SUPABASE_PWA4_SERVICE_ROLE_KEY production <<< "${{ secrets.SUPABASE_PWA4_SERVICE_ROLE_KEY }}" || echo "Variable may already exist"
+          vercel env add NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY production <<< "${{ secrets.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY }}" || echo "Variable may already exist"
+          vercel env add STRIPE_SECRET_KEY production <<< "${{ secrets.STRIPE_SECRET_KEY }}" || echo "Variable may already exist"
+          vercel env add STRIPE_WEBHOOK_SECRET production <<< "${{ secrets.STRIPE_WEBHOOK_SECRET }}" || echo "Variable may already exist"
           vercel env add NEXT_PUBLIC_SITE_URL production <<< "${{ secrets.NEXT_PUBLIC_SITE_URL || 'https://airbear.me' }}" || echo "Variable may already exist"
         env:
           VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}

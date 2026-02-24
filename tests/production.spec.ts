@@ -1,4 +1,3 @@
-import "./polyfills";
 import { expect, test } from "@playwright/test";
 
 test.describe("Production PWA Tests", () => {

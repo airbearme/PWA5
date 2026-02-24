@@ -1,10 +1,5 @@
 // Learn more: https://github.com/testing-library/jest-dom
 import '@testing-library/jest-dom'
-import { TransformStream } from 'node:stream/web';
-
-if (typeof global.TransformStream === 'undefined') {
-  global.TransformStream = TransformStream;
-}
 
 // Mock Next.js router
 jest.mock('next/navigation', () => ({

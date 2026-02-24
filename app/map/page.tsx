@@ -29,9 +29,8 @@ export default function MapPage() {
       try {
         const supabase = getSupabaseClient();
 
-        // ⚡ Bolt: Parallelize independent Supabase queries to eliminate waterfalls
-        // This reduces TTI (Time to Interactive) by fetching spots and airbears concurrently
-        const [spotsRes, airbearsRes] = await Promise.all([
+        // Parallelize fetching to eliminate network waterfall
+        const [spotsResult, airbearsResult] = await Promise.all([
           supabase
             .from("spots")
             .select("*")
@@ -42,18 +41,18 @@ export default function MapPage() {
             .select("*")
         ]);
 
-        if (spotsRes.error) {
-          console.error("Error loading spots:", spotsRes.error);
-          throw spotsRes.error;
+        if (spotsResult.error) {
+          console.error("Error loading spots:", spotsResult.error);
+          throw spotsResult.error;
         }
 
-        if (airbearsRes.error) {
-          console.error("Error loading airbears:", airbearsRes.error);
-          throw airbearsRes.error;
+        setSpots(spotsResult.data || []);
+
+        if (airbearsResult.error) {
+          throw airbearsResult.error;
         }
 
-        setSpots(spotsRes.data || []);
-        setAirbears(airbearsRes.data || []);
+        setAirbears(airbearsResult.data || []);
       } catch (err) {
         console.error("Error loading map data:", err);
         toast({

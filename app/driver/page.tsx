@@ -46,10 +46,8 @@ export default function DriverDashboardPage() {
       try {
         const supabase = getSupabaseClient();
 
-        // ⚡ Bolt: Parallelize independent Supabase queries to eliminate waterfalls
-        // This is especially important here as it runs every 5 seconds via setInterval
-        // Also using .maybeSingle() to safely handle cases with no active ride
-        const [spotsRes, pendingRidesRes, activeRideRes] = await Promise.all([
+        // Parallelize fetching to eliminate network waterfall
+        const [spotsResult, ridesResult, activeRideResult] = await Promise.all([
           supabase.from("spots").select("id, name"),
           supabase
             .from("rides")
@@ -61,21 +59,22 @@ export default function DriverDashboardPage() {
             .select("*")
             .eq("driver_id", user.id)
             .in("status", ["accepted", "in_progress"])
-            .maybeSingle()
+            .maybeSingle() // Use maybeSingle to avoid error if no ride exists
         ]);
 
-        if (spotsRes.data) {
+        const spotsData = spotsResult.data;
+        if (spotsData) {
           const spotsMap: Record<string, { name: string }> = {};
-          spotsRes.data.forEach((spot) => {
+          spotsData.forEach((spot) => {
             spotsMap[spot.id] = { name: spot.name };
           });
           setSpots(spotsMap);
         }
 
-        if (pendingRidesRes.error) throw pendingRidesRes.error;
-        setPendingRides(pendingRidesRes.data || []);
+        if (ridesResult.error) throw ridesResult.error;
+        setPendingRides(ridesResult.data || []);
 
-        setActiveRide(activeRideRes.data || null);
+        setActiveRide(activeRideResult.data || null);
       } catch (error) {
         console.error("Error loading driver data:", error);
       } finally {

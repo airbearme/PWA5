@@ -41,9 +41,8 @@ export default function DashboardPage() {
       try {
         const supabase = getSupabaseClient();
 
-        // ⚡ Bolt: Parallelize independent Supabase queries to eliminate waterfalls
-        // This reduces TTI (Time to Interactive) for the user dashboard
-        const [ridesRes, spotsRes] = await Promise.all([
+        // Parallelize fetching to eliminate network waterfall
+        const [ridesResult, spotsResult] = await Promise.all([
           supabase
             .from("rides")
             .select("*")
@@ -55,12 +54,14 @@ export default function DashboardPage() {
             .select("id, name")
         ]);
 
-        if (ridesRes.error) throw ridesRes.error;
-        setRides(ridesRes.data || []);
+        if (ridesResult.error) throw ridesResult.error;
+        setRides(ridesResult.data || []);
 
-        if (spotsRes.data) {
+        const spotsData = spotsResult.data;
+
+        if (spotsData) {
           const spotsMap: Record<string, { name: string }> = {};
-          spotsRes.data.forEach((spot) => {
+          spotsData.forEach((spot) => {
             spotsMap[spot.id] = { name: spot.name };
           });
           setSpots(spotsMap);
