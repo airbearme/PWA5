@@ -1,4 +1,9 @@
 import { defineConfig, devices } from "@playwright/test";
+import { TransformStream } from 'node:stream/web';
+
+if (typeof (globalThis as any).TransformStream === 'undefined') {
+  (globalThis as any).TransformStream = TransformStream;
+}
 
 export default defineConfig({
 	testDir: "./tests",
