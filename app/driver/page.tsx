@@ -46,11 +46,23 @@ export default function DriverDashboardPage() {
       try {
         const supabase = getSupabaseClient();
 
-        // Load spots
-        const { data: spotsData } = await supabase
-          .from("spots")
-          .select("id, name");
+        // Parallelize fetching to eliminate network waterfall
+        const [spotsResult, ridesResult, activeRideResult] = await Promise.all([
+          supabase.from("spots").select("id, name"),
+          supabase
+            .from("rides")
+            .select("*")
+            .eq("status", "pending")
+            .order("requested_at", { ascending: true }),
+          supabase
+            .from("rides")
+            .select("*")
+            .eq("driver_id", user.id)
+            .in("status", ["accepted", "in_progress"])
+            .maybeSingle() // Use maybeSingle to avoid error if no ride exists
+        ]);
 
+        const spotsData = spotsResult.data;
         if (spotsData) {
           const spotsMap: Record<string, { name: string }> = {};
           spotsData.forEach((spot) => {
@@ -59,25 +71,10 @@ export default function DriverDashboardPage() {
           setSpots(spotsMap);
         }
 
-        // Load pending rides
-        const { data: ridesData, error } = await supabase
-          .from("rides")
-          .select("*")
-          .eq("status", "pending")
-          .order("requested_at", { ascending: true });
+        if (ridesResult.error) throw ridesResult.error;
+        setPendingRides(ridesResult.data || []);
 
-        if (error) throw error;
-        setPendingRides(ridesData || []);
-
-        // Load active ride for this driver
-        const { data: activeRideData } = await supabase
-          .from("rides")
-          .select("*")
-          .eq("driver_id", user.id)
-          .in("status", ["accepted", "in_progress"])
-          .single();
-
-        setActiveRide(activeRideData || null);
+        setActiveRide(activeRideResult.data || null);
       } catch (error) {
         console.error("Error loading driver data:", error);
       } finally {
