@@ -8,7 +8,7 @@ echo "🧪 Setting up comprehensive testing suite..."
 # Install testing dependencies
 echo "📦 Installing testing dependencies..."
 
-npm install --save-dev \
+pnpm add -D \
   @testing-library/react @testing-library/jest-dom @testing-library/user-event \
   @testing-library/react-hooks \
   jest jest-environment-jsdom @jest/globals \

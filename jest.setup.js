@@ -56,12 +56,43 @@ global.ResizeObserver = class ResizeObserver {
   unobserve() {}
 }
 
-// Suppress console errors in tests (optional)
-// global.console = {
-//   ...console,
-//   error: jest.fn(),
-//   warn: jest.fn(),
-// }
+// Polyfill TextEncoder/TextDecoder for ESM compatibility
+import { TextEncoder, TextDecoder } from 'util';
+
+global.TextEncoder = TextEncoder;
+global.TextDecoder = TextDecoder;
+
+// Polyfill fetch for tests
+global.fetch = jest.fn((url) => {
+  if (typeof url !== 'string') return Promise.reject(new Error('Invalid URL'));
+
+  if (url.includes('/api/health')) {
+    return Promise.resolve({
+      ok: true,
+      status: 200,
+      json: () => Promise.resolve({ status: 'healthy', database: 'connected' }),
+    });
+  }
+  if (url.includes('/api/stripe/webhook')) {
+    return Promise.resolve({
+      ok: false,
+      status: 400,
+      json: () => Promise.resolve({ error: 'Missing signature' }),
+    });
+  }
+  if (url.includes('/api/auth/callback')) {
+    return Promise.resolve({
+      ok: true,
+      status: 302,
+      json: () => Promise.resolve({ status: 'redirecting' }),
+    });
+  }
+  return Promise.resolve({
+    ok: true,
+    status: 200,
+    json: () => Promise.resolve({}),
+  });
+});
 
 
 
