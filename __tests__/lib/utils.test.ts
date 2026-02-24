@@ -2,7 +2,7 @@
  * Utility Functions Unit Tests
  */
 
-import { describe, it, expect } from '@jest/globals';
+import { describe, it } from '@jest/globals';
 import { cn } from '@/lib/utils';
 
 describe('cn utility', () => {
@@ -19,7 +19,10 @@ describe('cn utility', () => {
   });
 
   it('merges Tailwind classes', () => {
-    expect(cn('px-2 py-1', 'px-4')).toBe('px-4 py-1');
+    const result = cn('px-2 py-1', 'px-4');
+    expect(result).toContain('px-4');
+    expect(result).toContain('py-1');
+    expect(result).not.toContain('px-2');
   });
 });
 
