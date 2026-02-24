@@ -9,3 +9,7 @@
 ## 2025-05-14 - GitHub Actions pnpm Standardization
 **Learning:** GitHub Actions workflows in a `pnpm`-only project will fail if they use `cache: npm` or `npm ci`. Additionally, `actions/setup-node` with `cache: pnpm` fails if `pnpm` isn't already installed on the runner.
 **Action:** Always ensure `pnpm/action-setup@v4` is called BEFORE `actions/setup-node@v4` and standardize on `pnpm install --frozen-lockfile`.
+
+## 2025-05-14 - Zod Environment Validation in CI
+**Learning:** Next.js build and test processes often validate environment variables via Zod. If required secrets are missing in CI, the build will fail.
+**Action:** Provide Zod-compliant placeholder values (e.g., valid URLs, expected prefixes like `pk_`) in CI workflows to ensure builds pass even when actual secrets are not available.
