@@ -5,3 +5,7 @@
 ## 2025-05-14 - Respecting Boundary Constraints
 **Learning:** Even when fixing a broken test environment or linting errors, modifying `package.json` or adding dependencies without explicit permission violates agent boundaries.
 **Action:** Prioritize the core task (performance) and only fix environment issues that are strictly necessary and within boundaries. If a dependency is missing, request user input or report it instead of auto-installing if boundaries prohibit it.
+
+## 2025-05-14 - GitHub Actions pnpm Standardization
+**Learning:** GitHub Actions workflows in a `pnpm`-only project will fail if they use `cache: npm` or `npm ci`. Additionally, `actions/setup-node` with `cache: pnpm` fails if `pnpm` isn't already installed on the runner.
+**Action:** Always ensure `pnpm/action-setup@v4` is called BEFORE `actions/setup-node@v4` and standardize on `pnpm install --frozen-lockfile`.
