@@ -10,6 +10,7 @@ import { Badge } from "@/components/ui/badge";
 import { useToast } from "@/hooks/use-toast";
 import { Navigation, Battery, MapPin, Activity, Clock, CheckCircle, X } from "lucide-react";
 import Link from "next/link";
+import Image from "next/image";
 
 interface Ride {
   id: string;
@@ -46,38 +47,38 @@ export default function DriverDashboardPage() {
       try {
         const supabase = getSupabaseClient();
 
-        // Load spots
-        const { data: spotsData } = await supabase
-          .from("spots")
-          .select("id, name");
+        // Bolt ⚡: Parallelize loading spots, pending rides, and active ride to eliminate waterfall.
+        // Performance Impact: Reduces data fetch time by max(t1, t2, t3) instead of t1 + t2 + t3.
+        // Measurable benefit: Accelerates dashboard readiness for drivers, critical for fast ride acceptance.
+        const [spotsResponse, pendingRidesResponse, activeRideResponse] = await Promise.all([
+          supabase
+            .from("spots")
+            .select("id, name"),
+          supabase
+            .from("rides")
+            .select("*")
+            .eq("status", "pending")
+            .order("requested_at", { ascending: true }),
+          supabase
+            .from("rides")
+            .select("*")
+            .eq("driver_id", user.id)
+            .in("status", ["accepted", "in_progress"])
+            .maybeSingle()
+        ]);
 
-        if (spotsData) {
+        if (spotsResponse.data) {
           const spotsMap: Record<string, { name: string }> = {};
-          spotsData.forEach((spot) => {
+          spotsResponse.data.forEach((spot) => {
             spotsMap[spot.id] = { name: spot.name };
           });
           setSpots(spotsMap);
         }
 
-        // Load pending rides
-        const { data: ridesData, error } = await supabase
-          .from("rides")
-          .select("*")
-          .eq("status", "pending")
-          .order("requested_at", { ascending: true });
+        if (pendingRidesResponse.error) throw pendingRidesResponse.error;
+        setPendingRides(pendingRidesResponse.data || []);
 
-        if (error) throw error;
-        setPendingRides(ridesData || []);
-
-        // Load active ride for this driver
-        const { data: activeRideData } = await supabase
-          .from("rides")
-          .select("*")
-          .eq("driver_id", user.id)
-          .in("status", ["accepted", "in_progress"])
-          .single();
-
-        setActiveRide(activeRideData || null);
+        setActiveRide(activeRideResponse.data || null);
       } catch (error) {
         console.error("Error loading driver data:", error);
       } finally {
@@ -182,11 +183,14 @@ export default function DriverDashboardPage() {
       <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-emerald-950 via-lime-950 to-amber-950">
         <div className="text-center">
           <div className="flex justify-center mb-6">
-            <div className="w-32 h-32 rounded-full border-4 border-emerald-400/50 dark:border-emerald-500/50 bg-gradient-to-br from-emerald-500/20 to-lime-500/20 backdrop-blur-sm shadow-2xl hover-lift animate-float overflow-hidden">
-              <img
+            <div className="w-32 h-32 rounded-full border-4 border-emerald-400/50 dark:border-emerald-500/50 bg-gradient-to-br from-emerald-500/20 to-lime-500/20 backdrop-blur-sm shadow-2xl hover-lift animate-float overflow-hidden relative">
+              {/* Bolt ⚡: Use Next.js Image with priority for mascot (LCP asset). */}
+              <Image
                 src="/airbear-mascot.png"
                 alt="AirBear Mascot"
-                className="w-full h-full object-cover rounded-full animate-pulse-glow"
+                fill
+                priority
+                className="object-cover rounded-full animate-pulse-glow"
               />
             </div>
           </div>
@@ -208,11 +212,14 @@ export default function DriverDashboardPage() {
         {/* Header */}
         <div className="text-center mb-8">
           <div className="flex justify-center mb-4">
-            <div className="w-24 h-24 rounded-full border-4 border-emerald-400/50 dark:border-emerald-500/50 bg-gradient-to-br from-emerald-500/20 to-lime-500/20 backdrop-blur-sm shadow-2xl hover-lift animate-float overflow-hidden">
-              <img
+            <div className="w-24 h-24 rounded-full border-4 border-emerald-400/50 dark:border-emerald-500/50 bg-gradient-to-br from-emerald-500/20 to-lime-500/20 backdrop-blur-sm shadow-2xl hover-lift animate-float overflow-hidden relative">
+              {/* Bolt ⚡: Use Next.js Image with priority for mascot (LCP asset). */}
+              <Image
                 src="/airbear-mascot.png"
                 alt="AirBear Mascot"
-                className="w-full h-full object-cover rounded-full animate-pulse-glow"
+                fill
+                priority
+                className="object-cover rounded-full animate-pulse-glow"
               />
             </div>
           </div>

@@ -9,6 +9,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Calendar, MapPin, Leaf, Award, Navigation, Clock, CheckCircle } from "lucide-react";
 import Link from "next/link";
+import Image from "next/image";
 
 interface Ride {
   id: string;
@@ -41,25 +42,27 @@ export default function DashboardPage() {
       try {
         const supabase = getSupabaseClient();
 
-        // Load user rides
-        const { data: ridesData, error: ridesError } = await supabase
-          .from("rides")
-          .select("*")
-          .eq("user_id", user.id)
-          .order("requested_at", { ascending: false })
-          .limit(10);
+        // Bolt ⚡: Parallelize loading rides and spots to eliminate network waterfall.
+        // Performance Impact: Reduces data fetch time by max(t1, t2) instead of t1 + t2.
+        // Measurable benefit: Significant reduction in Time to Interactive (TTI) on first load.
+        const [ridesResponse, spotsResponse] = await Promise.all([
+          supabase
+            .from("rides")
+            .select("*")
+            .eq("user_id", user.id)
+            .order("requested_at", { ascending: false })
+            .limit(10),
+          supabase
+            .from("spots")
+            .select("id, name")
+        ]);
 
-        if (ridesError) throw ridesError;
-        setRides(ridesData || []);
+        if (ridesResponse.error) throw ridesResponse.error;
+        setRides(ridesResponse.data || []);
 
-        // Load spots for display
-        const { data: spotsData } = await supabase
-          .from("spots")
-          .select("id, name");
-
-        if (spotsData) {
+        if (spotsResponse.data) {
           const spotsMap: Record<string, { name: string }> = {};
-          spotsData.forEach((spot) => {
+          spotsResponse.data.forEach((spot) => {
             spotsMap[spot.id] = { name: spot.name };
           });
           setSpots(spotsMap);
@@ -79,11 +82,14 @@ export default function DashboardPage() {
       <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-emerald-950 via-lime-950 to-amber-950">
         <div className="text-center">
           <div className="flex justify-center mb-6">
-            <div className="w-32 h-32 rounded-full border-4 border-emerald-400/50 dark:border-emerald-500/50 bg-gradient-to-br from-emerald-500/20 to-lime-500/20 backdrop-blur-sm shadow-2xl hover-lift animate-float overflow-hidden">
-              <img
+            <div className="w-32 h-32 rounded-full border-4 border-emerald-400/50 dark:border-emerald-500/50 bg-gradient-to-br from-emerald-500/20 to-lime-500/20 backdrop-blur-sm shadow-2xl hover-lift animate-float overflow-hidden relative">
+              {/* Bolt ⚡: Use Next.js Image with priority for mascot (LCP asset). */}
+              <Image
                 src="/airbear-mascot.png"
                 alt="AirBear Mascot"
-                className="w-full h-full object-cover rounded-full animate-pulse-glow"
+                fill
+                priority
+                className="object-cover rounded-full animate-pulse-glow"
               />
             </div>
           </div>
@@ -114,11 +120,14 @@ export default function DashboardPage() {
         {/* Header */}
         <div className="text-center mb-8">
           <div className="flex justify-center mb-4">
-            <div className="w-24 h-24 rounded-full border-4 border-emerald-400/50 dark:border-emerald-500/50 bg-gradient-to-br from-emerald-500/20 to-lime-500/20 backdrop-blur-sm shadow-2xl hover-lift animate-float overflow-hidden">
-              <img
+            <div className="w-24 h-24 rounded-full border-4 border-emerald-400/50 dark:border-emerald-500/50 bg-gradient-to-br from-emerald-500/20 to-lime-500/20 backdrop-blur-sm shadow-2xl hover-lift animate-float overflow-hidden relative">
+              {/* Bolt ⚡: Use Next.js Image with priority for mascot (LCP asset). */}
+              <Image
                 src="/airbear-mascot.png"
                 alt="AirBear Mascot"
-                className="w-full h-full object-cover rounded-full animate-pulse-glow"
+                fill
+                priority
+                className="object-cover rounded-full animate-pulse-glow"
               />
             </div>
           </div>
