@@ -10,7 +10,6 @@ import { Badge } from "@/components/ui/badge";
 import { useToast } from "@/hooks/use-toast";
 import { Navigation, Battery, MapPin, Activity, Clock, CheckCircle, X } from "lucide-react";
 import Link from "next/link";
-import Image from "next/image";
 
 interface Ride {
   id: string;
@@ -64,21 +63,25 @@ export default function DriverDashboardPage() {
             .select("*")
             .eq("driver_id", user.id)
             .in("status", ["accepted", "in_progress"])
-            .maybeSingle()
+            .maybeSingle() // Use maybeSingle to avoid errors if no active ride
         ]);
 
-        if (spotsResponse.data) {
+        const { data: spotsData } = spotsResponse;
+        const { data: ridesData, error: pendingRidesError } = pendingRidesResponse;
+        const { data: activeRideData } = activeRideResponse;
+
+        if (spotsData) {
           const spotsMap: Record<string, { name: string }> = {};
-          spotsResponse.data.forEach((spot) => {
+          spotsData.forEach((spot) => {
             spotsMap[spot.id] = { name: spot.name };
           });
           setSpots(spotsMap);
         }
 
-        if (pendingRidesResponse.error) throw pendingRidesResponse.error;
-        setPendingRides(pendingRidesResponse.data || []);
+        if (pendingRidesError) throw pendingRidesError;
+        setPendingRides(ridesData || []);
 
-        setActiveRide(activeRideResponse.data || null);
+        setActiveRide(activeRideData || null);
       } catch (error) {
         console.error("Error loading driver data:", error);
       } finally {

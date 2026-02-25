@@ -9,7 +9,6 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Calendar, MapPin, Leaf, Award, Navigation, Clock, CheckCircle } from "lucide-react";
 import Link from "next/link";
-import Image from "next/image";
 
 interface Ride {
   id: string;
@@ -57,12 +56,15 @@ export default function DashboardPage() {
             .select("id, name")
         ]);
 
-        if (ridesResponse.error) throw ridesResponse.error;
-        setRides(ridesResponse.data || []);
+        const { data: ridesData, error: ridesError } = ridesResponse;
+        const { data: spotsData } = spotsResponse;
 
-        if (spotsResponse.data) {
+        if (ridesError) throw ridesError;
+        setRides(ridesData || []);
+
+        if (spotsData) {
           const spotsMap: Record<string, { name: string }> = {};
-          spotsResponse.data.forEach((spot) => {
+          spotsData.forEach((spot) => {
             spotsMap[spot.id] = { name: spot.name };
           });
           setSpots(spotsMap);
@@ -83,7 +85,7 @@ export default function DashboardPage() {
         <div className="text-center">
           <div className="flex justify-center mb-6">
             <div className="w-32 h-32 rounded-full border-4 border-emerald-400/50 dark:border-emerald-500/50 bg-gradient-to-br from-emerald-500/20 to-lime-500/20 backdrop-blur-sm shadow-2xl hover-lift animate-float overflow-hidden relative">
-              {/* Bolt ⚡: Use Next.js Image with priority for mascot (LCP asset). */}
+              {/* Bolt ⚡: Use Next.js Image with priority for mascot (LCP asset) to improve Largest Contentful Paint. */}
               <Image
                 src="/airbear-mascot.png"
                 alt="AirBear Mascot"

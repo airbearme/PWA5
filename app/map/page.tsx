@@ -10,7 +10,6 @@ import { useToast } from "@/hooks/use-toast";
 import { Battery, MapPin, Navigation } from "lucide-react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
-import Image from "next/image";
 import { Button } from "@/components/ui/button";
 import MapComponent from "@/components/map-view-beautiful";
 import type { Spot } from "@/components/map-view";
@@ -44,18 +43,20 @@ export default function MapPage() {
             .select("*")
         ]);
 
-        if (spotsResponse.error) {
-          console.error("Error loading spots:", spotsResponse.error);
-          throw spotsResponse.error;
+        const { data: spotsData, error: spotsError } = spotsResponse;
+        const { data: airbearsData, error: airbearsError } = airbearsResponse;
+
+        if (spotsError) {
+          console.error("Error loading spots:", spotsError);
+          throw spotsError;
         }
 
-        if (airbearsResponse.error) {
-          console.error("Error loading airbears:", airbearsResponse.error);
-          throw airbearsResponse.error;
+        if (airbearsError) {
+          throw airbearsError;
         }
 
-        setSpots(spotsResponse.data || []);
-        setAirbears(airbearsResponse.data || []);
+        setSpots(spotsData || []);
+        setAirbears(airbearsData || []);
       } catch (err) {
         console.error("Error loading map data:", err);
         toast({
