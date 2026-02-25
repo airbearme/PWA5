@@ -7,6 +7,7 @@ import {
   useTransform,
   useSpring,
 } from "framer-motion";
+import Image from "next/image";
 import AirbearWheel from "@/components/airbear-wheel";
 
 export default function FloatingMascot() {
@@ -55,10 +56,16 @@ export default function FloatingMascot() {
             <AirbearWheel size="lg" glowing animated className="opacity-50" />
           </div>
           
-          {/* Mascot image */}
-          <img
+          {/* ⚡ Bolt: Optimized image loading for the floating mascot.
+              - Replaced standard `<img>` with Next.js `<Image>` component.
+              - Added `priority` to preload this recurring element.
+           */}
+          <Image
             src="/airbear-mascot.png"
             alt="AirBear Mascot"
+            width={80}
+            height={80}
+            priority
             className="w-full h-full object-cover rounded-full animate-float"
             style={{ animationDuration: "4s" }}
           />
