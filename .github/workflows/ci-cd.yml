@@ -37,6 +37,13 @@ jobs:
 
       - name: Run TypeScript check
         run: pnpm run type-check || true
+        env:
+          NEXT_PUBLIC_SUPABASE_PWA4_URL: https://placeholder.supabase.co
+          NEXT_PUBLIC_SUPABASE_PWA4_ANON_KEY: eyJplaceholder
+          SUPABASE_PWA4_SERVICE_ROLE_KEY: eyJplaceholder
+          NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY: pk_live_placeholder
+          STRIPE_SECRET_KEY: sk_live_placeholder
+          NEXT_PUBLIC_SITE_URL: https://airbear.me
 
   # Build
   build:
@@ -102,6 +109,13 @@ jobs:
 
       - name: Run unit tests
         run: pnpm run test || echo "Tests not configured yet"
+        env:
+          NEXT_PUBLIC_SUPABASE_PWA4_URL: https://placeholder.supabase.co
+          NEXT_PUBLIC_SUPABASE_PWA4_ANON_KEY: eyJplaceholder
+          SUPABASE_PWA4_SERVICE_ROLE_KEY: eyJplaceholder
+          NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY: pk_live_placeholder
+          STRIPE_SECRET_KEY: sk_live_placeholder
+          NEXT_PUBLIC_SITE_URL: https://airbear.me
 
       - name: Check API endpoints
         run: |
@@ -113,6 +127,13 @@ jobs:
         run: |
           echo "Validating required env vars..."
           node scripts/validate-env.js || echo "Env validation script not found"
+        env:
+          NEXT_PUBLIC_SUPABASE_PWA4_URL: https://placeholder.supabase.co
+          NEXT_PUBLIC_SUPABASE_PWA4_ANON_KEY: eyJplaceholder
+          SUPABASE_PWA4_SERVICE_ROLE_KEY: eyJplaceholder
+          NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY: pk_live_placeholder
+          STRIPE_SECRET_KEY: sk_live_placeholder
+          NEXT_PUBLIC_SITE_URL: https://airbear.me
 
   # Self-Repair
   self-repair:
@@ -145,6 +166,14 @@ jobs:
 
       - name: Re-run build after repair
         run: pnpm run build || echo "Build still failing after repair"
+        env:
+          NODE_ENV: production
+          NEXT_PUBLIC_SUPABASE_PWA4_URL: ${{ secrets.NEXT_PUBLIC_SUPABASE_PWA4_URL || 'https://placeholder.supabase.co' }}
+          NEXT_PUBLIC_SUPABASE_PWA4_ANON_KEY: ${{ secrets.NEXT_PUBLIC_SUPABASE_PWA4_ANON_KEY || 'eyJplaceholder' }}
+          SUPABASE_PWA4_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_PWA4_SERVICE_ROLE_KEY || 'eyJplaceholder' }}
+          NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY: ${{ secrets.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY || 'pk_live_placeholder' }}
+          STRIPE_SECRET_KEY: ${{ secrets.STRIPE_SECRET_KEY || 'sk_live_placeholder' }}
+          NEXT_PUBLIC_SITE_URL: ${{ secrets.NEXT_PUBLIC_SITE_URL || 'https://airbear.me' }}
 
   # Deploy to Vercel
   deploy:
