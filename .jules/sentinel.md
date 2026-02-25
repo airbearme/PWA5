@@ -7,3 +7,8 @@
 **Vulnerability:** Broken CI/CD pipeline due to incorrect pnpm setup and caching configuration.
 **Learning:** Using `actions/setup-node` with `cache: 'pnpm'` requires `pnpm` to be installed and in the PATH *before* the setup-node step. Also, pnpm 9.0+ is required for lockfile version 9.0.
 **Prevention:** Always place `pnpm/action-setup` before `actions/setup-node` in workflow files, and ensure all shell blocks in workflows use `echo` for outputting to `GITHUB_STEP_SUMMARY`.
+
+## 2026-02-25 - Build-time Environment Validation Failures
+**Vulnerability:** Next.js build failing in CI due to missing required environment variables (Zod validation).
+**Learning:** Next.js validates environment variables during build (especially for static generation). If `lib/env.ts` uses strict Zod validation, the build will crash in CI unless placeholders are provided.
+**Prevention:** Provide Zod-compliant placeholders (URLs with 'supabase.co', anon keys with 'eyJ', Stripe keys with 'pk_' or 'sk_') in all CI workflow steps that run `next build`.
