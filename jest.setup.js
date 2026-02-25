@@ -1,5 +1,17 @@
 // Learn more: https://github.com/testing-library/jest-dom
 import '@testing-library/jest-dom'
+import { TransformStream } from 'node:stream/web';
+import { TextEncoder, TextDecoder } from 'node:util';
+
+// Polyfills
+if (typeof global.TransformStream === 'undefined') {
+  global.TransformStream = TransformStream;
+}
+
+if (typeof global.TextEncoder === 'undefined') {
+  global.TextEncoder = TextEncoder;
+  global.TextDecoder = TextDecoder;
+}
 
 // Mock Next.js router
 jest.mock('next/navigation', () => ({
@@ -62,8 +74,3 @@ global.ResizeObserver = class ResizeObserver {
 //   error: jest.fn(),
 //   warn: jest.fn(),
 // }
-
-
-
-
-
