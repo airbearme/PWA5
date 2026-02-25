@@ -1,5 +1,5 @@
 import { createClient as createSupabaseAdminClient } from "@supabase/supabase-js";
-import type { Express } from "express";
+import type { Express, NextFunction, Request, Response } from "express";
 import { createServer, type Server } from "http";
 import Stripe from "stripe";
 import { z } from "zod";
@@ -35,6 +35,31 @@ if (!supabaseAdmin) {
 }
 
 export async function registerRoutes(app: Express): Promise<Server> {
+	// Middleware to verify Supabase JWT
+	const withAuth = async (req: Request, res: Response, next: NextFunction) => {
+		try {
+			const authHeader = req.headers.authorization;
+			if (!authHeader?.startsWith("Bearer ")) {
+				return res.status(401).json({ message: "Unauthorized: Missing token" });
+			}
+			const token = authHeader.split(" ")[1];
+			if (!supabaseAdmin) {
+				return res.status(500).json({ message: "Supabase not configured" });
+			}
+			const {
+				data: { user },
+				error,
+			} = await supabaseAdmin.auth.getUser(token);
+			if (error || !user) {
+				return res.status(401).json({ message: "Unauthorized: Invalid token" });
+			}
+			(req as any).user = user;
+			next();
+		} catch (error: any) {
+			res.status(401).json({ message: "Authentication failed" });
+		}
+	};
+
 	// Health check
 	app.get("/api/health", (_req, res) => {
 		res.json({
@@ -204,19 +229,26 @@ export async function registerRoutes(app: Express): Promise<Server> {
 		}
 	});
 
-	app.post("/api/auth/sync-profile", async (req, res) => {
+	app.post("/api/auth/sync-profile", withAuth, async (req, res) => {
 		try {
 			if (!supabaseAdmin) {
-				return res
-					.status(500)
-					.json({
-						message:
-							"Supabase is not configured. Set SUPABASE_URL and SUPABASE_SERVICE_ROLE_KEY.",
-					});
+				return res.status(500).json({
+					message:
+						"Supabase is not configured. Set SUPABASE_URL and SUPABASE_SERVICE_ROLE_KEY.",
+				});
 			}
 
+			const user = (req as any).user;
 			const payload = profileSchema.parse(req.body);
-			const profile = await ensureUserProfile(payload);
+
+			// Security fix: Use verified ID from token and ignore role from body
+			const securePayload = {
+				...payload,
+				id: user.id,
+				role: undefined, // Role should not be updatable via sync-profile
+			};
+
+			const profile = await ensureUserProfile(securePayload);
 			res.json({ user: profile });
 		} catch (error: any) {
 			res.status(400).json({ message: error.message });
@@ -263,9 +295,16 @@ export async function registerRoutes(app: Express): Promise<Server> {
 		}
 	});
 
-	app.get("/api/rides/user/:userId", async (req, res) => {
+	app.get("/api/rides/user/:userId", withAuth, async (req, res) => {
 		try {
 			const { userId } = req.params;
+			const currentUser = (req as any).user;
+
+			// IDOR protection
+			if (userId !== currentUser.id && currentUser.user_metadata?.role !== "admin") {
+				return res.status(403).json({ message: "Forbidden" });
+			}
+
 			const rides = await storage.getRidesByUser(userId);
 			res.json(rides);
 		} catch (error: any) {
@@ -315,9 +354,16 @@ export async function registerRoutes(app: Express): Promise<Server> {
 		}
 	});
 
-	app.get("/api/orders/user/:userId", async (req, res) => {
+	app.get("/api/orders/user/:userId", withAuth, async (req, res) => {
 		try {
 			const { userId } = req.params;
+			const currentUser = (req as any).user;
+
+			// IDOR protection
+			if (userId !== currentUser.id && currentUser.user_metadata?.role !== "admin") {
+				return res.status(403).json({ message: "Forbidden" });
+			}
+
 			const orders = await storage.getOrdersByUser(userId);
 			res.json(orders);
 		} catch (error: any) {
@@ -583,7 +629,12 @@ export async function registerRoutes(app: Express): Promise<Server> {
 	});
 
 	// Analytics routes (for admin dashboard)
-	app.get("/api/analytics/overview", async (req, res) => {
+	app.get("/api/analytics/overview", withAuth, async (req, res) => {
+		const currentUser = (req as any).user;
+		if (currentUser.user_metadata?.role !== "admin") {
+			return res.status(403).json({ message: "Forbidden: Admin access required" });
+		}
+
 		try {
 			const spots = await storage.getAllSpots();
 			const airbears = await storage.getAllAirbears();
