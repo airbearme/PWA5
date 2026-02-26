@@ -6,8 +6,6 @@ import { useAuthContext } from "@/components/auth-provider";
 import { getSupabaseClient } from "@/lib/supabase/client";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
 import { useToast } from "@/hooks/use-toast";
 import { MapPin, Navigation, DollarSign, Clock, ArrowRight, Loader2 } from "lucide-react";
 import Link from "next/link";
@@ -100,19 +98,8 @@ export default function BookRidePage() {
     setBooking(true);
 
     try {
-      const supabase = getSupabaseClient();
       const distance = calculateDistance(pickupSpot, destinationSpot);
       const fare = estimateFare(distance);
-
-      // Find available AirBear
-      const { data: availableAirbears } = await supabase
-        .from("airbears")
-        .select("id")
-        .eq("is_available", true)
-        .eq("is_charging", false)
-        .limit(1);
-
-      const airbearId = availableAirbears?.[0]?.id || null;
 
       // Create ride booking via API
       const response = await fetch("/api/rides/create", {
