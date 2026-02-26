@@ -33,22 +33,20 @@ jobs:
 
       - name: Run unit tests
         env:
-          NEXT_PUBLIC_SUPABASE_PWA4_URL: ${{ secrets.NEXT_PUBLIC_SUPABASE_PWA4_URL || 'https://placeholder.supabase.co' }}
-          NEXT_PUBLIC_SUPABASE_PWA4_ANON_KEY: ${{ secrets.NEXT_PUBLIC_SUPABASE_PWA4_ANON_KEY || 'eyJplaceholder' }}
-          SUPABASE_PWA4_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_PWA4_SERVICE_ROLE_KEY || 'eyJplaceholder-service-role' }}
-          NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY: ${{ secrets.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY || 'pk_test_placeholder' }}
-          STRIPE_SECRET_KEY: ${{ secrets.STRIPE_SECRET_KEY || 'sk_test_placeholder' }}
+          NEXT_PUBLIC_SUPABASE_URL: ${{ secrets.NEXT_PUBLIC_SUPABASE_URL }}
+          NEXT_PUBLIC_SUPABASE_ANON_KEY: ${{ secrets.NEXT_PUBLIC_SUPABASE_ANON_KEY }}
+          NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY: ${{ secrets.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY }}
+          STRIPE_SECRET_KEY: ${{ secrets.STRIPE_SECRET_KEY }}
           NEXT_PUBLIC_SITE_URL: ${{ secrets.NEXT_PUBLIC_SITE_URL || 'https://airbear.me' }}
           NODE_ENV: test
         run: pnpm run test:unit || echo "Unit tests not configured"
 
       - name: Run integration tests
         env:
-          NEXT_PUBLIC_SUPABASE_PWA4_URL: ${{ secrets.NEXT_PUBLIC_SUPABASE_PWA4_URL || 'https://placeholder.supabase.co' }}
-          NEXT_PUBLIC_SUPABASE_PWA4_ANON_KEY: ${{ secrets.NEXT_PUBLIC_SUPABASE_PWA4_ANON_KEY || 'eyJplaceholder' }}
-          SUPABASE_PWA4_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_PWA4_SERVICE_ROLE_KEY || 'eyJplaceholder-service-role' }}
-          NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY: ${{ secrets.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY || 'pk_test_placeholder' }}
-          STRIPE_SECRET_KEY: ${{ secrets.STRIPE_SECRET_KEY || 'sk_test_placeholder' }}
+          NEXT_PUBLIC_SUPABASE_URL: ${{ secrets.NEXT_PUBLIC_SUPABASE_URL }}
+          NEXT_PUBLIC_SUPABASE_ANON_KEY: ${{ secrets.NEXT_PUBLIC_SUPABASE_ANON_KEY }}
+          NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY: ${{ secrets.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY }}
+          STRIPE_SECRET_KEY: ${{ secrets.STRIPE_SECRET_KEY }}
           NEXT_PUBLIC_SITE_URL: ${{ secrets.NEXT_PUBLIC_SITE_URL || 'https://airbear.me' }}
           NODE_ENV: test
         run: pnpm run test:integration || echo "Integration tests not configured"
@@ -79,9 +77,9 @@ jobs:
 
       - name: Build application
         env:
-          NEXT_PUBLIC_SUPABASE_PWA4_URL: ${{ secrets.NEXT_PUBLIC_SUPABASE_PWA4_URL || 'https://placeholder.supabase.co' }}
-          NEXT_PUBLIC_SUPABASE_PWA4_ANON_KEY: ${{ secrets.NEXT_PUBLIC_SUPABASE_PWA4_ANON_KEY || 'eyJplaceholder' }}
-          SUPABASE_PWA4_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_PWA4_SERVICE_ROLE_KEY || 'eyJplaceholder-service-role' }}
+          NEXT_PUBLIC_SUPABASE_PWA4_URL: ${{ secrets.NEXT_PUBLIC_SUPABASE_PWA4_URL || secrets.NEXT_PUBLIC_SUPABASE_URL || 'https://placeholder.supabase.co' }}
+          NEXT_PUBLIC_SUPABASE_PWA4_ANON_KEY: ${{ secrets.NEXT_PUBLIC_SUPABASE_PWA4_ANON_KEY || secrets.NEXT_PUBLIC_SUPABASE_ANON_KEY || 'eyJplaceholder' }}
+          SUPABASE_PWA4_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_PWA4_SERVICE_ROLE_KEY || secrets.SUPABASE_SERVICE_ROLE_KEY || 'eyJplaceholder-service-role' }}
           NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY: ${{ secrets.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY || 'pk_test_placeholder' }}
           STRIPE_SECRET_KEY: ${{ secrets.STRIPE_SECRET_KEY || 'sk_test_placeholder' }}
           NEXT_PUBLIC_SITE_URL: ${{ secrets.NEXT_PUBLIC_SITE_URL || 'https://airbear.me' }}
@@ -91,9 +89,9 @@ jobs:
       - name: Start server
         run: pnpm run start &
         env:
-          NEXT_PUBLIC_SUPABASE_PWA4_URL: ${{ secrets.NEXT_PUBLIC_SUPABASE_PWA4_URL || 'https://placeholder.supabase.co' }}
-          NEXT_PUBLIC_SUPABASE_PWA4_ANON_KEY: ${{ secrets.NEXT_PUBLIC_SUPABASE_PWA4_ANON_KEY || 'eyJplaceholder' }}
-          SUPABASE_PWA4_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_PWA4_SERVICE_ROLE_KEY || 'eyJplaceholder-service-role' }}
+          NEXT_PUBLIC_SUPABASE_PWA4_URL: ${{ secrets.NEXT_PUBLIC_SUPABASE_PWA4_URL || secrets.NEXT_PUBLIC_SUPABASE_URL || 'https://placeholder.supabase.co' }}
+          NEXT_PUBLIC_SUPABASE_PWA4_ANON_KEY: ${{ secrets.NEXT_PUBLIC_SUPABASE_PWA4_ANON_KEY || secrets.NEXT_PUBLIC_SUPABASE_ANON_KEY || 'eyJplaceholder' }}
+          SUPABASE_PWA4_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_PWA4_SERVICE_ROLE_KEY || secrets.SUPABASE_SERVICE_ROLE_KEY || 'eyJplaceholder-service-role' }}
           NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY: ${{ secrets.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY || 'pk_test_placeholder' }}
           STRIPE_SECRET_KEY: ${{ secrets.STRIPE_SECRET_KEY || 'sk_test_placeholder' }}
           NEXT_PUBLIC_SITE_URL: ${{ secrets.NEXT_PUBLIC_SITE_URL || 'https://airbear.me' }}
@@ -233,9 +231,9 @@ jobs:
 
       - name: Run ultimate validation
         env:
-          NEXT_PUBLIC_SUPABASE_PWA4_URL: ${{ secrets.NEXT_PUBLIC_SUPABASE_PWA4_URL || 'https://placeholder.supabase.co' }}
-          NEXT_PUBLIC_SUPABASE_PWA4_ANON_KEY: ${{ secrets.NEXT_PUBLIC_SUPABASE_PWA4_ANON_KEY || 'eyJplaceholder' }}
-          SUPABASE_PWA4_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_PWA4_SERVICE_ROLE_KEY || 'eyJplaceholder-service-role' }}
+          NEXT_PUBLIC_SUPABASE_PWA4_URL: ${{ secrets.NEXT_PUBLIC_SUPABASE_PWA4_URL || secrets.NEXT_PUBLIC_SUPABASE_URL || 'https://placeholder.supabase.co' }}
+          NEXT_PUBLIC_SUPABASE_PWA4_ANON_KEY: ${{ secrets.NEXT_PUBLIC_SUPABASE_PWA4_ANON_KEY || secrets.NEXT_PUBLIC_SUPABASE_ANON_KEY || 'eyJplaceholder' }}
+          SUPABASE_PWA4_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_PWA4_SERVICE_ROLE_KEY || secrets.SUPABASE_SERVICE_ROLE_KEY || 'eyJplaceholder-service-role' }}
           NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY: ${{ secrets.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY || 'pk_test_placeholder' }}
           STRIPE_SECRET_KEY: ${{ secrets.STRIPE_SECRET_KEY || 'sk_test_placeholder' }}
           NEXT_PUBLIC_SITE_URL: ${{ secrets.NEXT_PUBLIC_SITE_URL || 'https://airbear.me' }}

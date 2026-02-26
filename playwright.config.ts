@@ -1,8 +1,8 @@
 import { defineConfig, devices } from "@playwright/test";
 import { TransformStream } from 'node:stream/web';
 
-if (!global.TransformStream) {
-	global.TransformStream = TransformStream;
+if (!(globalThis as any).TransformStream) {
+	(globalThis as any).TransformStream = TransformStream as any;
 }
 
 export default defineConfig({

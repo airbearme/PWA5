@@ -33,7 +33,7 @@ jobs:
         run: pnpm install --frozen-lockfile
 
       - name: Run ESLint
-        run: pnpm run lint || true
+        run: pnpm run lint
 
       - name: Run TypeScript check
         env:
@@ -44,7 +44,7 @@ jobs:
           STRIPE_SECRET_KEY: ${{ secrets.STRIPE_SECRET_KEY || 'sk_test_placeholder' }}
           NEXT_PUBLIC_SITE_URL: ${{ secrets.NEXT_PUBLIC_SITE_URL || 'https://airbear.me' }}
           NODE_ENV: test
-        run: pnpm run type-check || true
+        run: pnpm run type-check
 
   # Build
   build:

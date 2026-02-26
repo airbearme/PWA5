@@ -155,7 +155,7 @@ async function main() {
 
 	// 8. Security Tests
 	log("\n🔒 Phase 8: Security Tests", "bright");
-	runTest("npm Audit", "pnpm audit --audit-level=moderate || true", false);
+	runTest("npm Audit", "pnpm audit --audit-level=moderate", false);
 	runTest("Security Headers", "node scripts/test-security-headers.js", false);
 
 	// 9. Accessibility Tests
