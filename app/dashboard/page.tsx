@@ -41,25 +41,25 @@ export default function DashboardPage() {
       try {
         const supabase = getSupabaseClient();
 
-        // Load user rides
-        const { data: ridesData, error: ridesError } = await supabase
-          .from("rides")
-          .select("*")
-          .eq("user_id", user.id)
-          .order("requested_at", { ascending: false })
-          .limit(10);
+        // ⚡ Bolt: Parallelized fetching to eliminate network waterfall and improve TTI
+        const [ridesRes, spotsRes] = await Promise.all([
+          supabase
+            .from("rides")
+            .select("*")
+            .eq("user_id", user.id)
+            .order("requested_at", { ascending: false })
+            .limit(10),
+          supabase
+            .from("spots")
+            .select("id, name")
+        ]);
 
-        if (ridesError) throw ridesError;
-        setRides(ridesData || []);
+        if (ridesRes.error) throw ridesRes.error;
+        setRides(ridesRes.data || []);
 
-        // Load spots for display
-        const { data: spotsData } = await supabase
-          .from("spots")
-          .select("id, name");
-
-        if (spotsData) {
+        if (spotsRes.data) {
           const spotsMap: Record<string, { name: string }> = {};
-          spotsData.forEach((spot) => {
+          spotsRes.data.forEach((spot) => {
             spotsMap[spot.id] = { name: spot.name };
           });
           setSpots(spotsMap);

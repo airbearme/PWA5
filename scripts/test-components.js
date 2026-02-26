@@ -5,8 +5,8 @@
  * Validates React components can be imported and rendered
  */
 
-const fs = require("fs");
-const path = require("path");
+import fs from "fs";
+import path from "path";
 
 console.log("🎨 Testing component structure...\n");
 
@@ -67,5 +67,3 @@ if (fs.existsSync(uiDir)) {
 
 console.log("\n✅ Component structure validation complete!");
 process.exit(0);
-
-

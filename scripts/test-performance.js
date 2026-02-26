@@ -5,9 +5,10 @@
  * Tests application performance using Lighthouse
  */
 
-const { execSync } = require("child_process");
-const https = require("https");
-const http = require("http");
+import { execSync } from "child_process";
+import https from "https";
+import http from "http";
+import fs from "fs";
 
 const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || "http://localhost:3000";
 
@@ -19,7 +20,7 @@ try {
 } catch {
 	console.log("⚠️  Lighthouse CLI not found. Installing...");
 	try {
-		execSync("npm install -g lighthouse", { stdio: "inherit" });
+		execSync("pnpm add -g lighthouse", { stdio: "inherit" });
 	} catch {
 		console.log("❌ Failed to install Lighthouse. Skipping performance tests.");
 		process.exit(0);
@@ -49,7 +50,7 @@ async function runPerformanceTests() {
 		console.log(
 			`⚠️  Site ${SITE_URL} is not accessible. Skipping Lighthouse tests.`,
 		);
-		console.log("💡 Start the dev server with: npm run dev");
+		console.log("💡 Start the dev server with: pnpm run dev");
 		process.exit(0);
 	}
 
@@ -57,12 +58,11 @@ async function runPerformanceTests() {
 
 	try {
 		execSync(
-			`lighthouse ${SITE_URL} --only-categories=performance,accessibility,best-practices,seo --output=json --output-path=./lighthouse-report.json --quiet`,
+			`lighthouse ${SITE_URL} --only-categories=performance,accessibility,best-practices,seo --output=json --output-path=./lighthouse-report.json --quiet --chrome-flags="--headless --no-sandbox"`,
 			{ stdio: "inherit" },
 		);
 
 		// Read and parse results
-		const fs = require("fs");
 		if (fs.existsSync("./lighthouse-report.json")) {
 			const report = JSON.parse(
 				fs.readFileSync("./lighthouse-report.json", "utf8"),
@@ -101,5 +101,3 @@ async function runPerformanceTests() {
 }
 
 runPerformanceTests();
-
-

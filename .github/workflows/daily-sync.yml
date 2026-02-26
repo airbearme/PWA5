@@ -57,7 +57,7 @@ jobs:
         run: |
           echo "Verifying environment variables in Vercel..."
           vercel env ls production --token="${{ secrets.VERCEL_TOKEN }}" || echo "⚠️  Could not verify (may need manual check)"
-        continue-on-error: true
+
 
       - name: Summary
         run: |
