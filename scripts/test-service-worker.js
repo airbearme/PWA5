@@ -5,8 +5,8 @@
  * Validates service worker registration and functionality
  */
 
-const fs = require("fs");
-const path = require("path");
+import fs from "fs";
+import path from "path";
 
 console.log("🔧 Testing service worker...\n");
 
@@ -74,5 +74,3 @@ try {
 	console.error(`❌ Failed to read service worker: ${error.message}`);
 	process.exit(1);
 }
-
-
