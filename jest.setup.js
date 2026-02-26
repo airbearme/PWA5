@@ -1,6 +1,20 @@
 // Learn more: https://github.com/testing-library/jest-dom
 import '@testing-library/jest-dom'
 
+// Polyfill for fetch
+import { TransformStream } from 'node:stream/web'
+import { TextEncoder, TextDecoder } from 'node:util'
+import 'cross-fetch/polyfill'
+
+if (!global.TransformStream) {
+  global.TransformStream = TransformStream
+}
+
+if (!global.TextEncoder) {
+  global.TextEncoder = TextEncoder
+  global.TextDecoder = TextDecoder
+}
+
 // Mock Next.js router
 jest.mock('next/navigation', () => ({
   useRouter() {
