@@ -46,38 +46,36 @@ export default function DriverDashboardPage() {
       try {
         const supabase = getSupabaseClient();
 
-        // Load spots
-        const { data: spotsData } = await supabase
-          .from("spots")
-          .select("id, name");
+        // ⚡ Bolt: Parallelize requests and use maybeSingle for robustness
+        const [spotsResponse, pendingResponse, activeResponse] = await Promise.all([
+          // Only fetch spots if we don't have them yet to avoid redundant network calls
+          Object.keys(spots).length === 0
+            ? supabase.from("spots").select("id, name")
+            : Promise.resolve({ data: null, error: null }),
+          supabase
+            .from("rides")
+            .select("*")
+            .eq("status", "pending")
+            .order("requested_at", { ascending: true }),
+          supabase
+            .from("rides")
+            .select("*")
+            .eq("driver_id", user.id)
+            .in("status", ["accepted", "in_progress"])
+            .maybeSingle(),
+        ]);
 
-        if (spotsData) {
+        if (spotsResponse.data) {
           const spotsMap: Record<string, { name: string }> = {};
-          spotsData.forEach((spot) => {
+          spotsResponse.data.forEach((spot) => {
             spotsMap[spot.id] = { name: spot.name };
           });
           setSpots(spotsMap);
         }
 
-        // Load pending rides
-        const { data: ridesData, error } = await supabase
-          .from("rides")
-          .select("*")
-          .eq("status", "pending")
-          .order("requested_at", { ascending: true });
-
-        if (error) throw error;
-        setPendingRides(ridesData || []);
-
-        // Load active ride for this driver
-        const { data: activeRideData } = await supabase
-          .from("rides")
-          .select("*")
-          .eq("driver_id", user.id)
-          .in("status", ["accepted", "in_progress"])
-          .single();
-
-        setActiveRide(activeRideData || null);
+        if (pendingResponse.error) throw pendingResponse.error;
+        setPendingRides(pendingResponse.data || []);
+        setActiveRide(activeResponse.data || null);
       } catch (error) {
         console.error("Error loading driver data:", error);
       } finally {

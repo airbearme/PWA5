@@ -29,30 +29,28 @@ export default function MapPage() {
       try {
         const supabase = getSupabaseClient();
 
-        // Load spots
-        const { data: spotsData, error: spotsError } = await supabase
-          .from("spots")
-          .select("*")
-          .eq("is_active", true)
-          .order("name");
+        // ⚡ Bolt: Eliminate network waterfall by parallelizing requests
+        const [spotsResponse, airbearsResponse] = await Promise.all([
+          supabase
+            .from("spots")
+            .select("*")
+            .eq("is_active", true)
+            .order("name"),
+          supabase.from("airbears").select("*"),
+        ]);
 
-        if (spotsError) {
-          console.error("Error loading spots:", spotsError);
-          throw spotsError;
+        if (spotsResponse.error) {
+          console.error("Error loading spots:", spotsResponse.error);
+          throw spotsResponse.error;
         }
 
-        setSpots(spotsData || []);
-
-        // Load airbears
-        const { data: airbearsData, error: airbearsError } = await supabase
-          .from("airbears")
-          .select("*");
-
-        if (airbearsError) {
-          throw airbearsError;
+        if (airbearsResponse.error) {
+          console.error("Error loading airbears:", airbearsResponse.error);
+          throw airbearsResponse.error;
         }
 
-        setAirbears(airbearsData || []);
+        setSpots(spotsResponse.data || []);
+        setAirbears(airbearsResponse.data || []);
       } catch (err) {
         console.error("Error loading map data:", err);
         toast({
