@@ -6,23 +6,8 @@ import { describe, expect, it } from "@jest/globals";
 describe("AirBear API Health Checks", () => {
 	const baseUrl = process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000";
 
-	// Check if server is reachable
-	beforeAll(async () => {
-		try {
-			await fetch(baseUrl);
-		} catch (e) {
-			console.warn(`Test server at ${baseUrl} not reachable, some tests will be skipped`);
-		}
-	});
-
 	it("should have health endpoint responding", async () => {
-		let response;
-		try {
-			response = await fetch(`${baseUrl}/api/health`);
-		} catch (e) {
-			console.warn("Server not reachable, skipping test");
-			return;
-		}
+		const response = await fetch(`${baseUrl}/api/health`);
 		expect(response.status).toBe(200);
 		const data = await response.json();
 		expect(data.status).toBe("healthy");
@@ -30,28 +15,16 @@ describe("AirBear API Health Checks", () => {
 	});
 
 	it("should have Stripe webhook endpoint", async () => {
-		let response;
-		try {
-			response = await fetch(`${baseUrl}/api/stripe/webhook`, {
-				method: "POST",
+		const response = await fetch(`${baseUrl}/api/stripe/webhook`, {
+			method: "POST",
 			headers: { "Content-Type": "application/json" },
-			});
-		} catch (e) {
-			console.warn("Server not reachable, skipping test");
-			return;
-		}
+		});
 		// Should return 400 without proper Stripe signature
 		expect([400, 401]).toContain(response.status);
 	});
 
 	it("should have auth callback endpoint", async () => {
-		let response;
-		try {
-			response = await fetch(`${baseUrl}/api/auth/callback`);
-		} catch (e) {
-			console.warn("Server not reachable, skipping test");
-			return;
-		}
+		const response = await fetch(`${baseUrl}/api/auth/callback`);
 		// Should redirect or return 400
 		expect([302, 400]).toContain(response.status);
 	});

@@ -34,9 +34,6 @@ jobs:
       - name: Run unit tests
         run: pnpm run test:unit || echo "Unit tests not configured"
 
-      - name: Run integration tests
-        run: pnpm run test:integration || echo "Integration tests not configured"
-
   # E2E Tests
   e2e-tests:
     name: E2E Tests
@@ -62,6 +59,13 @@ jobs:
         run: npx playwright install --with-deps
 
       - name: Build application
+        env:
+          NEXT_PUBLIC_SUPABASE_PWA4_URL: https://placeholder.supabase.co
+          NEXT_PUBLIC_SUPABASE_PWA4_ANON_KEY: eyJplaceholder
+          SUPABASE_PWA4_SERVICE_ROLE_KEY: eyJplaceholder
+          NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY: pk_test_placeholder
+          STRIPE_SECRET_KEY: sk_test_placeholder
+          NEXT_PUBLIC_SITE_URL: https://airbear.me
         run: pnpm run build
 
       - name: Start server
@@ -69,6 +73,12 @@ jobs:
         env:
           NEXT_PUBLIC_SUPABASE_URL: ${{ secrets.NEXT_PUBLIC_SUPABASE_URL }}
           NEXT_PUBLIC_SUPABASE_ANON_KEY: ${{ secrets.NEXT_PUBLIC_SUPABASE_ANON_KEY }}
+
+      - name: Run integration tests
+        run: pnpm run test:integration || echo "Integration tests not configured"
+
+      - name: Run API tests
+        run: pnpm run test:api || echo "API tests not configured"
 
       - name: Run E2E tests
         run: pnpm run test:e2e || echo "E2E tests not configured"
@@ -95,6 +105,13 @@ jobs:
         run: pnpm install --frozen-lockfile
 
       - name: Build application
+        env:
+          NEXT_PUBLIC_SUPABASE_PWA4_URL: https://placeholder.supabase.co
+          NEXT_PUBLIC_SUPABASE_PWA4_ANON_KEY: eyJplaceholder
+          SUPABASE_PWA4_SERVICE_ROLE_KEY: eyJplaceholder
+          NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY: pk_test_placeholder
+          STRIPE_SECRET_KEY: sk_test_placeholder
+          NEXT_PUBLIC_SITE_URL: https://airbear.me
         run: pnpm run build
 
       - name: Start server
