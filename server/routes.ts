@@ -1,5 +1,5 @@
 import { createClient as createSupabaseAdminClient } from "@supabase/supabase-js";
-import type { Express } from "express";
+import type { Express, NextFunction, Request, Response } from "express";
 import { createServer, type Server } from "http";
 import Stripe from "stripe";
 import { z } from "zod";
@@ -97,6 +97,37 @@ export async function registerRoutes(app: Express): Promise<Server> {
 		});
 	};
 
+	// Auth middleware to verify Supabase JWT
+	const withAuth = async (req: Request, res: Response, next: NextFunction) => {
+		try {
+			const authHeader = req.headers.authorization;
+			if (!authHeader?.startsWith("Bearer ")) {
+				return res
+					.status(401)
+					.json({ message: "Missing or invalid authorization header" });
+			}
+
+			const token = authHeader.split(" ")[1];
+			if (!supabaseAdmin) {
+				return res.status(500).json({ message: "Supabase not configured" });
+			}
+
+			const {
+				data: { user },
+				error,
+			} = await supabaseAdmin.auth.getUser(token);
+
+			if (error || !user) {
+				return res.status(401).json({ message: "Invalid or expired token" });
+			}
+
+			(req as any).user = user;
+			next();
+		} catch (error: any) {
+			res.status(401).json({ message: "Authentication failed" });
+		}
+	};
+
 	app.post("/api/auth/register", async (req, res) => {
 		try {
 			if (!supabaseAdmin) {
@@ -111,26 +142,29 @@ export async function registerRoutes(app: Express): Promise<Server> {
 			const userData = profileSchema
 				.extend({ password: z.string().min(6) })
 				.parse(req.body);
+
+			// Security: Default to 'user' role unless created by an admin
+			// For simplicity in this demo/MVP, we'll just force 'user' role for self-registration
+			const assignedRole = "user";
+
 			const { data, error } = await supabaseAdmin.auth.admin.createUser({
 				email: userData.email || undefined,
 				password: userData.password,
 				email_confirm: true,
 				user_metadata: {
 					username: userData.username,
-					role: userData.role || "user",
+					role: assignedRole,
 					fullName: userData.fullName,
 				},
 			});
 
 			if (error) throw error;
 			const profile = await ensureUserProfile({
+				id: data.user?.id,
 				email: userData.email,
 				username: userData.username,
 				fullName: userData.fullName,
-				role:
-					(data.user?.user_metadata?.role as "user" | "driver" | "admin") ||
-					userData.role ||
-					"user",
+				role: assignedRole,
 				avatarUrl: null,
 			});
 
@@ -204,19 +238,19 @@ export async function registerRoutes(app: Express): Promise<Server> {
 		}
 	});
 
-	app.post("/api/auth/sync-profile", async (req, res) => {
+	app.post("/api/auth/sync-profile", withAuth, async (req, res) => {
 		try {
-			if (!supabaseAdmin) {
-				return res
-					.status(500)
-					.json({
-						message:
-							"Supabase is not configured. Set SUPABASE_URL and SUPABASE_SERVICE_ROLE_KEY.",
-					});
-			}
-
+			const requester = (req as any).user;
 			const payload = profileSchema.parse(req.body);
-			const profile = await ensureUserProfile(payload);
+
+			// Security: Always use verified ID and email from JWT
+			// Use role from verified metadata
+			const profile = await ensureUserProfile({
+				...payload,
+				id: requester.id,
+				email: requester.email,
+				role: requester.user_metadata?.role || "user",
+			});
 			res.json({ user: profile });
 		} catch (error: any) {
 			res.status(400).json({ message: error.message });
@@ -253,9 +287,13 @@ export async function registerRoutes(app: Express): Promise<Server> {
 	});
 
 	// Rides routes
-	app.post("/api/rides", async (req, res) => {
+	app.post("/api/rides", withAuth, async (req, res) => {
 		try {
-			const rideData = insertRideSchema.parse(req.body);
+			const requester = (req as any).user;
+			const rideData = insertRideSchema.parse({
+				...req.body,
+				userId: requester.id, // Security: Ensure ride is created for the authenticated user
+			});
 			const ride = await storage.createRide(rideData);
 			res.json(ride);
 		} catch (error: any) {
@@ -263,9 +301,15 @@ export async function registerRoutes(app: Express): Promise<Server> {
 		}
 	});
 
-	app.get("/api/rides/user/:userId", async (req, res) => {
+	app.get("/api/rides/user/:userId", withAuth, async (req, res) => {
 		try {
 			const { userId } = req.params;
+			// Security: Check if user is accessing their own rides or is an admin/driver
+			const requester = (req as any).user;
+			if (requester.id !== userId && requester.user_metadata?.role !== "admin" && requester.user_metadata?.role !== "driver") {
+				return res.status(403).json({ message: "Unauthorized access to user rides" });
+			}
+
 			const rides = await storage.getRidesByUser(userId);
 			res.json(rides);
 		} catch (error: any) {
@@ -273,10 +317,28 @@ export async function registerRoutes(app: Express): Promise<Server> {
 		}
 	});
 
-	app.patch("/api/rides/:id", async (req, res) => {
+	app.patch("/api/rides/:id", withAuth, async (req, res) => {
 		try {
 			const { id } = req.params;
 			const updates = req.body;
+
+			const existingRide = await storage.getRideById(id);
+			if (!existingRide) {
+				return res.status(404).json({ message: "Ride not found" });
+			}
+
+			// Security: Only owner, assigned driver, or admin can update
+			const requester = (req as any).user;
+			const isOwner = requester.id === existingRide.userId;
+			const isDriver = requester.id === existingRide.driverId;
+			const isAdmin = requester.user_metadata?.role === "admin";
+
+			if (!isOwner && !isDriver && !isAdmin) {
+				return res
+					.status(403)
+					.json({ message: "Unauthorized to update this ride" });
+			}
+
 			const ride = await storage.updateRide(id, updates);
 			res.json(ride);
 		} catch (error: any) {
@@ -298,10 +360,12 @@ export async function registerRoutes(app: Express): Promise<Server> {
 	});
 
 	// Orders routes
-	app.post("/api/orders", async (req, res) => {
+	app.post("/api/orders", withAuth, async (req, res) => {
 		try {
+			const requester = (req as any).user;
 			const orderData = insertOrderSchema.parse({
 				...req.body,
+				userId: requester.id, // Security: Ensure order is created for the authenticated user
 				// Accept numeric amounts from clients and normalize to string for Drizzle schema
 				totalAmount:
 					typeof req.body?.totalAmount === "number"
@@ -315,9 +379,15 @@ export async function registerRoutes(app: Express): Promise<Server> {
 		}
 	});
 
-	app.get("/api/orders/user/:userId", async (req, res) => {
+	app.get("/api/orders/user/:userId", withAuth, async (req, res) => {
 		try {
 			const { userId } = req.params;
+			// Security: Check if user is accessing their own orders or is an admin
+			const requester = (req as any).user;
+			if (requester.id !== userId && requester.user_metadata?.role !== "admin") {
+				return res.status(403).json({ message: "Unauthorized access to user orders" });
+			}
+
 			const orders = await storage.getOrdersByUser(userId);
 			res.json(orders);
 		} catch (error: any) {
@@ -326,15 +396,19 @@ export async function registerRoutes(app: Express): Promise<Server> {
 	});
 
 	// Stripe payment routes
-	app.post("/api/create-payment-intent", async (req, res) => {
+	app.post("/api/create-payment-intent", withAuth, async (req, res) => {
 		try {
+			const requester = (req as any).user;
 			const {
 				amount,
 				orderId,
 				rideId,
-				userId,
+				userId: providedUserId,
 				paymentMethod = "stripe",
 			} = req.body;
+
+			// Security: Always use verified userId from JWT
+			const userId = requester.id;
 
 			if (!amount || amount <= 0) {
 				return res.status(400).json({ message: "Invalid amount" });
@@ -385,9 +459,13 @@ export async function registerRoutes(app: Express): Promise<Server> {
 	});
 
 	// Payment confirmation
-	app.post("/api/payments/confirm", async (req, res) => {
+	app.post("/api/payments/confirm", withAuth, async (req, res) => {
 		try {
-			const paymentData = insertPaymentSchema.parse(req.body);
+			const requester = (req as any).user;
+			const paymentData = insertPaymentSchema.parse({
+				...req.body,
+				userId: requester.id, // Security: Ensure payment is recorded for the authenticated user
+			});
 			const payment = await storage.createPayment(paymentData);
 			res.json(payment);
 		} catch (error: any) {
@@ -395,7 +473,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
 		}
 	});
 
-	app.post("/api/payments/confirm-cash", async (req, res) => {
+	app.post("/api/payments/confirm-cash", withAuth, async (req, res) => {
 		try {
 			const { qrCode, driverId } = req.body;
 			if (!qrCode)
@@ -433,9 +511,11 @@ export async function registerRoutes(app: Express): Promise<Server> {
 	});
 
 	// CEO T-shirt purchase route
-	app.post("/api/ceo-tshirt/purchase", async (req, res) => {
+	app.post("/api/ceo-tshirt/purchase", withAuth, async (req, res) => {
 		try {
-			const { userId, size, amount } = req.body;
+			const requester = (req as any).user;
+			const { size, amount } = req.body;
+			const userId = requester.id; // Security: Use verified userId
 
 			// Create Stripe PaymentIntent for CEO T-shirt
 			const paymentIntent = await stripe.paymentIntents.create({
@@ -467,9 +547,18 @@ export async function registerRoutes(app: Express): Promise<Server> {
 	});
 
 	// Free ride validation for CEO T-shirt holders
-	app.get("/api/users/:userId/free-ride-status", async (req, res) => {
+	app.get("/api/users/:userId/free-ride-status", withAuth, async (req, res) => {
 		try {
 			const { userId } = req.params;
+
+			// Security: Check if user is accessing their own status or is an admin
+			const requester = (req as any).user;
+			if (requester.id !== userId && requester.user_metadata?.role !== "admin") {
+				return res
+					.status(403)
+					.json({ message: "Unauthorized access to free ride status" });
+			}
+
 			const user = await storage.getUser(userId);
 
 			if (!user) {
@@ -583,8 +672,14 @@ export async function registerRoutes(app: Express): Promise<Server> {
 	});
 
 	// Analytics routes (for admin dashboard)
-	app.get("/api/analytics/overview", async (req, res) => {
+	app.get("/api/analytics/overview", withAuth, async (req, res) => {
 		try {
+			// Security: Check if user is an admin
+			const requester = (req as any).user;
+			if (requester.user_metadata?.role !== "admin") {
+				return res.status(403).json({ message: "Forbidden: Admin access required" });
+			}
+
 			const spots = await storage.getAllSpots();
 			const airbears = await storage.getAllAirbears();
 			const activeAirbears = airbears.filter(
@@ -617,7 +712,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
 	});
 
 	// Push Notification Subscription Management
-	app.post("/api/push-subscriptions", async (req, res) => {
+	app.post("/api/push-subscriptions", withAuth, async (req, res) => {
 		try {
 			const { subscription, preferences } = req.body;
 
@@ -644,7 +739,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
 	});
 
 	// Update push notification preferences
-	app.patch("/api/push-subscriptions", async (req, res) => {
+	app.patch("/api/push-subscriptions", withAuth, async (req, res) => {
 		try {
 			const { endpoint, preferences } = req.body;
 
@@ -669,7 +764,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
 	});
 
 	// Remove push subscription
-	app.delete("/api/push-subscriptions", async (req, res) => {
+	app.delete("/api/push-subscriptions", withAuth, async (req, res) => {
 		try {
 			const { endpoint } = req.body;
 
@@ -689,7 +784,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
 	});
 
 	// Send test notification (for testing purposes)
-	app.post("/api/notifications/test", async (req, res) => {
+	app.post("/api/notifications/test", withAuth, async (req, res) => {
 		try {
 			// In a real app, this would send a push notification to the user's subscription
 			// For now, we'll just simulate it
@@ -704,7 +799,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
 	});
 
 	// Driver availability notification endpoint (called when drivers become available)
-	app.post("/api/notifications/driver-available", async (req, res) => {
+	app.post("/api/notifications/driver-available", withAuth, async (req, res) => {
 		try {
 			const { userId, location, availableDrivers } = req.body;
 
