@@ -35,7 +35,7 @@ jobs:
         run: pnpm run test:unit || echo "Unit tests not configured"
         env:
           NEXT_PUBLIC_SUPABASE_PWA4_URL: https://placeholder.supabase.co
-          NEXT_PUBLIC_SUPABASE_PWA4_ANON_KEY: placeholder
+          NEXT_PUBLIC_SUPABASE_PWA4_ANON_KEY: eyJplaceholder
           SUPABASE_PWA4_SERVICE_ROLE_KEY: placeholder
           NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY: pk_test_placeholder
           STRIPE_SECRET_KEY: sk_test_placeholder
@@ -45,7 +45,7 @@ jobs:
         run: pnpm run test:integration || echo "Integration tests not configured"
         env:
           NEXT_PUBLIC_SUPABASE_PWA4_URL: https://placeholder.supabase.co
-          NEXT_PUBLIC_SUPABASE_PWA4_ANON_KEY: placeholder
+          NEXT_PUBLIC_SUPABASE_PWA4_ANON_KEY: eyJplaceholder
           SUPABASE_PWA4_SERVICE_ROLE_KEY: placeholder
           NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY: pk_test_placeholder
           STRIPE_SECRET_KEY: sk_test_placeholder
