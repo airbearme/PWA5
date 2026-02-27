@@ -7,9 +7,9 @@ import { describe, it, expect, jest } from '@jest/globals';
 // Mock Next.js
 jest.mock('next/server', () => ({
   NextResponse: {
-    json: jest.fn((data: any, options?: any) => ({
+    json: jest.fn((data: any, options: any = {}) => ({
       json: () => Promise.resolve(data),
-      status: options?.status || 200,
+      status: options.status || 200,
     })),
   },
 }));
