@@ -40,13 +40,10 @@ export default function DriverDashboardPage() {
   }, [user, authLoading, router]);
 
   useEffect(() => {
-    const loadData = async () => {
+    const loadSpots = async () => {
       if (!user) return;
-
       try {
         const supabase = getSupabaseClient();
-
-        // Load spots
         const { data: spotsData } = await supabase
           .from("spots")
           .select("id, name");
@@ -58,37 +55,51 @@ export default function DriverDashboardPage() {
           });
           setSpots(spotsMap);
         }
-
-        // Load pending rides
-        const { data: ridesData, error } = await supabase
-          .from("rides")
-          .select("*")
-          .eq("status", "pending")
-          .order("requested_at", { ascending: true });
-
-        if (error) throw error;
-        setPendingRides(ridesData || []);
-
-        // Load active ride for this driver
-        const { data: activeRideData } = await supabase
-          .from("rides")
-          .select("*")
-          .eq("driver_id", user.id)
-          .in("status", ["accepted", "in_progress"])
-          .single();
-
-        setActiveRide(activeRideData || null);
       } catch (error) {
-        console.error("Error loading driver data:", error);
+        console.error("Error loading spots:", error);
+      }
+    };
+
+    loadSpots();
+  }, [user]);
+
+  useEffect(() => {
+    const loadRides = async () => {
+      if (!user) return;
+
+      try {
+        const supabase = getSupabaseClient();
+
+        // ⚡ Bolt: Parallelize data fetching to eliminate query waterfalls and improve Time to Interactive (TTI).
+        // Also removed static 'spots' fetching from the polling interval to reduce redundant network load.
+        const [pendingResponse, activeResponse] = await Promise.all([
+          supabase
+            .from("rides")
+            .select("*")
+            .eq("status", "pending")
+            .order("requested_at", { ascending: true }),
+          supabase
+            .from("rides")
+            .select("*")
+            .eq("driver_id", user.id)
+            .in("status", ["accepted", "in_progress"])
+            .maybeSingle()
+        ]);
+
+        if (pendingResponse.error) throw pendingResponse.error;
+        setPendingRides(pendingResponse.data || []);
+        setActiveRide(activeResponse.data || null);
+      } catch (error) {
+        console.error("Error loading rides data:", error);
       } finally {
         setLoading(false);
       }
     };
 
-    loadData();
+    loadRides();
 
-    // Refresh every 5 seconds
-    const interval = setInterval(loadData, 5000);
+    // Refresh rides every 5 seconds
+    const interval = setInterval(loadRides, 5000);
     return () => clearInterval(interval);
   }, [user]);
 
