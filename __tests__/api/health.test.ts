@@ -2,15 +2,15 @@
  * API Health Endpoint Tests
  */
 
-import { describe, it, expect, jest, beforeEach } from '@jest/globals';
+import { describe, it, jest, beforeEach } from '@jest/globals';
 
 // Mock Next.js
 jest.mock('next/server', () => ({
   NextResponse: {
-    json: jest.fn((data, options) => ({
+    json: jest.fn((data: any, options?: { status?: number }) => ({
       json: () => Promise.resolve(data),
       status: options?.status || 200,
-    })),
+    })) as any,
   },
 }));
 
