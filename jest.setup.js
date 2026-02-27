@@ -1,5 +1,12 @@
 // Learn more: https://github.com/testing-library/jest-dom
 import '@testing-library/jest-dom'
+import 'cross-fetch/polyfill'
+import { TransformStream } from "node:stream/web";
+
+// Polyfill Web APIs for Node.js environment
+if (typeof global.TransformStream === "undefined") {
+  global.TransformStream = TransformStream;
+}
 
 // Mock Next.js router
 jest.mock('next/navigation', () => ({
@@ -56,12 +63,10 @@ global.ResizeObserver = class ResizeObserver {
   unobserve() {}
 }
 
-// Suppress console errors in tests (optional)
-// global.console = {
-//   ...console,
-//   error: jest.fn(),
-//   warn: jest.fn(),
-// }
+// Suppress expected console errors in tests
+jest.spyOn(console, 'error').mockImplementation((msg) => {
+  if (typeof msg === 'string' && msg.includes('ErrorBoundary caught an error')) return;
+});
 
 
 
