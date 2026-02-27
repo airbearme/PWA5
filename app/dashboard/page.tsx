@@ -41,25 +41,25 @@ export default function DashboardPage() {
       try {
         const supabase = getSupabaseClient();
 
-        // ⚡ Bolt: Parallelize data fetching to eliminate query waterfalls and improve Time to Interactive (TTI).
-        const [ridesResponse, spotsResponse] = await Promise.all([
-          supabase
-            .from("rides")
-            .select("*")
-            .eq("user_id", user.id)
-            .order("requested_at", { ascending: false })
-            .limit(10),
-          supabase
-            .from("spots")
-            .select("id, name")
-        ]);
+        // Load user rides
+        const { data: ridesData, error: ridesError } = await supabase
+          .from("rides")
+          .select("*")
+          .eq("user_id", user.id)
+          .order("requested_at", { ascending: false })
+          .limit(10);
 
-        if (ridesResponse.error) throw ridesResponse.error;
-        setRides(ridesResponse.data || []);
+        if (ridesError) throw ridesError;
+        setRides(ridesData || []);
 
-        if (spotsResponse.data) {
+        // Load spots for display
+        const { data: spotsData } = await supabase
+          .from("spots")
+          .select("id, name");
+
+        if (spotsData) {
           const spotsMap: Record<string, { name: string }> = {};
-          (spotsResponse.data as { id: string; name: string }[]).forEach((spot) => {
+          spotsData.forEach((spot) => {
             spotsMap[spot.id] = { name: spot.name };
           });
           setSpots(spotsMap);

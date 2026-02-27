@@ -65,8 +65,7 @@ global.ResizeObserver = class ResizeObserver {
 
 // Suppress expected console errors in tests
 jest.spyOn(console, 'error').mockImplementation((msg) => {
-  if (msg?.includes?.('ErrorBoundary caught an error')) return;
-  // console.log(msg); // Uncomment to debug other errors
+  if (typeof msg === 'string' && msg.includes('ErrorBoundary caught an error')) return;
 });
 
 
