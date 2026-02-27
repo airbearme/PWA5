@@ -2,7 +2,7 @@
 
 import { useEffect, useState, useRef } from "react";
 import { Button } from "@/components/ui/button";
-import { X, Download, Smartphone } from "lucide-react";
+import { X, Download, Smartphone, Share, SquarePlus, ChevronLeft, MoreVertical } from "lucide-react";
 import AirbearWheel from "@/components/airbear-wheel";
 
 interface BeforeInstallPromptEvent extends Event {
@@ -14,6 +14,7 @@ export default function PWAInstallPrompt() {
   const [deferredPrompt, setDeferredPrompt] =
     useState<BeforeInstallPromptEvent | null>(null);
   const [showPrompt, setShowPrompt] = useState(false);
+  const [showInstructions, setShowInstructions] = useState(false);
   const [isInstalled, setIsInstalled] = useState(false);
 
   // Use refs to track state without causing re-renders
@@ -87,14 +88,8 @@ export default function PWAInstallPrompt() {
       }
       setDeferredPrompt(null);
     } else {
-      // Fallback for iOS/Safari
-      // Show instructions
-      alert(
-        "To install AirBear:\n\n" +
-          "iOS Safari: Tap Share → Add to Home Screen\n\n" +
-          "Android Chrome: Tap Menu → Install App\n\n" +
-          "Desktop: Look for install icon in address bar"
-      );
+      // Fallback for iOS/Safari & others: show themed instructions
+      setShowInstructions(true);
     }
   };
 
@@ -110,56 +105,95 @@ export default function PWAInstallPrompt() {
   return (
     <div className="fixed bottom-4 left-4 right-4 md:left-auto md:right-4 md:w-96 z-50 animate-in slide-in-from-bottom-5 duration-500">
       <div className="glass-morphism border-2 border-emerald-400/50 rounded-2xl p-6 shadow-2xl relative overflow-hidden">
-        {/* Background gradient */}
         <div className="absolute inset-0 bg-gradient-to-br from-emerald-900/20 via-lime-900/10 to-amber-900/20 pointer-events-none"></div>
 
-        {/* Spinning wheel decoration */}
         <div className="absolute top-2 right-2 opacity-20">
           <AirbearWheel size="sm" glowing animated />
         </div>
 
         <div className="relative z-10">
-          {/* Close button */}
           <button
             onClick={handleDismiss}
-            className="absolute top-2 right-2 p-1 rounded-full hover:bg-white/10 transition-colors"
+            className="absolute top-0 right-0 p-1 rounded-full hover:bg-white/10 transition-colors"
             aria-label="Dismiss"
           >
             <X className="h-4 w-4 text-muted-foreground" />
           </button>
 
-          {/* Content */}
-          <div className="flex items-start gap-4 mb-4">
-            <div className="p-3 rounded-full bg-gradient-to-br from-emerald-500 to-lime-500 shadow-lg animate-pulse-glow">
-              <Smartphone className="h-6 w-6 text-white" />
-            </div>
-            <div className="flex-1">
-              <h3 className="text-lg font-bold text-foreground mb-1">
-                Install AirBear
-              </h3>
-              <p className="text-sm text-muted-foreground">
-                Get the full app experience with offline access and faster
-                loading!
-              </p>
-            </div>
-          </div>
+          {!showInstructions ? (
+            <>
+              <div className="flex items-start gap-4 mb-4">
+                <div className="p-3 rounded-full bg-gradient-to-br from-emerald-500 to-lime-500 shadow-lg animate-pulse-glow">
+                  <Smartphone className="h-6 w-6 text-white" />
+                </div>
+                <div className="flex-1">
+                  <h3 className="text-lg font-bold text-foreground mb-1">
+                    Install AirBear
+                  </h3>
+                  <p className="text-sm text-muted-foreground text-pretty">
+                    Get the full app experience with offline access and faster
+                    loading!
+                  </p>
+                </div>
+              </div>
 
-          {/* Install button */}
-          <Button
-            onClick={handleInstall}
-            className="w-full eco-gradient text-white hover-lift ripple-effect animate-neon-glow shadow-lg"
-          >
-            <Download className="mr-2 h-4 w-4" />
-            Install Now
-          </Button>
+              <Button
+                onClick={handleInstall}
+                className="w-full eco-gradient text-white hover-lift ripple-effect animate-neon-glow shadow-lg"
+              >
+                <Download className="mr-2 h-4 w-4" />
+                Install Now
+              </Button>
 
-          {/* Dismiss link */}
-          <button
-            onClick={handleDismiss}
-            className="w-full mt-2 text-xs text-center text-muted-foreground hover:text-foreground transition-colors"
-          >
-            Maybe later
-          </button>
+              <button
+                onClick={handleDismiss}
+                className="w-full mt-2 text-xs text-center text-muted-foreground hover:text-foreground transition-colors"
+              >
+                Maybe later
+              </button>
+            </>
+          ) : (
+            <div className="space-y-4 animate-in fade-in slide-in-from-right-2 duration-300">
+              <button
+                onClick={() => setShowInstructions(false)}
+                className="flex items-center text-xs text-emerald-400 hover:text-emerald-300 transition-colors mb-2"
+              >
+                <ChevronLeft className="h-3 w-3 mr-1" />
+                Back
+              </button>
+
+              <h3 className="text-base font-bold text-foreground">How to Install</h3>
+
+              <div className="space-y-3">
+                <div className="flex items-center gap-3 bg-white/5 p-2 rounded-lg border border-white/10">
+                  <div className="p-2 rounded-md bg-emerald-500/20">
+                    <Share className="h-4 w-4 text-emerald-400" />
+                  </div>
+                  <p className="text-xs text-foreground">
+                    1. Tap <span className="font-semibold">Share</span> in Safari
+                  </p>
+                </div>
+
+                <div className="flex items-center gap-3 bg-white/5 p-2 rounded-lg border border-white/10">
+                  <div className="p-2 rounded-md bg-lime-500/20">
+                    <SquarePlus className="h-4 w-4 text-lime-400" />
+                  </div>
+                  <p className="text-xs text-foreground text-pretty">
+                    2. Scroll & tap <span className="font-semibold text-pretty">Add to Home Screen</span>
+                  </p>
+                </div>
+
+                <div className="flex items-center gap-3 bg-white/5 p-2 rounded-lg border border-white/10">
+                  <div className="p-2 rounded-md bg-amber-500/20">
+                    <MoreVertical className="h-4 w-4 text-amber-400" />
+                  </div>
+                  <p className="text-xs text-muted-foreground text-pretty">
+                    Other: Tap <span className="font-semibold text-foreground">Menu</span> → <span className="font-semibold text-foreground">Install App</span>
+                  </p>
+                </div>
+              </div>
+            </div>
+          )}
         </div>
       </div>
     </div>
