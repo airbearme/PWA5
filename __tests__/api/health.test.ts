@@ -2,7 +2,7 @@
  * API Health Endpoint Tests
  */
 
-import { describe, it, expect, jest, beforeEach } from '@jest/globals';
+import { describe, it, jest, beforeEach } from '@jest/globals';
 import '@testing-library/jest-dom';
 
 // Mock Next.js
