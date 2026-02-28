@@ -29,6 +29,9 @@ describe('ErrorBoundary', () => {
       throw new Error('Test error');
     };
 
+    // Suppress console.error for expected errors during testing
+    const consoleSpy = jest.spyOn(console, 'error').mockImplementation(() => {});
+
     render(
       <ErrorBoundary>
         <ThrowError />
@@ -36,10 +39,7 @@ describe('ErrorBoundary', () => {
     );
 
     expect(screen.getByText(/Oops! Something went wrong/i)).toBeInTheDocument();
+
+    consoleSpy.mockRestore();
   });
 });
-
-
-
-
-
