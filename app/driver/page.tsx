@@ -46,38 +46,56 @@ export default function DriverDashboardPage() {
       try {
         const supabase = getSupabaseClient();
 
-        // Load spots
-        const { data: spotsData } = await supabase
-          .from("spots")
-          .select("id, name");
+        // ⚡ Bolt: Parallelize queries to reduce TTI and optimize polling.
+        // 1. Fetch spots only if not already loaded to save bandwidth/DB load.
+        // 2. Parallelize pending rides and active ride queries using Promise.all.
+        const promises = [
+          // Load pending rides
+          supabase
+            .from("rides")
+            .select("*")
+            .eq("status", "pending")
+            .order("requested_at", { ascending: true }),
 
-        if (spotsData) {
-          const spotsMap: Record<string, { name: string }> = {};
-          spotsData.forEach((spot) => {
-            spotsMap[spot.id] = { name: spot.name };
-          });
-          setSpots(spotsMap);
+          // Load active ride for this driver
+          supabase
+            .from("rides")
+            .select("*")
+            .eq("driver_id", user.id)
+            .in("status", ["accepted", "in_progress"])
+            .maybeSingle(), // Use maybeSingle to safely handle no active ride
+        ];
+
+        // Only fetch spots if we don't have them yet
+        const shouldFetchSpots = Object.keys(spots).length === 0;
+        if (shouldFetchSpots) {
+          promises.push(supabase.from("spots").select("id, name"));
         }
 
-        // Load pending rides
-        const { data: ridesData, error } = await supabase
-          .from("rides")
-          .select("*")
-          .eq("status", "pending")
-          .order("requested_at", { ascending: true });
+        const results = await Promise.all(promises);
 
-        if (error) throw error;
-        setPendingRides(ridesData || []);
+        const [ridesResult, activeRideResult, spotsResult] = results;
 
-        // Load active ride for this driver
-        const { data: activeRideData } = await supabase
-          .from("rides")
-          .select("*")
-          .eq("driver_id", user.id)
-          .in("status", ["accepted", "in_progress"])
-          .single();
+        if (ridesResult.error) throw ridesResult.error;
+        setPendingRides(ridesResult.data || []);
 
-        setActiveRide(activeRideData || null);
+        if (activeRideResult.error) {
+          console.error("Error loading active ride:", activeRideResult.error);
+        } else {
+          setActiveRide(activeRideResult.data || null);
+        }
+
+        if (shouldFetchSpots && spotsResult) {
+          if (spotsResult.error) {
+            console.error("Error loading spots:", spotsResult.error);
+          } else if (spotsResult.data) {
+            const spotsMap: Record<string, { name: string }> = {};
+            (spotsResult.data as { id: string; name: string }[]).forEach((spot) => {
+              spotsMap[spot.id] = { name: spot.name };
+            });
+            setSpots(spotsMap);
+          }
+        }
       } catch (error) {
         console.error("Error loading driver data:", error);
       } finally {
@@ -90,7 +108,7 @@ export default function DriverDashboardPage() {
     // Refresh every 5 seconds
     const interval = setInterval(loadData, 5000);
     return () => clearInterval(interval);
-  }, [user]);
+  }, [user, spots]);
 
   const handleAcceptRide = async (rideId: string) => {
     if (!user) return;
