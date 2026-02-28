@@ -1,0 +1,3 @@
+## 2025-05-15 - Optimizing Supabase Query Waterfalls in Driver Dashboard
+**Learning:** Parallelizing sequential Supabase query waterfalls using `Promise.all` in Next.js page components significantly reduces Time to Interactive (TTI). Additionally, decoupling static lookup data (like `spots`) from dynamic updates by fetching them conditionally within a unified `Promise.all` prevents redundant network requests during polling loops.
+**Action:** Always identify sequential `await` calls for independent data sources and parallelize them. For high-frequency polling, implement a conditional check (e.g., `if (Object.keys(data).length === 0)`) to skip fetching static data after the initial load.
