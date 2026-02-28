@@ -77,7 +77,7 @@ export function serveStatic(app: Express) {
 	);
 
 	// fall through to index.html if the file doesn't exist
-	app.use("*", (_req, res) => {
+	app.get(/^(?!\/api).+/, (_req, res) => {
 		res.setHeader("Cache-Control", "public, max-age=0, must-revalidate");
 		res.sendFile(path.resolve(distPath, "index.html"));
 	});
