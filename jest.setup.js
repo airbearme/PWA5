@@ -1,5 +1,12 @@
 // Learn more: https://github.com/testing-library/jest-dom
 import '@testing-library/jest-dom'
+import 'cross-fetch/polyfill'
+import { TransformStream } from 'node:stream/web'
+
+// Polyfill for Node.js environments
+if (typeof global.TransformStream === 'undefined') {
+  global.TransformStream = TransformStream
+}
 
 // Mock Next.js router
 jest.mock('next/navigation', () => ({
