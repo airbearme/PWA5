@@ -1,8 +1,8 @@
+/// <reference types="@testing-library/jest-dom" />
 /**
  * API Health Endpoint Tests
  */
 
-import { describe, it, jest, beforeEach } from '@jest/globals';
 import '@testing-library/jest-dom';
 
 // Mock Next.js

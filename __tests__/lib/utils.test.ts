@@ -1,8 +1,8 @@
+/// <reference types="@testing-library/jest-dom" />
 /**
  * Utility Function Tests
  */
 
-import { describe, it } from '@jest/globals';
 import { cn } from '@/lib/utils';
 
 describe('cn utility', () => {

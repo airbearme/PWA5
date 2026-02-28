@@ -1,8 +1,8 @@
+/// <reference types="@testing-library/jest-dom" />
 /**
  * Error Boundary Component Tests
  */
 
-import { describe, it, jest } from '@jest/globals';
 import { render, screen } from '@testing-library/react';
 import '@testing-library/jest-dom';
 import { ErrorBoundary } from '@/components/error-boundary';
