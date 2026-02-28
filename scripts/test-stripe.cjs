@@ -6,9 +6,7 @@
  */
 
 const STRIPE_SECRET_KEY = process.env.STRIPE_SECRET_KEY;
-const STRIPE_PUBLISHABLE_KEY =
-	process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY ||
-	process.env.STRIPE_PUBLISHABLE_KEY;
+const STRIPE_PUBLISHABLE_KEY = process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY;
 
 console.log("💳 Testing Stripe configuration...\n");
 
@@ -28,7 +26,7 @@ if (!STRIPE_SECRET_KEY.startsWith("sk_")) {
 
 if (!STRIPE_PUBLISHABLE_KEY.startsWith("pk_")) {
 	console.log(
-		"❌ Invalid STRIPE_PUBLISHABLE_KEY format (should start with pk_)",
+		"❌ Invalid NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY format (should start with pk_)",
 	);
 	process.exit(1);
 }
@@ -68,5 +66,3 @@ async function testStripe() {
 }
 
 testStripe();
-
-

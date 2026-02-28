@@ -1,3 +1,4 @@
+/// <reference types="@testing-library/jest-dom" />
 // Comprehensive API Testing Suite for AirBear PWA
 // Run with: npm run test
 

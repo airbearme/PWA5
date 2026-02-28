@@ -1,3 +1,4 @@
+/// <reference types="@testing-library/jest-dom" />
 // Integration Tests for AirBear PWA Features
 // Tests real-time updates, authentication flows, and payment processing
 
