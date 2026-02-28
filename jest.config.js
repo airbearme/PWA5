@@ -16,7 +16,6 @@ const customJestConfig = {
     '**/__tests__/**/*.[jt]s?(x)',
     '**/?(*.)+(spec|test).[jt]s?(x)',
   ],
-  testPathIgnorePatterns: ['\\.spec\\.[jt]sx?$', '<rootDir>/.next/', '<rootDir>/node_modules/'],
   collectCoverageFrom: [
     'app/**/*.{js,jsx,ts,tsx}',
     'components/**/*.{js,jsx,ts,tsx}',

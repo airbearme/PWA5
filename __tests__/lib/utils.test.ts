@@ -7,8 +7,7 @@ import { cn } from '@/lib/utils';
 
 describe('cn utility', () => {
   it('merges class names correctly', () => {
-    expect(cn('foo', 'bar')).toContain('foo');
-    expect(cn('foo', 'bar')).toContain('bar');
+    expect(cn('foo', 'bar')).toBe('foo bar');
   });
 
   it('handles conditional classes', () => {
@@ -20,9 +19,6 @@ describe('cn utility', () => {
   });
 
   it('merges Tailwind classes', () => {
-    const result = cn('px-2 py-1', 'px-4');
-    expect(result).toContain('px-4');
-    expect(result).toContain('py-1');
-    expect(result).not.toContain('px-2');
+    expect(cn('px-2 py-1', 'px-4')).toBe('px-4 py-1');
   });
 });

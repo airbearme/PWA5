@@ -2,7 +2,7 @@
 
 import { useEffect, useState, useRef } from "react";
 import { Button } from "@/components/ui/button";
-import { X, Download, Smartphone, Share, SquarePlus, ArrowLeft } from "lucide-react";
+import { X, Download, Smartphone } from "lucide-react";
 import AirbearWheel from "@/components/airbear-wheel";
 
 interface BeforeInstallPromptEvent extends Event {
@@ -14,7 +14,6 @@ export default function PWAInstallPrompt() {
   const [deferredPrompt, setDeferredPrompt] =
     useState<BeforeInstallPromptEvent | null>(null);
   const [showPrompt, setShowPrompt] = useState(false);
-  const [showInstructions, setShowInstructions] = useState(false);
   const [isInstalled, setIsInstalled] = useState(false);
 
   // Use refs to track state without causing re-renders
@@ -88,14 +87,19 @@ export default function PWAInstallPrompt() {
       }
       setDeferredPrompt(null);
     } else {
-      // Show custom instructions for iOS/Safari
-      setShowInstructions(true);
+      // Fallback for iOS/Safari
+      // Show instructions
+      alert(
+        "To install AirBear:\n\n" +
+          "iOS Safari: Tap Share → Add to Home Screen\n\n" +
+          "Android Chrome: Tap Menu → Install App\n\n" +
+          "Desktop: Look for install icon in address bar"
+      );
     }
   };
 
   const handleDismiss = () => {
     setShowPrompt(false);
-    setShowInstructions(false);
     localStorage.setItem("pwa-install-dismissed", "true");
   };
 
@@ -124,87 +128,38 @@ export default function PWAInstallPrompt() {
             <X className="h-4 w-4 text-muted-foreground" />
           </button>
 
-          {!showInstructions ? (
-            <>
-              {/* Main Prompt Content */}
-              <div className="flex items-start gap-4 mb-4">
-                <div className="p-3 rounded-full bg-gradient-to-br from-emerald-500 to-lime-500 shadow-lg animate-pulse-glow">
-                  <Smartphone className="h-6 w-6 text-white" />
-                </div>
-                <div className="flex-1">
-                  <h3 className="text-lg font-bold text-foreground mb-1">
-                    Install AirBear
-                  </h3>
-                  <p className="text-sm text-muted-foreground">
-                    Get the full app experience with offline access and faster
-                    loading!
-                  </p>
-                </div>
-              </div>
-
-              {/* Install button */}
-              <Button
-                onClick={handleInstall}
-                className="w-full eco-gradient text-white hover-lift ripple-effect animate-neon-glow shadow-lg"
-              >
-                <Download className="mr-2 h-4 w-4" />
-                Install Now
-              </Button>
-
-              {/* Dismiss link */}
-              <button
-                onClick={handleDismiss}
-                className="w-full mt-2 text-xs text-center text-muted-foreground hover:text-foreground transition-colors"
-              >
-                Maybe later
-              </button>
-            </>
-          ) : (
-            <>
-              {/* Back button */}
-              <button
-                onClick={() => setShowInstructions(false)}
-                className="mb-4 text-xs flex items-center text-muted-foreground hover:text-foreground transition-colors"
-                aria-label="Back to install prompt"
-              >
-                <ArrowLeft className="mr-1 h-3 w-3" />
-                Back
-              </button>
-
-              <h3 className="text-lg font-bold text-foreground mb-4">
-                How to Install
+          {/* Content */}
+          <div className="flex items-start gap-4 mb-4">
+            <div className="p-3 rounded-full bg-gradient-to-br from-emerald-500 to-lime-500 shadow-lg animate-pulse-glow">
+              <Smartphone className="h-6 w-6 text-white" />
+            </div>
+            <div className="flex-1">
+              <h3 className="text-lg font-bold text-foreground mb-1">
+                Install AirBear
               </h3>
+              <p className="text-sm text-muted-foreground">
+                Get the full app experience with offline access and faster
+                loading!
+              </p>
+            </div>
+          </div>
 
-              <div className="space-y-4">
-                <div className="flex items-center gap-3 p-3 rounded-xl bg-white/5 border border-white/10">
-                  <div className="p-2 rounded-lg bg-emerald-500/20">
-                    <Share className="h-5 w-5 text-emerald-400" />
-                  </div>
-                  <div className="text-sm">
-                    <span className="font-semibold block">1. Tap Share</span>
-                    <span className="text-xs text-muted-foreground">Find the share icon in your browser</span>
-                  </div>
-                </div>
+          {/* Install button */}
+          <Button
+            onClick={handleInstall}
+            className="w-full eco-gradient text-white hover-lift ripple-effect animate-neon-glow shadow-lg"
+          >
+            <Download className="mr-2 h-4 w-4" />
+            Install Now
+          </Button>
 
-                <div className="flex items-center gap-3 p-3 rounded-xl bg-white/5 border border-white/10">
-                  <div className="p-2 rounded-lg bg-lime-500/20">
-                    <SquarePlus className="h-5 w-5 text-lime-400" />
-                  </div>
-                  <div className="text-sm">
-                    <span className="font-semibold block">2. Add to Home Screen</span>
-                    <span className="text-xs text-muted-foreground">Scroll down and tap the plus icon</span>
-                  </div>
-                </div>
-              </div>
-
-              <Button
-                onClick={handleDismiss}
-                className="w-full mt-6 bg-white/10 hover:bg-white/20 text-white border border-white/20"
-              >
-                Got it
-              </Button>
-            </>
-          )}
+          {/* Dismiss link */}
+          <button
+            onClick={handleDismiss}
+            className="w-full mt-2 text-xs text-center text-muted-foreground hover:text-foreground transition-colors"
+          >
+            Maybe later
+          </button>
         </div>
       </div>
     </div>
