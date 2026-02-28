@@ -11,7 +11,9 @@ const customJestConfig = {
   testEnvironment: 'jest-environment-jsdom',
   moduleNameMapper: {
     '^@/(.*)$': '<rootDir>/$1',
+    '^(\\.{1,2}/.*)\\.js$': '$1',
   },
+  testPathIgnorePatterns: ['<rootDir>/tests/'],
   testMatch: [
     '**/__tests__/**/*.[jt]s?(x)',
     '**/?(*.)+(spec|test).[jt]s?(x)',

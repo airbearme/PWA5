@@ -1,8 +1,9 @@
 import { createClient as createSupabaseAdminClient } from "@supabase/supabase-js";
-import type { Express } from "express";
+import type { Express, Response, NextFunction } from "express";
 import { createServer, type Server } from "http";
 import Stripe from "stripe";
 import { z } from "zod";
+import { withAuth, withRole, type AuthRequest } from "./auth.js";
 import {
 	insertOrderSchema,
 	insertPaymentSchema,
@@ -204,7 +205,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
 		}
 	});
 
-	app.post("/api/auth/sync-profile", async (req, res) => {
+	app.post("/api/auth/sync-profile", withAuth, async (req: AuthRequest, res) => {
 		try {
 			if (!supabaseAdmin) {
 				return res
@@ -215,7 +216,19 @@ export async function registerRoutes(app: Express): Promise<Server> {
 					});
 			}
 
-			const payload = profileSchema.parse(req.body);
+			const bodyPayload = profileSchema.parse(req.body);
+
+			// Sentinel: Enforce the ID and email from the verified token
+			const payload = {
+				...bodyPayload,
+				id: req.user!.id,
+				email: req.user!.email,
+				// Ensure user cannot promote themselves to admin via sync-profile
+				role: bodyPayload.role === "admin" && req.user!.role !== "admin"
+					? "user" as const
+					: bodyPayload.role
+			};
+
 			const profile = await ensureUserProfile(payload);
 			res.json({ user: profile });
 		} catch (error: any) {
@@ -253,7 +266,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
 	});
 
 	// Rides routes
-	app.post("/api/rides", async (req, res) => {
+	app.post("/api/rides", withAuth, async (req: AuthRequest, res) => {
 		try {
 			const rideData = insertRideSchema.parse(req.body);
 			const ride = await storage.createRide(rideData);
@@ -263,9 +276,15 @@ export async function registerRoutes(app: Express): Promise<Server> {
 		}
 	});
 
-	app.get("/api/rides/user/:userId", async (req, res) => {
+	app.get("/api/rides/user/:userId", withAuth, async (req: AuthRequest, res) => {
 		try {
 			const { userId } = req.params;
+
+			// Sentinel: IDOR check - users can only view their own rides
+			if (req.user!.id !== userId && req.user!.role !== "admin") {
+				return res.status(403).json({ message: "Forbidden: You can only access your own rides" });
+			}
+
 			const rides = await storage.getRidesByUser(userId);
 			res.json(rides);
 		} catch (error: any) {
@@ -273,7 +292,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
 		}
 	});
 
-	app.patch("/api/rides/:id", async (req, res) => {
+	app.patch("/api/rides/:id", withAuth, async (req: AuthRequest, res) => {
 		try {
 			const { id } = req.params;
 			const updates = req.body;
@@ -298,7 +317,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
 	});
 
 	// Orders routes
-	app.post("/api/orders", async (req, res) => {
+	app.post("/api/orders", withAuth, async (req: AuthRequest, res) => {
 		try {
 			const orderData = insertOrderSchema.parse({
 				...req.body,
@@ -315,9 +334,15 @@ export async function registerRoutes(app: Express): Promise<Server> {
 		}
 	});
 
-	app.get("/api/orders/user/:userId", async (req, res) => {
+	app.get("/api/orders/user/:userId", withAuth, async (req: AuthRequest, res) => {
 		try {
 			const { userId } = req.params;
+
+			// Sentinel: IDOR check - users can only view their own orders
+			if (req.user!.id !== userId && req.user!.role !== "admin") {
+				return res.status(403).json({ message: "Forbidden: You can only access your own orders" });
+			}
+
 			const orders = await storage.getOrdersByUser(userId);
 			res.json(orders);
 		} catch (error: any) {
@@ -583,7 +608,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
 	});
 
 	// Analytics routes (for admin dashboard)
-	app.get("/api/analytics/overview", async (req, res) => {
+	app.get("/api/analytics/overview", withAuth, withRole("admin"), async (req: AuthRequest, res) => {
 		try {
 			const spots = await storage.getAllSpots();
 			const airbears = await storage.getAllAirbears();

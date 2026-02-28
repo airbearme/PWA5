@@ -1,0 +1,4 @@
+## 2024-05-22 - API Authentication Bypass and IDOR
+**Vulnerability:** Many sensitive API endpoints (/api/auth/sync-profile, /api/rides, /api/orders, /api/analytics/overview) were completely unprotected, allowing anyone to spoof user IDs, escalate roles (admin), or access other users' private data via simple ID changes in parameters.
+**Learning:** The application had an Express backend that was not utilizing the Supabase authentication session available on the client side, leading to a gap between "frontend auth" and "backend security".
+**Prevention:** Always use a server-side middleware (like the newly implemented `withAuth`) to verify the JWT from the request before processing sensitive operations. Enforce that the `userId` of any created or fetched resource matches the `id` from the verified JWT.
