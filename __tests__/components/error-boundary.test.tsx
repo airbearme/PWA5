@@ -14,6 +14,16 @@ jest.mock('@/lib/error-logger', () => ({
 }));
 
 describe('ErrorBoundary', () => {
+  let consoleSpy: any;
+
+  beforeEach(() => {
+    consoleSpy = jest.spyOn(console, 'error').mockImplementation(() => {});
+  });
+
+  afterEach(() => {
+    consoleSpy.mockRestore();
+  });
+
   it('renders children when there is no error', () => {
     render(
       <ErrorBoundary>
