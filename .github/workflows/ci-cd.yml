@@ -9,7 +9,7 @@ on:
 
 env:
   NODE_VERSION: "20.x"
-  # Placeholders to satisfy Zod validation during build/test
+  # Placeholders for Zod validation during build/test
   NEXT_PUBLIC_SUPABASE_PWA4_URL: ${{ secrets.NEXT_PUBLIC_SUPABASE_PWA4_URL || 'https://placeholder.supabase.co' }}
   NEXT_PUBLIC_SUPABASE_PWA4_ANON_KEY: ${{ secrets.NEXT_PUBLIC_SUPABASE_PWA4_ANON_KEY || 'eyJplaceholder' }}
   SUPABASE_PWA4_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_PWA4_SERVICE_ROLE_KEY || 'placeholder' }}
@@ -23,12 +23,10 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - name: Setup pnpm
-        uses: pnpm/action-setup@v4
+      - uses: pnpm/action-setup@v4
         with:
           version: latest
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
+      - uses: actions/setup-node@v4
         with:
           node-version: ${{ env.NODE_VERSION }}
           cache: "pnpm"
@@ -42,18 +40,15 @@ jobs:
     needs: lint
     steps:
       - uses: actions/checkout@v4
-      - name: Setup pnpm
-        uses: pnpm/action-setup@v4
+      - uses: pnpm/action-setup@v4
         with:
           version: latest
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
+      - uses: actions/setup-node@v4
         with:
           node-version: ${{ env.NODE_VERSION }}
           cache: "pnpm"
       - run: pnpm install --frozen-lockfile
-      - name: Build Next.js
-        run: pnpm run build
+      - run: pnpm run build
         env:
           NODE_ENV: production
 
@@ -69,19 +64,17 @@ jobs:
     needs: build
     steps:
       - uses: actions/checkout@v4
-      - name: Setup pnpm
-        uses: pnpm/action-setup@v4
+      - uses: pnpm/action-setup@v4
         with:
           version: latest
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
+      - uses: actions/setup-node@v4
         with:
           node-version: ${{ env.NODE_VERSION }}
           cache: "pnpm"
       - run: pnpm install --frozen-lockfile
       - run: pnpm run test || echo "Tests failed"
-      - run: node scripts/health-check.js || echo "Health check script failed"
-      - run: node scripts/validate-env.js || echo "Env validation script failed"
+      - run: node scripts/health-check.js || echo "Health check failed"
+      - run: node scripts/validate-env.js || echo "Env validation failed"
 
   deploy:
     name: Deploy to Vercel

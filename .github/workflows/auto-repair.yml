@@ -1,26 +1,14 @@
 name: Auto-Repair & Self-Healing
-
-env:
-  NEXT_PUBLIC_SUPABASE_PWA4_URL: ${{ secrets.NEXT_PUBLIC_SUPABASE_PWA4_URL || 'https://placeholder.supabase.co' }}
-
-  NEXT_PUBLIC_SUPABASE_PWA4_ANON_KEY: ${{ secrets.NEXT_PUBLIC_SUPABASE_PWA4_ANON_KEY || 'eyJplaceholder' }}
-
-  SUPABASE_PWA4_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_PWA4_SERVICE_ROLE_KEY || 'placeholder' }}
-
-  NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY: ${{ secrets.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY || 'pk_test_placeholder' }}
-
-  STRIPE_SECRET_KEY: ${{ secrets.STRIPE_SECRET_KEY || 'sk_test_placeholder' }}
-
-  NEXT_PUBLIC_SITE_URL: ${{ secrets.NEXT_PUBLIC_SITE_URL || 'https://airbear.me' }}
-
-  NODE_VERSION: '20.x'
 on:
 
-  workflow_run:
-    workflows: ["CI/CD Pipeline"]
-    types:
-      - completed  schedule:
-    - cron: '0 2 * * *' # Daily at 2 AM  workflow_dispatch:
+env:
+  NODE_VERSION: '20.x'
+  NEXT_PUBLIC_SUPABASE_PWA4_URL: ${{ secrets.NEXT_PUBLIC_SUPABASE_PWA4_URL || 'https://placeholder.supabase.co' }}
+  NEXT_PUBLIC_SUPABASE_PWA4_ANON_KEY: ${{ secrets.NEXT_PUBLIC_SUPABASE_PWA4_ANON_KEY || 'eyJplaceholder' }}
+  SUPABASE_PWA4_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_PWA4_SERVICE_ROLE_KEY || 'placeholder' }}
+  NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY: ${{ secrets.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY || 'pk_test_placeholder' }}
+  STRIPE_SECRET_KEY: ${{ secrets.STRIPE_SECRET_KEY || 'sk_test_placeholder' }}
+  NEXT_PUBLIC_SITE_URL: ${{ secrets.NEXT_PUBLIC_SITE_URL || 'https://airbear.me' }}
 
 jobs:
   analyze-errors:
@@ -33,50 +21,35 @@ jobs:
           version: latest
       - uses: actions/setup-node@v4
         with:
-          node-version: "20.x"
+          node-version: ${{ env.NODE_VERSION }}
           cache: "pnpm"
-      - name: Install dependencies
-        run: pnpm install --frozen-lockfile || pnpm install --frozen-lockfile
-      - name: Analyze error logs
-      - name: Generate fix suggestions
-        run: |
-          node scripts/generate-fixes.js || echo "Fix generation script not found"
+      - run: pnpm install --frozen-lockfile
+      - run: node scripts/generate-fixes.js || echo "Fix generation script not found"
 
   auto-fix:
     name: Apply Auto-Fixes
     runs-on: ubuntu-latest
     needs: analyze-errors
     steps:
-      - name: Install dependencies
-        run: pnpm install --frozen-lockfile || pnpm install --frozen-lockfile
-      - name: Run auto-fixes
-        run: |
-          echo "Applying auto-fixes..."
-          pnpm run lint --fix || true
-          node scripts/apply-fixes.js || echo "Auto-fix script not found"
+      - run: pnpm install --frozen-lockfile
+      - run: |
+        echo "Applying auto-fixes..."
+        pnpm run lint --fix || true
+        node scripts/apply-fixes.js || echo "Auto-fix script not found"
       - name: Create fix PR
         uses: peter-evans/create-pull-request@v5
         with:
-          token: ${{ secrets.GITHUB_TOKEN }}
-          commit-message: "chore: auto-fix issues detected by self-repair workflow"
-          title: "Auto-Fix: Resolved Issues"
-          body: |
-            This PR contains automatic fixes applied by the self-repair workflow.
-            
-            ## Changes
-      - Fixed linting issues
-      - Applied error pattern fixes
-      - Updated dependencies if needed
-            
-            Please review before merging.
-          branch: auto-fix/$(date +%Y%m%d-%H%M%S)
-          delete-branch: true
+        token: ${{ secrets.GITHUB_TOKEN }}
+        commit-message: "chore: auto-fix issues detected by self-repair workflow"
+        title: "Auto-Fix: Resolved Issues"
+        body: |
+        This PR contains automatic fixes applied by the self-repair workflow.
+        branch: auto-fix/latest
+        delete-branch: true
 
   database-maintenance:
     name: Database Maintenance
     runs-on: ubuntu-latest
     steps:
-      - name: Run database cleanup
-      - name: Optimize error logs
-        run: |
-          node scripts/optimize-error-logs.js || echo "Error log optimization script not found"
+      - run: pnpm install --frozen-lockfile
+      - run: node scripts/optimize-error-logs.js || echo "Error log optimization script not found"

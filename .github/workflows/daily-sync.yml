@@ -1,67 +1,78 @@
 name: 🔄 Daily Secret Sync & Health Check
-
 on:
-  schedule:
-    # Run daily at 3 AM UTC to verify everything is synced
-    - cron: '0 3 * * *'  workflow_dispatch:
 
-env:  NODE_VERSION: '20.x'
+env:
+  NODE_VERSION: '20.x'
+  NEXT_PUBLIC_SUPABASE_PWA4_URL: ${{ secrets.NEXT_PUBLIC_SUPABASE_PWA4_URL || 'https://placeholder.supabase.co' }}
+  NEXT_PUBLIC_SUPABASE_PWA4_ANON_KEY: ${{ secrets.NEXT_PUBLIC_SUPABASE_PWA4_ANON_KEY || 'eyJplaceholder' }}
+  SUPABASE_PWA4_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_PWA4_SERVICE_ROLE_KEY || 'placeholder' }}
+  NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY: ${{ secrets.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY || 'pk_test_placeholder' }}
+  STRIPE_SECRET_KEY: ${{ secrets.STRIPE_SECRET_KEY || 'sk_test_placeholder' }}
+  NEXT_PUBLIC_SITE_URL: ${{ secrets.NEXT_PUBLIC_SITE_URL || 'https://airbear.me' }}
 
 jobs:
   health-check:
     name: 🏥 Health Check
     runs-on: ubuntu-latest
     steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+        with:
+          version: latest
+      - uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: "pnpm"
       - name: Check production site
         run: |
-          echo "Checking production site health..."
-          response=$(curl -s -o /dev/null -w "%{http_code}" https://airbear.me)
-          if [ "$response" -eq 200 ]; then
-            echo "✅ Production site is live (HTTP $response)"
-          else
-            echo "❌ Production site returned HTTP $response"
-            exit 1
-          fi
+        echo "Checking production site health..."
+        response=$(curl -s -o /dev/null -w "%{http_code}" https://airbear.me)
+        if [ "$response" -eq 200 ]; then
+        echo "✅ Production site is live (HTTP $response)"
+        else
+        echo "❌ Production site returned HTTP $response"
+        exit 1
+        fi
       - name: Check health endpoint
         run: |
-          echo "Checking API health endpoint..."
-          response=$(curl -s https://airbear.me/api/health)
-          echo "Response: $response"
-          if echo "$response" | grep -q '"status":"healthy"'; then
-            echo "✅ Health endpoint reports healthy"
-          else
-            echo "⚠️  Health endpoint may have issues"
-          fi
+        echo "Checking API health endpoint..."
+        response=$(curl -s https://airbear.me/api/health)
+        echo "Response: $response"
+        if echo "$response" | grep -q '"status":"healthy"'; then
+        echo "✅ Health endpoint reports healthy"
+        else
+        echo "⚠️  Health endpoint may have issues"
+        fi
       - name: Verify UI assets load
         run: |
-          echo "Verifying UI assets..."
-          css_status=$(curl -s -o /dev/null -w "%{http_code}" https://airbear.me/_next/static/css/app/layout.css || echo "000")
-          if [ "$css_status" -eq 200 ] || [ "$css_status" -eq 000 ]; then
-            echo "✅ CSS assets accessible"
-          else
-            echo "⚠️  CSS may not be loading (HTTP $css_status)"
-          fi
+        echo "Verifying UI assets..."
+        css_status=$(curl -s -o /dev/null -w "%{http_code}" https://airbear.me/_next/static/css/app/layout.css || echo "000")
+        if [ "$css_status" -eq 200 ] || [ "$css_status" -eq 000 ]; then
+        echo "✅ CSS assets accessible"
+        else
+        echo "⚠️  CSS may not be loading (HTTP $css_status)"
+        fi
 
   sync-verification:
     name: 🔐 Verify Secrets Synced
     runs-on: ubuntu-latest
     steps:
       - name: Install Vercel CLI
-        run: pnpm install --frozen-lockfile --global vercel@latest
+        run: pnpm install --frozen-lockfile --frozen-lockfile --global vercel@latest
       - name: Verify Vercel environment variables
         run: |
-          echo "Verifying environment variables in Vercel..."
-          vercel env ls production --token="${{ secrets.VERCEL_TOKEN }}" || echo "⚠️  Could not verify (may need manual check)"
+        echo "Verifying environment variables in Vercel..."
+        vercel env ls production --token="${{ secrets.VERCEL_TOKEN }}" || echo "⚠️  Could not verify (may need manual check)"
         continue-on-error: true
       - name: Summary
         run: |
-          echo "## 🔄 Daily Sync Summary" >> $GITHUB_STEP_SUMMARY
-          echo "" >> $GITHUB_STEP_SUMMARY
-          echo "**Date**: $(date)" >> $GITHUB_STEP_SUMMARY
-          echo "**Status**: ✅ All checks completed" >> $GITHUB_STEP_SUMMARY
-          echo "" >> $GITHUB_STEP_SUMMARY
-          echo "### Checks Performed:" >> $GITHUB_STEP_SUMMARY
-          echo "- ✅ Production site health" >> $GITHUB_STEP_SUMMARY
-          echo "- ✅ API health endpoint" >> $GITHUB_STEP_SUMMARY
-          echo "- ✅ UI assets loading" >> $GITHUB_STEP_SUMMARY
-          echo "- ✅ Vercel secrets verification" >> $GITHUB_STEP_SUMMARY
+        echo "## 🔄 Daily Sync Summary" >> $GITHUB_STEP_SUMMARY
+        echo "" >> $GITHUB_STEP_SUMMARY
+        echo "**Date**: $(date)" >> $GITHUB_STEP_SUMMARY
+        echo "**Status**: ✅ All checks completed" >> $GITHUB_STEP_SUMMARY
+        echo "" >> $GITHUB_STEP_SUMMARY
+        echo "### Checks Performed:" >> $GITHUB_STEP_SUMMARY
+        echo "- ✅ Production site health" >> $GITHUB_STEP_SUMMARY
+        echo "- ✅ API health endpoint" >> $GITHUB_STEP_SUMMARY
+        echo "- ✅ UI assets loading" >> $GITHUB_STEP_SUMMARY
+        echo "- ✅ Vercel secrets verification" >> $GITHUB_STEP_SUMMARY
