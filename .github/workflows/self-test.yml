@@ -2,10 +2,19 @@ name: Self-Testing & Health Checks
 
 on:
   schedule:
-    - cron: '0 */6 * * *' # Every 6 hours
+    - cron: '0 */6 * * *'
   workflow_dispatch:
   push:
     branches: [main]
+
+env:
+  NODE_VERSION: '20.x'
+  NEXT_PUBLIC_SUPABASE_PWA4_URL: ${{ secrets.NEXT_PUBLIC_SUPABASE_PWA4_URL || 'https://placeholder.supabase.co' }}
+  NEXT_PUBLIC_SUPABASE_PWA4_ANON_KEY: ${{ secrets.NEXT_PUBLIC_SUPABASE_PWA4_ANON_KEY || 'eyJplaceholder' }}
+  SUPABASE_PWA4_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_PWA4_SERVICE_ROLE_KEY || 'placeholder' }}
+  NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY: ${{ secrets.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY || 'pk_test_placeholder' }}
+  STRIPE_SECRET_KEY: ${{ secrets.STRIPE_SECRET_KEY || 'sk_test_placeholder' }}
+  NEXT_PUBLIC_SITE_URL: ${{ secrets.NEXT_PUBLIC_SITE_URL || 'https://airbear.me' }}
 
 jobs:
   health-check:
@@ -13,83 +22,49 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
+      - uses: pnpm/action-setup@v4
         with:
-          node-version: '20.x'
-      
-      - name: Install dependencies
-        run: npm ci || pnpm install --frozen-lockfile
-      
-      - name: Check API endpoints
-        run: |
+          version: latest
+      - uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: "pnpm"
+      - run: pnpm install --frozen-lockfile
+      - run: |
           echo "Checking production endpoints..."
           curl -f https://airbear.me/api/health || echo "Health endpoint not available"
-          curl -f https://airbear.me/api/stripe/create-payment-intent || echo "Stripe endpoint check skipped"
-      
-      - name: Check database connectivity
-        env:
-          SUPABASE_URL: ${{ secrets.NEXT_PUBLIC_SUPABASE_URL }}
-          SUPABASE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
-        run: |
-          node scripts/check-database.js || echo "Database check script not found"
-      
-      - name: Check Stripe connectivity
-        env:
-          STRIPE_SECRET_KEY: ${{ secrets.STRIPE_SECRET_KEY }}
-        run: |
-          node scripts/check-stripe.js || echo "Stripe check script not found"
-      
-      - name: Report health status
-        if: always()
-        run: |
-          echo "Health check completed"
-          node scripts/report-health.js || echo "Health reporting script not found"
+      - run: node scripts/check-database.js || echo "Database check failed"
+      - run: node scripts/check-stripe.js || echo "Stripe check failed"
+      - run: node scripts/report-health.js || echo "Health reporting failed"
 
   performance-test:
     name: Performance Testing
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
+      - uses: pnpm/action-setup@v4
         with:
-          node-version: '20.x'
-      
-      - name: Install dependencies
-        run: npm ci || pnpm install --frozen-lockfile
-      
-      - name: Run Lighthouse CI
-        run: |
-          npm install -g @lhci/cli || true
-          lhci autorun || echo "Lighthouse CI not configured"
-      
-      - name: Check bundle size
-        run: |
-          pnpm run build
-          node scripts/check-bundle-size.js || echo "Bundle size check script not found"
+          version: latest
+      - uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: "pnpm"
+      - run: pnpm install --frozen-lockfile
+      - run: |
+          pnpm install --frozen-lockfile -g @lhci/cli || true
+          lhci autorun || echo "Lighthouse CI skipped"
+      - run: pnpm run build
+      - run: node scripts/check-bundle-size.js || echo "Bundle size check failed"
 
   security-scan:
     name: Security Scanning
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      
-      - name: Run npm audit
-        run: |
-          npm audit --audit-level=moderate || echo "Vulnerabilities found"
-      
-      - name: Run Snyk scan
-        uses: snyk/actions/node@master
+      - run: npm audit --audit-level=moderate || echo "Vulnerabilities found"
+      - uses: snyk/actions/node@master
         continue-on-error: true
         env:
           SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
         with:
           args: --severity-threshold=high
-
-
-
-
-
