@@ -1,12 +1,10 @@
-#!/usr/bin/env node
+import fs from "fs";
+import path from "path";
 
 /**
  * Bundle Size Check Script
  * Validates bundle sizes are within acceptable limits
  */
-
-const fs = require("fs");
-const path = require("path");
 
 console.log("📦 Checking bundle sizes...\n");
 
@@ -98,5 +96,3 @@ if (fs.existsSync(chunksDir)) {
 
 console.log("\n✅ Bundle size check complete!");
 process.exit(0);
-
-
