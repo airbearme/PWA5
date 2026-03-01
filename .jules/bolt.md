@@ -1,0 +1,3 @@
+## 2026-03-01 - Standardizing GitHub Actions with pnpm/action-setup@v4
+**Learning:** Standardizing GitHub Action workflows to use `pnpm/action-setup@v4` strictly *before* `actions/setup-node@v4` (with `cache: 'pnpm'`) significantly improves CI build times and reliability in a `pnpm` workspace. Using `pnpm install --frozen-lockfile` ensures dependency integrity across environments.
+**Action:** Always position the `pnpm/action-setup` step before the `actions/setup-node` step in CI workflows, specify `version: latest` to support the newest lockfile versions (e.g., v9.0), and utilize the `cache: 'pnpm'` option in `actions/setup-node` to leverage persistent dependency caching.
