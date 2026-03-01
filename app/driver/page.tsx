@@ -1,7 +1,6 @@
 "use client";
 
-import { useState, useEffect, useCallback, useRef } from "react";
-import Image from "next/image";
+import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { useAuthContext } from "@/components/auth-provider";
 import { getSupabaseClient } from "@/lib/supabase/client";
@@ -33,7 +32,6 @@ export default function DriverDashboardPage() {
   const [activeRide, setActiveRide] = useState<Ride | null>(null);
   const [loading, setLoading] = useState(true);
   const [spots, setSpots] = useState<Record<string, { name: string }>>({});
-  const spotsFetchedRef = useRef(false);
 
   useEffect(() => {
     if (!authLoading && !user) {
@@ -41,68 +39,58 @@ export default function DriverDashboardPage() {
     }
   }, [user, authLoading, router]);
 
-  const loadData = useCallback(async () => {
-    if (!user) return;
+  useEffect(() => {
+    const loadData = async () => {
+      if (!user) return;
 
-    try {
-      const supabase = getSupabaseClient();
+      try {
+        const supabase = getSupabaseClient();
 
-      // ⚡ Bolt: Parallelize data fetching to improve performance
-      // and decouple static data from dynamic updates.
-      // We use a ref to track if spots have been fetched to avoid
-      // unnecessary re-renders of the loadData dependency.
-      const fetchSpots = !spotsFetchedRef.current
-        ? supabase.from("spots").select("id, name")
-        : Promise.resolve({ data: null, error: null });
+        // Load spots
+        const { data: spotsData } = await supabase
+          .from("spots")
+          .select("id, name");
 
-      const [
-        { data: spotsData, error: spotsError },
-        { data: ridesData, error: ridesError },
-        { data: activeRideData, error: activeRideError }
-      ] = await Promise.all([
-        fetchSpots,
-        supabase
+        if (spotsData) {
+          const spotsMap: Record<string, { name: string }> = {};
+          spotsData.forEach((spot) => {
+            spotsMap[spot.id] = { name: spot.name };
+          });
+          setSpots(spotsMap);
+        }
+
+        // Load pending rides
+        const { data: ridesData, error } = await supabase
           .from("rides")
           .select("*")
           .eq("status", "pending")
-          .order("requested_at", { ascending: true }),
-        supabase
+          .order("requested_at", { ascending: true });
+
+        if (error) throw error;
+        setPendingRides(ridesData || []);
+
+        // Load active ride for this driver
+        const { data: activeRideData } = await supabase
           .from("rides")
           .select("*")
           .eq("driver_id", user.id)
           .in("status", ["accepted", "in_progress"])
-          .maybeSingle() // ⚡ Bolt: Use maybeSingle to avoid noisy errors when no active ride exists
-      ]);
+          .single();
 
-      if (spotsError) throw spotsError;
-      if (ridesError) throw ridesError;
-      if (activeRideError) throw activeRideError;
-
-      if (spotsData) {
-        const spotsMap: Record<string, { name: string }> = {};
-        spotsData.forEach((spot) => {
-          spotsMap[spot.id] = { name: spot.name };
-        });
-        setSpots(spotsMap);
-        spotsFetchedRef.current = true;
+        setActiveRide(activeRideData || null);
+      } catch (error) {
+        console.error("Error loading driver data:", error);
+      } finally {
+        setLoading(false);
       }
+    };
 
-      setPendingRides(ridesData || []);
-      setActiveRide(activeRideData || null);
-    } catch (error) {
-      console.error("Error loading driver data:", error);
-    } finally {
-      setLoading(false);
-    }
-  }, [user]);
-
-  useEffect(() => {
     loadData();
 
     // Refresh every 5 seconds
     const interval = setInterval(loadData, 5000);
     return () => clearInterval(interval);
-  }, [loadData]);
+  }, [user]);
 
   const handleAcceptRide = async (rideId: string) => {
     if (!user) return;
@@ -122,9 +110,8 @@ export default function DriverDashboardPage() {
         description: "You've accepted the ride. Navigate to pickup location.",
       });
 
-      // ⚡ Bolt: Use loadData() instead of window.location.reload()
-      // to avoid expensive full page reloads and provide a smoother experience.
-      loadData();
+      // Reload data
+      window.location.reload();
     } catch (error: any) {
       toast({
         title: "Error",
@@ -154,8 +141,7 @@ export default function DriverDashboardPage() {
         description: "Navigate to the destination.",
       });
 
-      // ⚡ Bolt: Use loadData() instead of window.location.reload()
-      loadData();
+      window.location.reload();
     } catch (error: any) {
       toast({
         title: "Error",
@@ -181,8 +167,7 @@ export default function DriverDashboardPage() {
         description: "Great job! The ride has been completed.",
       });
 
-      // ⚡ Bolt: Use loadData() instead of window.location.reload()
-      loadData();
+      window.location.reload();
     } catch (error: any) {
       toast({
         title: "Error",
@@ -198,12 +183,9 @@ export default function DriverDashboardPage() {
         <div className="text-center">
           <div className="flex justify-center mb-6">
             <div className="w-32 h-32 rounded-full border-4 border-emerald-400/50 dark:border-emerald-500/50 bg-gradient-to-br from-emerald-500/20 to-lime-500/20 backdrop-blur-sm shadow-2xl hover-lift animate-float overflow-hidden">
-              <Image
+              <img
                 src="/airbear-mascot.png"
                 alt="AirBear Mascot"
-                width={128}
-                height={128}
-                priority
                 className="w-full h-full object-cover rounded-full animate-pulse-glow"
               />
             </div>
@@ -227,12 +209,9 @@ export default function DriverDashboardPage() {
         <div className="text-center mb-8">
           <div className="flex justify-center mb-4">
             <div className="w-24 h-24 rounded-full border-4 border-emerald-400/50 dark:border-emerald-500/50 bg-gradient-to-br from-emerald-500/20 to-lime-500/20 backdrop-blur-sm shadow-2xl hover-lift animate-float overflow-hidden">
-              <Image
+              <img
                 src="/airbear-mascot.png"
                 alt="AirBear Mascot"
-                width={96}
-                height={96}
-                priority
                 className="w-full h-full object-cover rounded-full animate-pulse-glow"
               />
             </div>

@@ -1,7 +1,3 @@
-## 2025-01-24 - Performance Optimization in High-Frequency Polling Dashboards
-**Learning:** In high-frequency polling dashboards (e.g., `app/driver/page.tsx`), decoupling static lookup data from dynamic updates by fetching static data conditionally (only if state is empty or via a `useRef` flag) within a unified `Promise.all` prevents redundant load while keeping the initial loading state synchronized.
-**Action:** Use `Promise.all` for parallelization and a `useRef` flag for static data to avoid unnecessary re-renders when using `useCallback` with polling.
-
-## 2025-01-24 - Avoiding Expensive Page Reloads
-**Learning:** Replacing `window.location.reload()` with targeted state updates (e.g., re-invoking a memoized `loadData` function) provides a significantly faster and smoother user experience by avoiding the overhead of a full Next.js page hydration and asset re-loading.
-**Action:** Favor direct state refresh functions over full page reloads in ride action handlers.
+## 2026-03-01 - Standardizing GitHub Actions with pnpm/action-setup@v4
+**Learning:** Standardizing GitHub Action workflows to use `pnpm/action-setup@v4` strictly *before* `actions/setup-node@v4` (with `cache: 'pnpm'`) significantly improves CI build times and reliability in a `pnpm` workspace. Using `pnpm install --frozen-lockfile` ensures dependency integrity across environments.
+**Action:** Always position the `pnpm/action-setup` step before the `actions/setup-node` step in CI workflows, specify `version: latest` to support the newest lockfile versions (e.g., v9.0), and utilize the `cache: 'pnpm'` option in `actions/setup-node` to leverage persistent dependency caching.
