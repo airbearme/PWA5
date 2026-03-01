@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef, useCallback } from "react";
 import { useRouter } from "next/navigation";
 import { useAuthContext } from "@/components/auth-provider";
 import { getSupabaseClient } from "@/lib/supabase/client";
@@ -32,6 +32,7 @@ export default function DriverDashboardPage() {
   const [activeRide, setActiveRide] = useState<Ride | null>(null);
   const [loading, setLoading] = useState(true);
   const [spots, setSpots] = useState<Record<string, { name: string }>>({});
+  const spotsLoadedRef = useRef(false);
 
   useEffect(() => {
     if (!authLoading && !user) {
@@ -39,58 +40,79 @@ export default function DriverDashboardPage() {
     }
   }, [user, authLoading, router]);
 
-  useEffect(() => {
-    const loadData = async () => {
-      if (!user) return;
+  /**
+   * ⚡ Bolt: Optimized data loading for the driver dashboard.
+   * - Uses `Promise.all` to fetch multiple datasets in parallel.
+   * - Uses `useRef` to avoid re-fetching static `spots` data on every polling cycle.
+   * - This reduces API overhead and improves perceived performance.
+   */
+  const loadData = useCallback(async () => {
+    if (!user) return;
 
-      try {
-        const supabase = getSupabaseClient();
+    try {
+      const supabase = getSupabaseClient();
+      const promises: Promise<any>[] = [];
 
-        // Load spots
-        const { data: spotsData } = await supabase
-          .from("spots")
-          .select("id, name");
-
-        if (spotsData) {
-          const spotsMap: Record<string, { name: string }> = {};
-          spotsData.forEach((spot) => {
-            spotsMap[spot.id] = { name: spot.name };
-          });
-          setSpots(spotsMap);
-        }
-
-        // Load pending rides
-        const { data: ridesData, error } = await supabase
+      // 1. Fetch pending rides
+      promises.push(
+        supabase
           .from("rides")
           .select("*")
           .eq("status", "pending")
-          .order("requested_at", { ascending: true });
+          .order("requested_at", { ascending: true })
+      );
 
-        if (error) throw error;
-        setPendingRides(ridesData || []);
-
-        // Load active ride for this driver
-        const { data: activeRideData } = await supabase
+      // 2. Fetch active ride for this driver
+      promises.push(
+        supabase
           .from("rides")
           .select("*")
           .eq("driver_id", user.id)
           .in("status", ["accepted", "in_progress"])
-          .single();
+          .maybeSingle()
+      );
 
-        setActiveRide(activeRideData || null);
-      } catch (error) {
-        console.error("Error loading driver data:", error);
-      } finally {
-        setLoading(false);
+      // 3. Conditionally fetch spots (static data)
+      if (!spotsLoadedRef.current) {
+        promises.push(supabase.from("spots").select("id, name"));
       }
-    };
+
+      const results = await Promise.all(promises);
+      const [ridesResult, activeRideResult, spotsResult] = results;
+
+      if (ridesResult.error) throw ridesResult.error;
+      setPendingRides(ridesResult.data || []);
+
+      if (activeRideResult.error) {
+        console.error("Error fetching active ride:", activeRideResult.error);
+      } else {
+        setActiveRide(activeRideResult.data || null);
+      }
+
+      if (spotsResult && !spotsResult.error && spotsResult.data) {
+        const spotsMap: Record<string, { name: string }> = {};
+        spotsResult.data.forEach((spot: any) => {
+          spotsMap[spot.id] = { name: spot.name };
+        });
+        setSpots(spotsMap);
+        spotsLoadedRef.current = true;
+      }
+    } catch (error) {
+      console.error("Error loading driver data:", error);
+    } finally {
+      setLoading(false);
+    }
+  }, [user]);
+
+  useEffect(() => {
+    if (!user) return;
 
     loadData();
 
     // Refresh every 5 seconds
     const interval = setInterval(loadData, 5000);
     return () => clearInterval(interval);
-  }, [user]);
+  }, [user, loadData]);
 
   const handleAcceptRide = async (rideId: string) => {
     if (!user) return;
@@ -110,8 +132,8 @@ export default function DriverDashboardPage() {
         description: "You've accepted the ride. Navigate to pickup location.",
       });
 
-      // Reload data
-      window.location.reload();
+      // ⚡ Bolt: Use state refresh instead of window.location.reload() for faster UI updates
+      loadData();
     } catch (error: any) {
       toast({
         title: "Error",
@@ -141,7 +163,8 @@ export default function DriverDashboardPage() {
         description: "Navigate to the destination.",
       });
 
-      window.location.reload();
+      // ⚡ Bolt: Use state refresh instead of window.location.reload() for faster UI updates
+      loadData();
     } catch (error: any) {
       toast({
         title: "Error",
@@ -167,7 +190,8 @@ export default function DriverDashboardPage() {
         description: "Great job! The ride has been completed.",
       });
 
-      window.location.reload();
+      // ⚡ Bolt: Use state refresh instead of window.location.reload() for faster UI updates
+      loadData();
     } catch (error: any) {
       toast({
         title: "Error",
