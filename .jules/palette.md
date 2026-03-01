@@ -1,0 +1,3 @@
+## 2025-05-15 - Integrated PWA Installation Instructions
+**Learning:** For PWAs on iOS/Safari, the native "Add to Home Screen" option is buried in the Share menu, often leading to user confusion or missed installs when using a generic "Install" button that does nothing. An in-app visual guide that mirrors the browser's UI (e.g., using Share and SquarePlus icons) significantly improves conversion and user confidence.
+**Action:** Always provide visual instructions for PWA installation on platforms that don't support the native `beforeinstallprompt` API (like iOS Safari) instead of falling back to a generic alert or doing nothing.
