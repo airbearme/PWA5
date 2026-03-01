@@ -1,12 +1,10 @@
-#!/usr/bin/env node
+import https from "https";
+import http from "http";
 
 /**
  * Health Check Script
  * Checks all critical endpoints and services
  */
-
-const https = require("https");
-const http = require("http");
 
 const checks = [
 	{
@@ -66,5 +64,3 @@ runHealthChecks().catch((error) => {
 	console.error("Health check failed:", error);
 	process.exit(1);
 });
-
-
