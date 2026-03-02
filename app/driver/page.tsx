@@ -1,14 +1,15 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback, useRef } from "react";
 import { useRouter } from "next/navigation";
 import { useAuthContext } from "@/components/auth-provider";
 import { getSupabaseClient } from "@/lib/supabase/client";
+import Image from "next/image";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { useToast } from "@/hooks/use-toast";
-import { Navigation, Battery, MapPin, Activity, Clock, CheckCircle, X } from "lucide-react";
+import { Navigation, MapPin, Activity, Clock } from "lucide-react";
 import Link from "next/link";
 
 interface Ride {
@@ -32,6 +33,7 @@ export default function DriverDashboardPage() {
   const [activeRide, setActiveRide] = useState<Ride | null>(null);
   const [loading, setLoading] = useState(true);
   const [spots, setSpots] = useState<Record<string, { name: string }>>({});
+  const hasLoadedSpots = useRef(false);
 
   useEffect(() => {
     if (!authLoading && !user) {
@@ -39,14 +41,16 @@ export default function DriverDashboardPage() {
     }
   }, [user, authLoading, router]);
 
-  useEffect(() => {
-    const loadData = async () => {
-      if (!user) return;
+  // ⚡ Bolt: Memoized data fetching to prevent unnecessary re-renders
+  // and conditional fetching of static data to reduce redundant API calls.
+  const loadData = useCallback(async () => {
+    if (!user) return;
 
-      try {
-        const supabase = getSupabaseClient();
+    try {
+      const supabase = getSupabaseClient();
 
-        // Load spots
+      // Load static spots data only once
+      if (!hasLoadedSpots.current) {
         const { data: spotsData } = await supabase
           .from("spots")
           .select("id, name");
@@ -57,40 +61,44 @@ export default function DriverDashboardPage() {
             spotsMap[spot.id] = { name: spot.name };
           });
           setSpots(spotsMap);
+          hasLoadedSpots.current = true;
         }
-
-        // Load pending rides
-        const { data: ridesData, error } = await supabase
-          .from("rides")
-          .select("*")
-          .eq("status", "pending")
-          .order("requested_at", { ascending: true });
-
-        if (error) throw error;
-        setPendingRides(ridesData || []);
-
-        // Load active ride for this driver
-        const { data: activeRideData } = await supabase
-          .from("rides")
-          .select("*")
-          .eq("driver_id", user.id)
-          .in("status", ["accepted", "in_progress"])
-          .single();
-
-        setActiveRide(activeRideData || null);
-      } catch (error) {
-        console.error("Error loading driver data:", error);
-      } finally {
-        setLoading(false);
       }
-    };
 
-    loadData();
+      // Load pending rides
+      const { data: ridesData, error } = await supabase
+        .from("rides")
+        .select("*")
+        .eq("status", "pending")
+        .order("requested_at", { ascending: true });
 
-    // Refresh every 5 seconds
-    const interval = setInterval(loadData, 5000);
-    return () => clearInterval(interval);
+      if (error) throw error;
+      setPendingRides(ridesData || []);
+
+      // Load active ride for this driver
+      const { data: activeRideData } = await supabase
+        .from("rides")
+        .select("*")
+        .eq("driver_id", user.id)
+        .in("status", ["accepted", "in_progress"])
+        .maybeSingle(); // ⚡ Bolt: maybeSingle() is more robust for optional records
+
+      setActiveRide(activeRideData || null);
+    } catch (error) {
+      console.error("Error loading driver data:", error);
+    } finally {
+      setLoading(false);
+    }
   }, [user]);
+
+  useEffect(() => {
+    if (user) {
+      loadData();
+      // Refresh dynamic data every 5 seconds
+      const interval = setInterval(loadData, 5000);
+      return () => clearInterval(interval);
+    }
+  }, [user, loadData]);
 
   const handleAcceptRide = async (rideId: string) => {
     if (!user) return;
@@ -110,12 +118,12 @@ export default function DriverDashboardPage() {
         description: "You've accepted the ride. Navigate to pickup location.",
       });
 
-      // Reload data
-      window.location.reload();
-    } catch (error: any) {
+      // ⚡ Bolt: Use memoized loadData() instead of full page reload for instant UI update
+      loadData();
+    } catch (error) {
       toast({
         title: "Error",
-        description: error.message || "Failed to accept ride",
+        description: (error as Error).message || "Failed to accept ride",
         variant: "destructive",
       });
     }
@@ -141,11 +149,12 @@ export default function DriverDashboardPage() {
         description: "Navigate to the destination.",
       });
 
-      window.location.reload();
-    } catch (error: any) {
+      // ⚡ Bolt: Use memoized loadData() instead of full page reload for instant UI update
+      loadData();
+    } catch (error) {
       toast({
         title: "Error",
-        description: error.message || "Failed to start ride",
+        description: (error as Error).message || "Failed to start ride",
         variant: "destructive",
       });
     }
@@ -167,11 +176,12 @@ export default function DriverDashboardPage() {
         description: "Great job! The ride has been completed.",
       });
 
-      window.location.reload();
-    } catch (error: any) {
+      // ⚡ Bolt: Use memoized loadData() instead of full page reload for instant UI update
+      loadData();
+    } catch (error) {
       toast({
         title: "Error",
-        description: error.message || "Failed to complete ride",
+        description: (error as Error).message || "Failed to complete ride",
         variant: "destructive",
       });
     }
@@ -182,11 +192,12 @@ export default function DriverDashboardPage() {
       <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-emerald-950 via-lime-950 to-amber-950">
         <div className="text-center">
           <div className="flex justify-center mb-6">
-            <div className="w-32 h-32 rounded-full border-4 border-emerald-400/50 dark:border-emerald-500/50 bg-gradient-to-br from-emerald-500/20 to-lime-500/20 backdrop-blur-sm shadow-2xl hover-lift animate-float overflow-hidden">
-              <img
+            <div className="w-32 h-32 rounded-full border-4 border-emerald-400/50 dark:border-emerald-500/50 bg-gradient-to-br from-emerald-500/20 to-lime-500/20 backdrop-blur-sm shadow-2xl hover-lift animate-float overflow-hidden relative">
+              <Image
                 src="/airbear-mascot.png"
                 alt="AirBear Mascot"
-                className="w-full h-full object-cover rounded-full animate-pulse-glow"
+                fill
+                className="object-cover rounded-full animate-pulse-glow"
               />
             </div>
           </div>
@@ -208,11 +219,12 @@ export default function DriverDashboardPage() {
         {/* Header */}
         <div className="text-center mb-8">
           <div className="flex justify-center mb-4">
-            <div className="w-24 h-24 rounded-full border-4 border-emerald-400/50 dark:border-emerald-500/50 bg-gradient-to-br from-emerald-500/20 to-lime-500/20 backdrop-blur-sm shadow-2xl hover-lift animate-float overflow-hidden">
-              <img
+            <div className="w-24 h-24 rounded-full border-4 border-emerald-400/50 dark:border-emerald-500/50 bg-gradient-to-br from-emerald-500/20 to-lime-500/20 backdrop-blur-sm shadow-2xl hover-lift animate-float overflow-hidden relative">
+              <Image
                 src="/airbear-mascot.png"
                 alt="AirBear Mascot"
-                className="w-full h-full object-cover rounded-full animate-pulse-glow"
+                fill
+                className="object-cover rounded-full animate-pulse-glow"
               />
             </div>
           </div>
