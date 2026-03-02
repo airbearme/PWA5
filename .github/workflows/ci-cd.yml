@@ -33,10 +33,10 @@ jobs:
         run: pnpm install --frozen-lockfile
 
       - name: Run ESLint
-        run: pnpm run lint || true
+        run: pnpm run lint
 
       - name: Run TypeScript check
-        run: pnpm run type-check || true
+        run: pnpm run type-check
 
   # Build
   build:
@@ -101,18 +101,18 @@ jobs:
         run: pnpm install --frozen-lockfile
 
       - name: Run unit tests
-        run: pnpm run test || echo "Tests not configured yet"
+        run: pnpm run test
 
       - name: Check API endpoints
         run: |
           echo "Checking API health..."
           # Add health check script
-          node scripts/health-check.js || echo "Health check script not found"
+          node scripts/health-check.js
 
       - name: Validate environment variables
         run: |
           echo "Validating required env vars..."
-          node scripts/validate-env.js || echo "Env validation script not found"
+          node scripts/validate-env.js
 
   # Self-Repair
   self-repair:
@@ -148,20 +148,46 @@ jobs:
 
   # Deploy to Vercel
   deploy:
-    name: Deploy to Vercel
+    name: Deploy to Vercel Production
     runs-on: ubuntu-latest
     needs: [build, self-test]
     if: github.ref == 'refs/heads/main' && github.event_name == 'push'
     steps:
-      - uses: actions/checkout@v4
+      - name: Checkout code
+        uses: actions/checkout@v4
 
-      - name: Deploy to Vercel
-        uses: amondnet/vercel-action@v25
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
         with:
-          vercel-token: ${{ secrets.VERCEL_TOKEN }}
-          vercel-org-id: ${{ secrets.VERCEL_ORG_ID }}
-          vercel-project-id: ${{ secrets.VERCEL_PROJECT_ID }}
-          vercel-args: "--prod"
+          node-version: '20.x'
+          cache: 'pnpm'
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: latest
+
+      - name: Install Vercel CLI
+        run: pnpm add --global vercel@latest
+
+      - name: Pull Vercel Environment Information
+        run: vercel pull --yes --environment=production --token=${{ secrets.VERCEL_TOKEN }}
+        env:
+          VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
+          VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
+
+      - name: Build Project
+        run: vercel build --prod --token=${{ secrets.VERCEL_TOKEN }}
+        env:
+          VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
+          VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
+
+      - name: Deploy Project to Vercel
+        id: deploy
+        run: vercel deploy --prebuilt --prod --token=${{ secrets.VERCEL_TOKEN }}
+        env:
+          VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
+          VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
 
   # Error Reporting
   error-report:
