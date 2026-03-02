@@ -1,0 +1,4 @@
+## 2024-08-05 - ES Module Compatibility in Test Scripts
+**Vulnerability:** N/A (Tooling/Verification Issue)
+**Learning:** During verification, the `test:security` script, written with CommonJS `require()` syntax, failed because the project's `package.json` is configured with `"type": "module"`. This forces all `.js` files to be treated as ES Modules.
+**Prevention:** To ensure verification scripts run reliably, any Node.js script using CommonJS syntax must be renamed to use the `.cjs` extension. The corresponding `pnpm` script in `package.json` must also be updated to point to the new `.cjs` filename. This prevents module compatibility errors and allows security checks to execute correctly.
