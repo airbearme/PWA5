@@ -2,6 +2,7 @@
 
 import { useEffect, useState, useRef } from "react";
 import { Button } from "@/components/ui/button";
+import { useToast } from "@/components/ui/use-toast";
 import { X, Download, Smartphone } from "lucide-react";
 import AirbearWheel from "@/components/airbear-wheel";
 
@@ -11,6 +12,7 @@ interface BeforeInstallPromptEvent extends Event {
 }
 
 export default function PWAInstallPrompt() {
+  const { toast } = useToast();
   const [deferredPrompt, setDeferredPrompt] =
     useState<BeforeInstallPromptEvent | null>(null);
   const [showPrompt, setShowPrompt] = useState(false);
@@ -87,14 +89,25 @@ export default function PWAInstallPrompt() {
       }
       setDeferredPrompt(null);
     } else {
-      // Fallback for iOS/Safari
-      // Show instructions
-      alert(
-        "To install AirBear:\n\n" +
-          "iOS Safari: Tap Share → Add to Home Screen\n\n" +
-          "Android Chrome: Tap Menu → Install App\n\n" +
-          "Desktop: Look for install icon in address bar"
-      );
+      // Fallback for iOS/Safari - show instructions in a toast
+      toast({
+        title: "How to install AirBear",
+        description: (
+          <ul className="mt-2 list-disc space-y-1 pl-5">
+            <li>
+              <strong>iOS/iPadOS:</strong> Tap Share → Add to Home Screen
+            </li>
+            <li>
+              <strong>Android:</strong> Tap Menu → Install App
+            </li>
+            <li>
+              <strong>Desktop:</strong> Look for an install icon in the address
+              bar
+            </li>
+          </ul>
+        ),
+        duration: 9000, // Give users more time to read
+      });
     }
   };
 
