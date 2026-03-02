@@ -11,6 +11,7 @@ const http = require("http");
 const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || "https://airbear.me";
 
 const requiredHeaders = {
+	"content-security-policy": "CSP header should be present",
 	"strict-transport-security": "HSTS header should be present",
 	"x-content-type-options": "X-Content-Type-Options should be nosniff",
 	"x-frame-options": "X-Frame-Options should be present",
