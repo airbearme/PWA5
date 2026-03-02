@@ -1,5 +1,8 @@
+/**
+ * @jest-environment node
+ */
 // Comprehensive API Testing Suite for AirBear PWA
-// Run with: npm run test
+// Run with: pnpm run test
 
 import { describe, expect, it } from "@jest/globals";
 
