@@ -1,5 +1,6 @@
 // Learn more: https://github.com/testing-library/jest-dom
-import '@testing-library/jest-dom'
+require('@testing-library/jest-dom');
+require('cross-fetch/polyfill');
 
 // Mock Next.js router
 jest.mock('next/navigation', () => ({
@@ -55,15 +56,3 @@ global.ResizeObserver = class ResizeObserver {
   observe() {}
   unobserve() {}
 }
-
-// Suppress console errors in tests (optional)
-// global.console = {
-//   ...console,
-//   error: jest.fn(),
-//   warn: jest.fn(),
-// }
-
-
-
-
-
