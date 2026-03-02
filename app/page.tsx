@@ -9,6 +9,7 @@
 
 "use client";
 
+import { useMemo } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
@@ -16,6 +17,39 @@ import { MapPin, ShoppingBag, Leaf, Zap, Crown } from "lucide-react";
 import AirbearWheel from "@/components/airbear-wheel";
 
 export default function HomePage() {
+  // ⚡ Bolt: Memoize particle effects to prevent re-calculation on re-renders.
+  // This is a static visual effect, so it doesn't need to be regenerated.
+  const particleEffects = useMemo(() => {
+    return Array.from({ length: 12 }, (_, i) => (
+      <div
+        key={i}
+        className={`absolute w-2 h-2 rounded-full animate-particle opacity-60`}
+        style={{
+          left: `${(i * 8) % 100}%`,
+          top: `${(i * 15) % 100}%`,
+          animationDelay: `${i * 0.5}s`,
+          backgroundColor:
+            i % 2 === 0 ? "rgb(34, 197, 94)" : "rgb(251, 191, 36)",
+        }}
+      />
+    ));
+  }, []);
+
+  // ⚡ Bolt: Memoize holographic effects for the same performance reason.
+  const holographicEffects = useMemo(() => {
+    return Array.from({ length: 8 }, (_, i) => (
+      <div
+        key={i}
+        className="absolute w-2 h-2 bg-gradient-to-r from-cyan-400 via-purple-500 to-pink-500 rounded-full opacity-60 animate-pulse-glow"
+        style={{
+          left: `${20 + i * 10}%`,
+          top: `${30 + Math.sin(i) * 20}%`,
+          animationDelay: `${i * 0.3}s`,
+        }}
+      />
+    ));
+  }, []);
+
   return (
     <main className="min-h-screen bg-gradient-to-br from-emerald-950 via-lime-950 to-amber-950 dark:from-emerald-950 dark:via-lime-950 dark:to-amber-950 relative overflow-hidden">
       {/* Animated Background with Solar Rays & Spinning Wheels */}
@@ -71,19 +105,7 @@ export default function HomePage() {
 
       {/* Enhanced Particle effects background */}
       <div className="absolute inset-0 overflow-hidden pointer-events-none">
-        {Array.from({ length: 12 }, (_, i) => (
-          <div
-            key={i}
-            className={`absolute w-2 h-2 rounded-full animate-particle opacity-60`}
-            style={{
-              left: `${(i * 8) % 100}%`,
-              top: `${(i * 15) % 100}%`,
-              animationDelay: `${i * 0.5}s`,
-              backgroundColor:
-                i % 2 === 0 ? "rgb(34, 197, 94)" : "rgb(251, 191, 36)",
-            }}
-          />
-        ))}
+        {particleEffects}
       </div>
 
       <div className="container mx-auto px-4 py-16 relative z-10">
@@ -116,17 +138,7 @@ export default function HomePage() {
 
               {/* Holographic overlay effect */}
               <div className="absolute inset-0 pointer-events-none">
-                {Array.from({ length: 8 }, (_, i) => (
-                  <div
-                    key={i}
-                    className="absolute w-2 h-2 bg-gradient-to-r from-cyan-400 via-purple-500 to-pink-500 rounded-full opacity-60 animate-pulse-glow"
-                    style={{
-                      left: `${20 + i * 10}%`,
-                      top: `${30 + Math.sin(i) * 20}%`,
-                      animationDelay: `${i * 0.3}s`,
-                    }}
-                  />
-                ))}
+                {holographicEffects}
               </div>
             </h1>
 
