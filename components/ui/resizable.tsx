@@ -1,6 +1,6 @@
 'use client'
 
-import { GripVertical } from 'lucide-react'
+import GripVertical from 'lucide-react/dist/esm/icons/grip-vertical'
 
 import { cn } from '@/lib/utils'
 
