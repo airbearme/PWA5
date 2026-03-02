@@ -2,8 +2,9 @@
  * Error Boundary Component Tests
  */
 
-import { describe, it, expect, jest } from '@jest/globals';
+import { describe, it, jest } from '@jest/globals';
 import { render, screen } from '@testing-library/react';
+import '@testing-library/jest-dom';
 import { ErrorBoundary } from '@/components/error-boundary';
 
 // Mock the error logger
@@ -29,6 +30,9 @@ describe('ErrorBoundary', () => {
       throw new Error('Test error');
     };
 
+    // Suppress console.error during this test as it's expected
+    jest.spyOn(console, 'error').mockImplementation(() => {});
+
     render(
       <ErrorBoundary>
         <ThrowError />
@@ -36,6 +40,8 @@ describe('ErrorBoundary', () => {
     );
 
     expect(screen.getByText(/Oops! Something went wrong/i)).toBeInTheDocument();
+
+    (console.error as jest.Mock).mockRestore();
   });
 });
 
