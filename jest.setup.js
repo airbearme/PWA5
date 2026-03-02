@@ -62,8 +62,3 @@ global.ResizeObserver = class ResizeObserver {
 //   error: jest.fn(),
 //   warn: jest.fn(),
 // }
-
-
-
-
-
