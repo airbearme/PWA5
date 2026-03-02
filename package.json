@@ -6,7 +6,7 @@
 	"scripts": {
 		"build": "next build",
 		"db:push": "drizzle-kit push",
-		"deploy": "npm run verify && npm run deploy:vercel",
+		"deploy": "pnpm verify && pnpm deploy:vercel",
 		"deploy:production": "bash deploy.sh",
 		"deploy:now": "bash scripts/deploy-production-now.sh",
 		"deploy:vercel": "vercel --prod",
@@ -29,7 +29,7 @@
 		"test:realtime": "node scripts/test-realtime.js",
 		"test:error-logger": "node scripts/test-error-logger.js",
 		"test:bundle": "node scripts/check-bundle-size.js",
-		"test:all": "npm run test && npm run test:e2e && npm run test:performance && npm run test:accessibility",
+		"test:all": "pnpm test && pnpm test:e2e && pnpm test:performance && pnpm test:accessibility",
 		"test:workflows": "node scripts/test-complete-workflows.js",
 		"test:comprehensive-e2e": "node scripts/comprehensive-e2e-test.js",
 		"test:validate": "node scripts/ultimate-validation.js",
@@ -40,7 +40,7 @@
 		"validate:ui": "node scripts/validate-ui-foundation.js",
 		"setup:secrets": "bash scripts/setup-github-secrets.sh",
 		"deploy:prep": "bash scripts/deploy-production.sh",
-		"verify": "npm run type-check && npm run lint && npm run build",
+		"verify": "pnpm type-check && pnpm lint && pnpm build",
 		"setup:testing": "bash scripts/setup-testing.sh"
 	},
 	"dependencies": {
