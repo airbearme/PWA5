@@ -41,7 +41,7 @@ Production-ready Next.js PWA for sustainable rideshare services with integrated 
 ### Prerequisites
 
 - Node.js 20.x or higher
-- npm or pnpm
+- pnpm
 - Supabase account
 - Stripe account
 
@@ -55,7 +55,7 @@ Production-ready Next.js PWA for sustainable rideshare services with integrated 
 
 2. **Install dependencies**
    ```bash
-   npm install
+   pnpm install
    ```
 
 3. **Set up environment variables**
@@ -66,12 +66,12 @@ Production-ready Next.js PWA for sustainable rideshare services with integrated 
 
 4. **Validate environment variables**
    ```bash
-   npm run validate:env
+   pnpm run validate:env
    ```
 
 5. **Start development server**
    ```bash
-   npm run dev
+   pnpm run dev
    ```
 
 6. **Open http://localhost:3000**
