@@ -1,0 +1,3 @@
+## 2024-07-25 - Memoize Expensive Calculations
+**Learning:** I identified a common performance anti-pattern in `app/book/page.tsx` where expensive calculations (`calculateDistance`, `estimateFare`) were being executed on every component render. This is inefficient and can lead to a sluggish UI, especially as the component grows in complexity.
+**Action:** I will apply the `useMemo` hook to memoize these calculations. This ensures they are only re-computed when their dependencies (`pickupSpot`, `destinationSpot`) change, preventing unnecessary work on re-renders and making the UI more responsive. This is a go-to pattern for optimizing React components.
