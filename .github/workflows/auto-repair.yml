@@ -35,11 +35,11 @@ jobs:
           SUPABASE_URL: ${{ secrets.NEXT_PUBLIC_SUPABASE_URL }}
           SUPABASE_SERVICE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
         run: |
-          node scripts/analyze-errors.js || echo "Error analysis script not found"
+          node scripts/analyze-errors.cjs || echo "Error analysis script not found"
       
       - name: Generate fix suggestions
         run: |
-          node scripts/generate-fixes.js || echo "Fix generation script not found"
+          node scripts/generate-fixes.cjs || echo "Fix generation script not found"
 
   auto-fix:
     name: Apply Auto-Fixes
@@ -66,7 +66,7 @@ jobs:
         run: |
           echo "Applying auto-fixes..."
           pnpm run lint --fix || true
-          node scripts/apply-fixes.js || echo "Auto-fix script not found"
+          node scripts/apply-fixes.cjs || echo "Auto-fix script not found"
       
       - name: Create fix PR
         uses: peter-evans/create-pull-request@v5
@@ -108,11 +108,11 @@ jobs:
           SUPABASE_URL: ${{ secrets.NEXT_PUBLIC_SUPABASE_URL }}
           SUPABASE_SERVICE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
         run: |
-          node scripts/database-cleanup.js || echo "Database cleanup script not found"
+          node scripts/database-cleanup.cjs || echo "Database cleanup script not found"
       
       - name: Optimize error logs
         run: |
-          node scripts/optimize-error-logs.js || echo "Error log optimization script not found"
+          node scripts/optimize-error-logs.cjs || echo "Error log optimization script not found"
 
 
 
