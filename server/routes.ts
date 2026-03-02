@@ -9,6 +9,7 @@ import {
 	insertRideSchema,
 } from "../shared/schema.js";
 import { storage } from "./storage.js";
+import { rateLimit } from "../lib/rate-limit.js";
 
 const stripeSecretKey = process.env.STRIPE_SECRET_KEY;
 if (!stripeSecretKey) {
@@ -99,6 +100,11 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
 	app.post("/api/auth/register", async (req, res) => {
 		try {
+			// Sentinel: Rate limit registration to prevent abuse
+			if (!rateLimit(`reg-${req.ip}`, 5, 900000)) {
+				return res.status(429).json({ message: "Too many registration attempts" });
+			}
+
 			if (!supabaseAdmin) {
 				return res
 					.status(500)
@@ -149,6 +155,12 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
 	app.post("/api/auth/login", async (req, res) => {
 		try {
+			// Sentinel: Rate limit login by IP and email to prevent brute force
+			const { email: requestEmail } = req.body;
+			if (!rateLimit(`login-ip-${req.ip}`, 10, 60000) || (requestEmail && !rateLimit(`login-em-${requestEmail}`, 5, 300000))) {
+				return res.status(429).json({ message: "Too many login attempts" });
+			}
+
 			if (!supabaseAdmin) {
 				return res
 					.status(500)
@@ -328,6 +340,11 @@ export async function registerRoutes(app: Express): Promise<Server> {
 	// Stripe payment routes
 	app.post("/api/create-payment-intent", async (req, res) => {
 		try {
+			// Sentinel: Rate limit payment attempts
+			if (!rateLimit(`pay-${req.ip}`, 10, 60000)) {
+				return res.status(429).json({ message: "Rate limit exceeded" });
+			}
+
 			const {
 				amount,
 				orderId,
@@ -397,12 +414,27 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
 	app.post("/api/payments/confirm-cash", async (req, res) => {
 		try {
+			// Sentinel: Rate limit cash confirmation
+			if (!rateLimit(`conf-cash-${req.ip}`, 20, 60000)) {
+				return res.status(429).json({ message: "Rate limit exceeded" });
+			}
+
 			const { qrCode, driverId } = req.body;
 			if (!qrCode)
 				return res.status(400).json({ message: "Missing QR code data" });
 
-			const decodedData = JSON.parse(Buffer.from(qrCode, "base64").toString());
-			const { orderId, rideId, amount } = decodedData;
+			let decodedData;
+			try {
+				decodedData = JSON.parse(Buffer.from(qrCode, "base64").toString());
+			} catch (e) {
+				return res.status(400).json({ message: "Invalid QR code format" });
+			}
+
+			const { orderId, rideId, amount, userId } = decodedData;
+			// Sentinel: Validate QR data before processing
+			if ((!orderId && !rideId) || !amount || !userId) {
+				return res.status(400).json({ message: "Invalid QR code data" });
+			}
 
 			if (orderId) {
 				await storage.updateOrder(orderId, { status: "completed" });
