@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState, memo } from "react";
 import type { AirbearLocation } from "@/lib/supabase/realtime";
 import type { Database } from "@/lib/types/database";
 
@@ -12,7 +12,11 @@ interface MapViewProps {
   onSpotSelect?: (spot: Spot) => void;
 }
 
-export default function MapView({
+// ⚡ Bolt: Wrapped MapView with React.memo to prevent unnecessary re-renders.
+// This is crucial for performance because the parent component might re-render
+// frequently, passing a new `onSpotSelect` function instance. Without memoization,
+// this would trigger a costly regeneration of all map markers.
+const MapView = memo(function MapView({
   spots,
   airbears,
   onSpotSelect,
@@ -537,4 +541,6 @@ export default function MapView({
       )}
     </div>
   );
-}
+});
+
+export default MapView;
