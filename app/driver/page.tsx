@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback, useRef } from "react";
 import { useRouter } from "next/navigation";
 import { useAuthContext } from "@/components/auth-provider";
 import { getSupabaseClient } from "@/lib/supabase/client";
@@ -32,6 +32,7 @@ export default function DriverDashboardPage() {
   const [activeRide, setActiveRide] = useState<Ride | null>(null);
   const [loading, setLoading] = useState(true);
   const [spots, setSpots] = useState<Record<string, { name: string }>>({});
+  const spotsLoadedRef = useRef(false);
 
   useEffect(() => {
     if (!authLoading && !user) {
@@ -39,14 +40,14 @@ export default function DriverDashboardPage() {
     }
   }, [user, authLoading, router]);
 
-  useEffect(() => {
-    const loadData = async () => {
-      if (!user) return;
+  const loadData = useCallback(async () => {
+    if (!user) return;
 
-      try {
-        const supabase = getSupabaseClient();
+    try {
+      const supabase = getSupabaseClient();
 
-        // Load spots
+      // ⚡ Bolt: Only fetch spots if not already loaded (static data)
+      if (!spotsLoadedRef.current) {
         const { data: spotsData } = await supabase
           .from("spots")
           .select("id, name");
@@ -57,40 +58,44 @@ export default function DriverDashboardPage() {
             spotsMap[spot.id] = { name: spot.name };
           });
           setSpots(spotsMap);
+          spotsLoadedRef.current = true;
         }
-
-        // Load pending rides
-        const { data: ridesData, error } = await supabase
-          .from("rides")
-          .select("*")
-          .eq("status", "pending")
-          .order("requested_at", { ascending: true });
-
-        if (error) throw error;
-        setPendingRides(ridesData || []);
-
-        // Load active ride for this driver
-        const { data: activeRideData } = await supabase
-          .from("rides")
-          .select("*")
-          .eq("driver_id", user.id)
-          .in("status", ["accepted", "in_progress"])
-          .single();
-
-        setActiveRide(activeRideData || null);
-      } catch (error) {
-        console.error("Error loading driver data:", error);
-      } finally {
-        setLoading(false);
       }
-    };
 
-    loadData();
+      // Load pending rides
+      const { data: ridesData, error } = await supabase
+        .from("rides")
+        .select("*")
+        .eq("status", "pending")
+        .order("requested_at", { ascending: true });
 
-    // Refresh every 5 seconds
-    const interval = setInterval(loadData, 5000);
-    return () => clearInterval(interval);
+      if (error) throw error;
+      setPendingRides(ridesData || []);
+
+      // Load active ride for this driver
+      const { data: activeRideData } = await supabase
+        .from("rides")
+        .select("*")
+        .eq("driver_id", user.id)
+        .in("status", ["accepted", "in_progress"])
+        .single();
+
+      setActiveRide(activeRideData || null);
+    } catch (error) {
+      console.error("Error loading driver data:", error);
+    } finally {
+      setLoading(false);
+    }
   }, [user]);
+
+  useEffect(() => {
+    if (user) {
+      loadData();
+      // Refresh every 5 seconds
+      const interval = setInterval(loadData, 5000);
+      return () => clearInterval(interval);
+    }
+  }, [user, loadData]);
 
   const handleAcceptRide = async (rideId: string) => {
     if (!user) return;
@@ -110,8 +115,8 @@ export default function DriverDashboardPage() {
         description: "You've accepted the ride. Navigate to pickup location.",
       });
 
-      // Reload data
-      window.location.reload();
+      // ⚡ Bolt: Refresh data without full page reload
+      loadData();
     } catch (error: any) {
       toast({
         title: "Error",
@@ -141,7 +146,8 @@ export default function DriverDashboardPage() {
         description: "Navigate to the destination.",
       });
 
-      window.location.reload();
+      // ⚡ Bolt: Refresh data without full page reload
+      loadData();
     } catch (error: any) {
       toast({
         title: "Error",
@@ -167,7 +173,8 @@ export default function DriverDashboardPage() {
         description: "Great job! The ride has been completed.",
       });
 
-      window.location.reload();
+      // ⚡ Bolt: Refresh data without full page reload
+      loadData();
     } catch (error: any) {
       toast({
         title: "Error",

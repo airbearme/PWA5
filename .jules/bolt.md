@@ -1,0 +1,3 @@
+## 2024-05-24 - Optimizing Polling and State Updates in Dashboards
+**Learning:** In high-frequency polling environments like the Driver Dashboard, fetching static data (like spots) in every cycle and using `window.location.reload()` for state updates are common but avoidable performance bottlenecks. Replacing full reloads with targeted data refreshes significantly improves the perceived performance and reduces unnecessary network traffic.
+**Action:** Decouple static lookup data from dynamic updates using a `useRef` flag and replace `window.location.reload()` with local state refresh functions to provide instantaneous UI updates.
