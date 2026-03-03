@@ -1,0 +1,3 @@
+## 2025-05-15 - Optimizing Driver Dashboard Data Fetching and Polling
+**Learning:** Polling in the Driver Dashboard was inefficient, fetching static data (`spots`) on every cycle and using `window.location.reload()` for updates, which causes unnecessary latency and a poor UX. Replacing `.single()` with `.maybeSingle()` prevents unnecessary 406 errors when fetching data that might be absent (like an active ride).
+**Action:** Parallelize fetching using `Promise.all`, use a `useRef` flag to fetch static data only once, and replace page reloads with local state refreshes. Replace `<img>` with Next.js `<Image />` for LCP improvements.
