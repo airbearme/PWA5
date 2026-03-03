@@ -1,3 +1,3 @@
-## 2024-05-24 - Optimizing Polling and State Updates in Dashboards
-**Learning:** In high-frequency polling environments like the Driver Dashboard, fetching static data (like spots) in every cycle and using `window.location.reload()` for state updates are common but avoidable performance bottlenecks. Replacing full reloads with targeted data refreshes significantly improves the perceived performance and reduces unnecessary network traffic.
-**Action:** Decouple static lookup data from dynamic updates using a `useRef` flag and replace `window.location.reload()` with local state refresh functions to provide instantaneous UI updates.
+## 2026-03-03 - Driver Dashboard Polling Optimization
+**Learning:** High-frequency dashboard polling with static lookup data causes redundant network load. Coupling static data (e.g., spots) with dynamic state (e.g., rides) in a single refresh function can lead to wasteful re-fetching of unchanging data. Reusing window.location.reload() for state updates is a significant performance anti-pattern in React apps, especially on mobile/PWA.
+**Action:** Use a useRef flag to cache static data within polling cycles. Favor targeted state refreshes over full page reloads for ride actions. Ensure CI workflows are explicitly configured for the project's package manager (pnpm) to avoid environment-specific test failures.

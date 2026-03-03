@@ -63,6 +63,11 @@ jobs:
 
       - name: Build application
         run: pnpm run build
+        env:
+          NEXT_PUBLIC_SUPABASE_PWA4_URL: https://placeholder.supabase.co
+          NEXT_PUBLIC_SUPABASE_PWA4_ANON_KEY: eyJplaceholder
+          NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY: pk_test_placeholder
+          STRIPE_SECRET_KEY: sk_test_placeholder
 
       - name: Start server
         run: pnpm run start &
@@ -96,6 +101,11 @@ jobs:
 
       - name: Build application
         run: pnpm run build
+        env:
+          NEXT_PUBLIC_SUPABASE_PWA4_URL: https://placeholder.supabase.co
+          NEXT_PUBLIC_SUPABASE_PWA4_ANON_KEY: eyJplaceholder
+          NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY: pk_test_placeholder
+          STRIPE_SECRET_KEY: sk_test_placeholder
 
       - name: Start server
         run: pnpm run start &
