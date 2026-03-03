@@ -8,8 +8,6 @@ import { registerRoutes } from "./routes";
 import { log, serveStatic, setupVite } from "./vite";
 
 const app = express();
-// Sentinel: Trust the first proxy (e.g. Vercel, load balancer) to ensure req.ip is correct for rate limiting.
-app.set("trust proxy", 1);
 app.use(
 	express.json({
 		verify: (req: any, _res, buf) => {
