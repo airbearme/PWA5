@@ -1,8 +1,9 @@
 import { createClient as createSupabaseAdminClient } from "@supabase/supabase-js";
-import type { Express } from "express";
+import type { Express, Request, Response, NextFunction } from "express";
 import { createServer, type Server } from "http";
 import Stripe from "stripe";
 import { z } from "zod";
+import { rateLimit } from "../lib/rate-limit.js";
 import {
 	insertOrderSchema,
 	insertPaymentSchema,
@@ -35,6 +36,16 @@ if (!supabaseAdmin) {
 }
 
 export async function registerRoutes(app: Express): Promise<Server> {
+	// Security: Rate limiting middleware for sensitive endpoints
+	const authRateLimit = (req: Request, res: Response, next: NextFunction) => {
+		const ip = req.ip || "unknown";
+		// 10 requests per minute for auth/payment endpoints
+		if (!rateLimit(`auth:${ip}`, 10, 60000)) {
+			return res.status(429).json({ message: "Too many requests. Please try again later." });
+		}
+		next();
+	};
+
 	// Health check
 	app.get("/api/health", (_req, res) => {
 		res.json({
@@ -97,7 +108,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
 		});
 	};
 
-	app.post("/api/auth/register", async (req, res) => {
+	app.post("/api/auth/register", authRateLimit, async (req, res) => {
 		try {
 			if (!supabaseAdmin) {
 				return res
@@ -147,7 +158,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
 		}
 	});
 
-	app.post("/api/auth/login", async (req, res) => {
+	app.post("/api/auth/login", authRateLimit, async (req, res) => {
 		try {
 			if (!supabaseAdmin) {
 				return res
@@ -204,7 +215,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
 		}
 	});
 
-	app.post("/api/auth/sync-profile", async (req, res) => {
+	app.post("/api/auth/sync-profile", authRateLimit, async (req, res) => {
 		try {
 			if (!supabaseAdmin) {
 				return res
@@ -385,7 +396,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
 	});
 
 	// Payment confirmation
-	app.post("/api/payments/confirm", async (req, res) => {
+	app.post("/api/payments/confirm", authRateLimit, async (req, res) => {
 		try {
 			const paymentData = insertPaymentSchema.parse(req.body);
 			const payment = await storage.createPayment(paymentData);
@@ -395,7 +406,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
 		}
 	});
 
-	app.post("/api/payments/confirm-cash", async (req, res) => {
+	app.post("/api/payments/confirm-cash", authRateLimit, async (req, res) => {
 		try {
 			const { qrCode, driverId } = req.body;
 			if (!qrCode)
