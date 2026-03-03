@@ -1,6 +1,7 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
+import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { useAuthContext } from "@/components/auth-provider";
 import { getSupabaseClient } from "@/lib/supabase/client";
@@ -34,35 +35,46 @@ export default function DashboardPage() {
     }
   }, [user, authLoading, router]);
 
+  // ⚡ Bolt: Use a ref to prevent redundant fetching of static 'spots' data across re-renders or pollings.
+  const spotsLoaded = useRef(false);
+
   useEffect(() => {
+    // ⚡ Bolt: Optimized data loading function.
+    // - Parallelizes Supabase queries using Promise.all for faster execution.
+    // - Uses a useRef flag to avoid redundant fetching of static 'spots' data.
     const loadData = async () => {
       if (!user) return;
 
       try {
         const supabase = getSupabaseClient();
 
-        // Load user rides
-        const { data: ridesData, error: ridesError } = await supabase
-          .from("rides")
-          .select("*")
-          .eq("user_id", user.id)
-          .order("requested_at", { ascending: false })
-          .limit(10);
+        const queries = [
+          // Load user rides
+          supabase
+            .from("rides")
+            .select("*")
+            .eq("user_id", user.id)
+            .order("requested_at", { ascending: false })
+            .limit(10),
+        ];
 
-        if (ridesError) throw ridesError;
-        setRides(ridesData || []);
+        // Load spots only if not already loaded
+        if (!spotsLoaded.current) {
+          queries.push(supabase.from("spots").select("id, name"));
+        }
 
-        // Load spots for display
-        const { data: spotsData } = await supabase
-          .from("spots")
-          .select("id, name");
+        const [ridesResult, spotsResult] = await Promise.all(queries);
 
-        if (spotsData) {
+        if (ridesResult.error) throw ridesResult.error;
+        setRides(ridesResult.data || []);
+
+        if (spotsResult?.data) {
           const spotsMap: Record<string, { name: string }> = {};
-          spotsData.forEach((spot) => {
+          spotsResult.data.forEach((spot) => {
             spotsMap[spot.id] = { name: spot.name };
           });
           setSpots(spotsMap);
+          spotsLoaded.current = true;
         }
       } catch (error) {
         console.error("Error loading dashboard data:", error);
@@ -80,9 +92,12 @@ export default function DashboardPage() {
         <div className="text-center">
           <div className="flex justify-center mb-6">
             <div className="w-32 h-32 rounded-full border-4 border-emerald-400/50 dark:border-emerald-500/50 bg-gradient-to-br from-emerald-500/20 to-lime-500/20 backdrop-blur-sm shadow-2xl hover-lift animate-float overflow-hidden">
-              <img
+              <Image
                 src="/airbear-mascot.png"
                 alt="AirBear Mascot"
+                width={128}
+                height={128}
+                priority
                 className="w-full h-full object-cover rounded-full animate-pulse-glow"
               />
             </div>
@@ -115,9 +130,12 @@ export default function DashboardPage() {
         <div className="text-center mb-8">
           <div className="flex justify-center mb-4">
             <div className="w-24 h-24 rounded-full border-4 border-emerald-400/50 dark:border-emerald-500/50 bg-gradient-to-br from-emerald-500/20 to-lime-500/20 backdrop-blur-sm shadow-2xl hover-lift animate-float overflow-hidden">
-              <img
+              <Image
                 src="/airbear-mascot.png"
                 alt="AirBear Mascot"
+                width={96}
+                height={96}
+                priority
                 className="w-full h-full object-cover rounded-full animate-pulse-glow"
               />
             </div>

@@ -31,6 +31,9 @@ jobs:
         run: pnpm run lint
       
       - name: Type check
+        env:
+          NEXT_PUBLIC_SUPABASE_PWA4_URL: 'https://placeholder.supabase.co'
+          NEXT_PUBLIC_SUPABASE_PWA4_ANON_KEY: 'eyJplaceholder'
         run: pnpm run type-check
 
   deploy-production:
