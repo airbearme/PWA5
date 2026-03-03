@@ -61,7 +61,11 @@ export async function createApp() {
 
 	app.use((err: any, req: Request, res: Response, _next: NextFunction) => {
 		const status = err.status || err.statusCode || 500;
-		const message = err.message || "Internal Server Error";
+		// Sentinel: Obscure internal error details in production to prevent information leakage.
+		const isProduction = process.env.NODE_ENV === "production";
+		const message = (status === 500 && isProduction)
+			? "Internal Server Error"
+			: (err.message || "Internal Server Error");
 
 		// Log the error for server-side debugging
 		console.error(`[Fatal Error] ${req.method} ${req.path}:`, err);

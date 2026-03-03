@@ -1,5 +1,10 @@
 // Learn more: https://github.com/testing-library/jest-dom
-import '@testing-library/jest-dom'
+require('@testing-library/jest-dom');
+require('cross-fetch/polyfill');
+const { ReadableStream, WritableStream, TransformStream } = require('web-streams-polyfill');
+global.ReadableStream = ReadableStream;
+global.WritableStream = WritableStream;
+global.TransformStream = TransformStream;
 
 // Mock Next.js router
 jest.mock('next/navigation', () => ({
