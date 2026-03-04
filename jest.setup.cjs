@@ -1,5 +1,13 @@
 // Learn more: https://github.com/testing-library/jest-dom
-import '@testing-library/jest-dom'
+require('@testing-library/jest-dom')
+const { fetch, Headers, Request, Response } = require('cross-fetch')
+const { TransformStream } = require('web-streams-polyfill')
+
+global.fetch = fetch
+global.Headers = Headers
+global.Request = Request
+global.Response = Response
+global.TransformStream = TransformStream
 
 // Mock Next.js router
 jest.mock('next/navigation', () => ({
@@ -62,8 +70,3 @@ global.ResizeObserver = class ResizeObserver {
 //   error: jest.fn(),
 //   warn: jest.fn(),
 // }
-
-
-
-
-
