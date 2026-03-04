@@ -1,0 +1,4 @@
+## 2025-05-15 - Optimizing Dashboard Polling in Driver Dashboard
+**Learning:** In high-frequency polling dashboards (e.g., app/driver/page.tsx), sequential `await` calls for multiple data sources and redundant fetching of static metadata (like 'spots') significantly degrade performance and increase network overhead. Replacing `window.location.reload()` with a targeted state refresh function (`loadData`) prevents unnecessary re-rendering of the entire page shell and avoids the performance penalty of a full browser reload.
+
+**Action:** Decouple static lookup data from dynamic updates using a `useRef` flag to fetch static data only once. Use `Promise.all` to parallelize all initial and subsequent dynamic data fetches. Favor local state refreshes over `window.location.reload()` to provide instantaneous UI updates.
