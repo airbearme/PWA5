@@ -36,22 +36,22 @@ jobs:
       
       - name: Check database connectivity
         env:
-          NEXT_PUBLIC_SUPABASE_PWA4_URL: ${{ secrets.NEXT_PUBLIC_SUPABASE_PWA4_URL }}
-          SUPABASE_PWA4_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_PWA4_SERVICE_ROLE_KEY }}
+          NEXT_PUBLIC_SUPABASE_PWA4_URL: ${{ secrets.NEXT_PUBLIC_SUPABASE_PWA4_URL || 'https://placeholder.supabase.co' }}
+          SUPABASE_PWA4_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_PWA4_SERVICE_ROLE_KEY || 'placeholder' }}
         run: |
-          node scripts/check-database.js || echo "Database check script not found"
+          node scripts/check-database.cjs || echo "Database check script not found"
       
       - name: Check Stripe connectivity
         env:
-          STRIPE_SECRET_KEY: ${{ secrets.STRIPE_SECRET_KEY }}
+          STRIPE_SECRET_KEY: ${{ secrets.STRIPE_SECRET_KEY || 'sk_test_placeholder' }}
         run: |
-          node scripts/check-stripe.js || echo "Stripe check script not found"
+          node scripts/check-stripe.cjs || echo "Stripe check script not found"
       
       - name: Report health status
         if: always()
         run: |
           echo "Health check completed"
-          node scripts/report-health.js || echo "Health reporting script not found"
+          node scripts/report-health.cjs || echo "Health reporting script not found"
 
   performance-test:
     name: Performance Testing
@@ -81,7 +81,7 @@ jobs:
       - name: Check bundle size
         run: |
           pnpm run build
-          node scripts/check-bundle-size.js || echo "Bundle size check script not found"
+          node scripts/check-bundle-size.cjs || echo "Bundle size check script not found"
 
   security-scan:
     name: Security Scanning
@@ -89,9 +89,9 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       
-      - name: Run pnpm audit
+      - name: Run ppnpm audit
         run: |
-          pnpm audit || echo "Vulnerabilities found"
+          ppnpm audit || echo "Vulnerabilities found"
       
       - name: Run Snyk scan
         uses: snyk/actions/node@master

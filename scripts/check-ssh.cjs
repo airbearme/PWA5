@@ -1,5 +1,5 @@
-import dotenv from "dotenv";
-import { Client } from "ssh2";
+const dotenv = require("dotenv");
+const { Client } = require("ssh2");
 
 dotenv.config();
 

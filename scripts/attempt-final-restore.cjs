@@ -1,5 +1,5 @@
-import fs from "fs";
-import SftpClient from "ssh2-sftp-client";
+const fs = require("fs");
+const SftpClient = require("ssh2-sftp-client");
 
 const IONOS_CONFIG = {
 	host: "access-5018328928.webspace-host.com",

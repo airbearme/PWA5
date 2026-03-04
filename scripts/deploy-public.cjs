@@ -1,8 +1,8 @@
 #!/usr/bin/env node
 
-import fs from "fs";
-import path from "path";
-import SftpClient from "ssh2-sftp-client";
+const fs = require("fs");
+const path = require("path");
+const SftpClient = require("ssh2-sftp-client");
 
 const CONFIG = {
 	host: "access-5018328928.webspace-host.com",
@@ -63,7 +63,7 @@ async function setPerms(sftp, dir) {
 async function main() {
 	if (!fs.existsSync(LOCAL_DIR)) {
 		throw new Error(
-			`Missing build output at ${LOCAL_DIR}. Run "npm run build:static" first.`,
+			`Missing build output at ${LOCAL_DIR}. Run "pnpm run build:static" first.`,
 		);
 	}
 

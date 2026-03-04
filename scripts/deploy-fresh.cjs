@@ -1,10 +1,10 @@
 #!/usr/bin/env node
 
-import { execSync } from "child_process";
-import dotenv from "dotenv";
-import fs from "fs";
-import path from "path";
-import SftpClient from "ssh2-sftp-client";
+const { execSync } = require("child_process");
+const dotenv = require("dotenv");
+const fs = require("fs");
+const path = require("path");
+const SftpClient = require("ssh2-sftp-client");
 
 // Load environment variables
 dotenv.config();
@@ -32,7 +32,7 @@ async function deploy() {
 		execSync("rm -rf dist", { stdio: "inherit" });
 
 		console.log("📦 Building fresh production application...");
-		execSync("npm run build:static", { stdio: "inherit" });
+		execSync("pnpm run build:static", { stdio: "inherit" });
 
 		// 2. Verify build output
 		const distPath = path.resolve("dist/public");
