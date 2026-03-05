@@ -69,7 +69,7 @@ async function main() {
 
 	// 1. Environment Validation
 	log("\n📋 Phase 1: Environment & Configuration", "bright");
-	runTest("Environment Variables", "node scripts/validate-env.js", true);
+	runTest("Environment Variables", "node scripts/validate-env.cjs", true);
 	runTest("TypeScript Type Check", "npm run type-check", true);
 	runTest("ESLint", "npm run lint", false);
 
@@ -88,7 +88,7 @@ async function main() {
 
 	// 3. Unit Tests
 	log("\n🔬 Phase 3: Unit Tests", "bright");
-	if (checkFileExists("jest.config.js")) {
+	if (checkFileExists("jest.config.cjs")) {
 		runTest("Jest Unit Tests", "npm run test -- --passWithNoTests", false);
 	} else {
 		log("⚠️  Jest not configured, skipping unit tests", "yellow");
@@ -133,54 +133,54 @@ async function main() {
 	// Run comprehensive workflow tests
 	runTest(
 		"Complete Workflow Tests",
-		"node scripts/test-complete-workflows.js",
+		"node scripts/test-complete-workflows.cjs",
 		false,
 	);
 	runTest(
 		"Comprehensive E2E Tests",
-		"node scripts/comprehensive-e2e-test.js",
+		"node scripts/comprehensive-e2e-test.cjs",
 		false,
 	);
 
 	// 7. Performance Tests
 	log("\n⚡ Phase 7: Performance Tests", "bright");
-	runTest("Lighthouse Performance", "node scripts/test-performance.js", false);
-	runTest("Bundle Size Check", "node scripts/check-bundle-size.js", false);
+	runTest("Lighthouse Performance", "node scripts/test-performance.cjs", false);
+	runTest("Bundle Size Check", "node scripts/check-bundle-size.cjs", false);
 
 	// 8. Security Tests
 	log("\n🔒 Phase 8: Security Tests", "bright");
 	runTest("npm Audit", "npm audit --audit-level=moderate || true", false);
-	runTest("Security Headers", "node scripts/test-security-headers.js", false);
+	runTest("Security Headers", "node scripts/test-security-headers.cjs", false);
 
 	// 9. Accessibility Tests
 	log("\n♿ Phase 9: Accessibility Tests", "bright");
-	runTest("Accessibility Audit", "node scripts/test-accessibility.js", false);
+	runTest("Accessibility Audit", "node scripts/test-accessibility.cjs", false);
 
 	// 10. Database Tests
 	log("\n💾 Phase 10: Database Tests", "bright");
-	runTest("Database Connectivity", "node scripts/test-database.js", false);
-	runTest("Database Schema", "node scripts/test-database-schema.js", false);
+	runTest("Database Connectivity", "node scripts/test-database.cjs", false);
+	runTest("Database Schema", "node scripts/test-database-schema.cjs", false);
 
 	// 11. Payment Tests
 	log("\n💳 Phase 11: Payment Integration", "bright");
-	runTest("Stripe Configuration", "node scripts/test-stripe.js", false);
+	runTest("Stripe Configuration", "node scripts/test-stripe.cjs", false);
 
 	// 12. Real-time Tests
 	log("\n📡 Phase 12: Real-time Features", "bright");
-	runTest("Supabase Realtime", "node scripts/test-realtime.js", false);
+	runTest("Supabase Realtime", "node scripts/test-realtime.cjs", false);
 
 	// 13. PWA Tests
 	log("\n📱 Phase 13: PWA Features", "bright");
-	runTest("PWA Manifest", "node scripts/test-pwa-manifest.js", false);
-	runTest("Service Worker", "node scripts/test-service-worker.js", false);
+	runTest("PWA Manifest", "node scripts/test-pwa-manifest.cjs", false);
+	runTest("Service Worker", "node scripts/test-service-worker.cjs", false);
 
 	// 14. Visual Tests
 	log("\n🎨 Phase 14: Visual & UI Tests", "bright");
-	runTest("Component Rendering", "node scripts/test-components.js", false);
+	runTest("Component Rendering", "node scripts/test-components.cjs", false);
 
 	// 15. Error Handling Tests
 	log("\n🚨 Phase 15: Error Handling", "bright");
-	runTest("Error Logger", "node scripts/test-error-logger.js", false);
+	runTest("Error Logger", "node scripts/test-error-logger.cjs", false);
 
 	// Final Summary
 	const endTime = Date.now();
