@@ -1,0 +1,3 @@
+## 2025-05-14 - Optimized Driver Dashboard Data Flow
+**Learning:** Sequential data fetching and full-page reloads using `window.location.reload()` create significant lag and poor UX in polling-heavy dashboards. Parallelizing requests with `Promise.all` and implementing local state refresh functions significantly reduces perceived latency and improves responsiveness. Caching static metadata (like 'spots') with `useRef` guards prevents redundant network overhead during intervals.
+**Action:** Always prefer parallelizing independent data fetches in dashboard components and use local state refresh functions instead of full page reloads for action handlers.
