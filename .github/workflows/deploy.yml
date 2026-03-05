@@ -9,6 +9,13 @@ on:
 env:
   VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
   VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
+  # Placeholder secrets for Zod validation during build/type-check
+  NEXT_PUBLIC_SUPABASE_PWA4_URL: "https://placeholder.supabase.co"
+  NEXT_PUBLIC_SUPABASE_PWA4_ANON_KEY: "eyJplaceholder"
+  SUPABASE_PWA4_SERVICE_ROLE_KEY: "eyJplaceholder"
+  NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY: "pk_test_placeholder"
+  STRIPE_SECRET_KEY: "sk_test_placeholder"
+  NEXT_PUBLIC_SITE_URL: "https://airbear.me"
 
 jobs:
   test:
@@ -38,6 +45,14 @@ jobs:
 
   deploy-production:
     needs: test
+    env:
+      # Placeholder secrets for Zod validation during build/type-check
+      NEXT_PUBLIC_SUPABASE_PWA4_URL: "https://placeholder.supabase.co"
+      NEXT_PUBLIC_SUPABASE_PWA4_ANON_KEY: "eyJplaceholder"
+      SUPABASE_PWA4_SERVICE_ROLE_KEY: "eyJplaceholder"
+      NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY: "pk_test_placeholder"
+      STRIPE_SECRET_KEY: "sk_test_placeholder"
+      NEXT_PUBLIC_SITE_URL: "https://airbear.me"
     runs-on: ubuntu-latest
     if: github.ref == 'refs/heads/main' && github.event_name == 'push'
     
@@ -45,7 +60,7 @@ jobs:
       - uses: actions/checkout@v4
       
       - name: Install Vercel CLI
-        run: npm install --global vercel@latest
+        run: pnpm add -g vercel@latest
       
       - name: Pull Vercel Environment
         run: vercel pull --yes --environment=production --token=${{ secrets.VERCEL_TOKEN }}
