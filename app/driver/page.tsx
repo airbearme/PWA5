@@ -52,26 +52,29 @@ export default function DriverDashboardPage() {
     try {
       const supabase = getSupabaseClient();
 
-      const promises: Promise<any>[] = [
-        // Load pending rides
-        supabase
-          .from("rides")
-          .select("*")
-          .eq("status", "pending")
-          .order("requested_at", { ascending: true }),
+      const pendingRidesPromise = supabase
+        .from("rides")
+        .select("*")
+        .eq("status", "pending")
+        .order("requested_at", { ascending: true })
+        .then(res => res);
 
-        // Load active ride for this driver
-        supabase
-          .from("rides")
-          .select("*")
-          .eq("driver_id", user.id)
-          .in("status", ["accepted", "in_progress"])
-          .maybeSingle(), // use maybeSingle to avoid 406 errors when no active ride exists
+      const activeRidePromise = supabase
+        .from("rides")
+        .select("*")
+        .eq("driver_id", user.id)
+        .in("status", ["accepted", "in_progress"])
+        .maybeSingle()
+        .then(res => res);
+
+      const promises: Promise<any>[] = [
+        pendingRidesPromise,
+        activeRidePromise,
       ];
 
       // Only fetch spots once
       if (!spotsFetchedRef.current) {
-        promises.push(supabase.from("spots").select("id, name"));
+        promises.push(supabase.from("spots").select("id, name").then(res => res));
       }
 
       const results = await Promise.all(promises);
