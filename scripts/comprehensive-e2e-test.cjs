@@ -5,9 +5,9 @@
  * Tests complete user workflows end-to-end
  */
 
-import { execSync } from "child_process";
-import http from "http";
-import https from "https";
+const { execSync } = require("child_process");
+const http = require("http");
+const https = require("https");
 
 const BASE_URL = process.env.NEXT_PUBLIC_SITE_URL || "http://localhost:3000";
 

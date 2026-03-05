@@ -6,10 +6,11 @@
  */
 
 const requiredEnvVars = [
-	"NEXT_PUBLIC_SUPABASE_URL",
-	"NEXT_PUBLIC_SUPABASE_ANON_KEY",
+	"NEXT_PUBLIC_SUPABASE_PWA4_URL",
+	"NEXT_PUBLIC_SUPABASE_PWA4_ANON_KEY",
+	"SUPABASE_PWA4_SERVICE_ROLE_KEY",
+	"NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY",
 	"STRIPE_SECRET_KEY",
-	"STRIPE_PUBLISHABLE_KEY",
 ];
 
 const optionalEnvVars = ["STRIPE_WEBHOOK_SECRET", "NEXT_PUBLIC_SITE_URL"];
@@ -22,7 +23,8 @@ function validateEnv() {
 	const present = [];
 
 	requiredEnvVars.forEach((varName) => {
-		if (process.env[varName]) {
+		const value = process.env[varName];
+		if (value && value.length > 0) {
 			present.push(varName);
 			console.log(`✅ ${varName}: Set`);
 		} else {

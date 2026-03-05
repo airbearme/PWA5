@@ -5,13 +5,9 @@
  * Runs comprehensive tests for all aspects of the codebase
  */
 
-import { execSync } from "child_process";
-import fs from "fs";
-import path, { dirname } from "path";
-import { fileURLToPath } from "url";
-
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = dirname(__filename);
+const { execSync } = require("child_process");
+const fs = require("fs");
+const path = require("path");
 
 const colors = {
 	reset: "\x1b[0m",

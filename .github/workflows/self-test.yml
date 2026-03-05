@@ -52,7 +52,7 @@ jobs:
       
       - name: Check Stripe connectivity
         env:
-          STRIPE_SECRET_KEY: ${{ secrets.STRIPE_SECRET_KEY }}
+          STRIPE_SECRET_KEY: ${{ secrets.STRIPE_SECRET_KEY || "sk_test_placeholder" }}
         run: |
           node scripts/check-stripe.cjs || echo "Stripe check script not found"
       
