@@ -1,5 +1,5 @@
 // Learn more: https://github.com/testing-library/jest-dom
-import '@testing-library/jest-dom'
+require('@testing-library/jest-dom')
 
 // Mock Next.js router
 jest.mock('next/navigation', () => ({
@@ -54,6 +54,12 @@ global.ResizeObserver = class ResizeObserver {
   disconnect() {}
   observe() {}
   unobserve() {}
+}
+
+// Polyfills for missing Web APIs in Node environment
+if (typeof global.TransformStream === 'undefined') {
+  const { TransformStream } = require('node:stream/web');
+  global.TransformStream = TransformStream;
 }
 
 // Suppress console errors in tests (optional)
