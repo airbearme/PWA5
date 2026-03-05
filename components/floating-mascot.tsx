@@ -36,6 +36,7 @@ export default function FloatingMascot() {
     <motion.a
       href="/"
       className="fixed bottom-6 right-6 z-50"
+      aria-label="Go to home page"
       style={{
         translateX: followX,
         translateY: followY,
