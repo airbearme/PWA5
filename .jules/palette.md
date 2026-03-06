@@ -1,7 +1,7 @@
-## 2025-02-18 - Consistent Feedback Pattern in Auth
-**Learning:** Using the `Alert` component for error messages in forms provides a more consistent and accessible experience than generic `div` elements, especially in a dark-themed application like AirBear.
-**Action:** Always prefer `Alert` with `variant="destructive"` for error states in new forms.
+## 2025-05-15 - Enhancing Auth Feedback Loops
+**Learning:** Using generic `div` elements for error messages lacks semantic weight and visual consistency. Replacing them with specialized `Alert` components improves accessibility and ensures errors are immediately recognizable as critical feedback.
+**Action:** Always prefer design-system-integrated `Alert` components over custom error `div`s.
 
-## 2025-02-18 - Spinner Component Reuse
-**Learning:** The project has a dedicated `Spinner` component in `components/ui/spinner.tsx` which should be used for loading states instead of custom CSS animations or simple text.
-**Action:** Use the `Spinner` component for all button loading states to maintain visual consistency.
+## 2025-05-15 - Visual Loading Indicators
+**Learning:** Disabling buttons during async operations prevents double-submission but can feel "stuck" without a visual spinner. Adding a `Spinner` inside the button provides active feedback that the system is processing.
+**Action:** Include `Spinner` components within `Button` elements for all primary async actions.

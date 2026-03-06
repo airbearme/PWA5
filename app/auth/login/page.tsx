@@ -5,6 +5,8 @@ import type React from "react";
 import { useState } from "react";
 import { getSupabaseClient } from "@/lib/supabase/client";
 import { Button } from "@/components/ui/button";
+import { Alert, AlertDescription } from "@/components/ui/alert";
+import { Spinner } from "@/components/ui/spinner";
 import {
   Card,
   CardContent,
@@ -14,8 +16,6 @@ import {
 } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Alert, AlertDescription } from "@/components/ui/alert";
-import { Spinner } from "@/components/ui/spinner";
 import { useRouter } from "next/navigation";
 import { Apple, Chrome } from "lucide-react";
 
