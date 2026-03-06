@@ -1,5 +1,5 @@
 // Learn more: https://github.com/testing-library/jest-dom
-import '@testing-library/jest-dom'
+require('@testing-library/jest-dom');
 
 // Mock Next.js router
 jest.mock('next/navigation', () => ({
@@ -56,14 +56,34 @@ global.ResizeObserver = class ResizeObserver {
   unobserve() {}
 }
 
-// Suppress console errors in tests (optional)
-// global.console = {
-//   ...console,
-//   error: jest.fn(),
-//   warn: jest.fn(),
-// }
+// Polyfills for ESM environment
+const { TextEncoder, TextDecoder } = require('util');
+global.TextEncoder = TextEncoder;
+global.TextDecoder = TextDecoder;
 
+if (typeof fetch === 'undefined') {
+  const { Headers, Request, Response } = require('cross-fetch');
+  global.fetch = require('cross-fetch');
+  global.Headers = Headers;
+  global.Request = Request;
+  global.Response = Response;
+}
 
+if (typeof TransformStream === 'undefined') {
+  const { TransformStream } = require('web-streams-polyfill');
+  global.TransformStream = TransformStream;
+}
 
+// React 19 act polyfill/fix for environment issues
+const React = require('react');
+if (typeof React.act === 'undefined') {
+  React.act = (cb) => {
+    const result = cb();
+    if (result && typeof result.then === 'function') {
+      return result;
+    }
+    return result;
+  };
+}
 
-
+global.IS_REACT_ACT_ENVIRONMENT = true;
