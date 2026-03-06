@@ -42,7 +42,9 @@ export function validateLocation(data: unknown): boolean {
     location.latitude >= -90 &&
     location.latitude <= 90 &&
     location.longitude >= -180 &&
-    location.longitude <= 180
+    location.longitude <= 180 &&
+    (location.heading === undefined || (typeof location.heading === "number" && location.heading >= 0 && location.heading <= 360)) &&
+    (location.battery_level === undefined || (typeof location.battery_level === "number" && location.battery_level >= 0 && location.battery_level <= 100))
   )
 }
 
