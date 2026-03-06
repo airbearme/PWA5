@@ -73,3 +73,17 @@ if (typeof TransformStream === 'undefined') {
   const { TransformStream } = require('web-streams-polyfill');
   global.TransformStream = TransformStream;
 }
+
+// React 19 act polyfill/fix for environment issues
+const React = require('react');
+if (typeof React.act === 'undefined') {
+  React.act = (cb) => {
+    const result = cb();
+    if (result && typeof result.then === 'function') {
+      return result;
+    }
+    return result;
+  };
+}
+
+global.IS_REACT_ACT_ENVIRONMENT = true;
