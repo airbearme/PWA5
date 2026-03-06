@@ -1,8 +1,17 @@
 import { getSupabaseServer } from "@/lib/supabase/server"
 import { NextResponse } from "next/server"
+import { rateLimit } from "@/lib/rate-limit"
+import { validateLocation } from "@/lib/utils/validators"
 
 export async function POST(request: Request) {
   try {
+    // Apply rate limiting by IP (handle comma-separated list of proxies)
+    const xForwardedFor = request.headers.get("x-forwarded-for")
+    const ip = xForwardedFor ? xForwardedFor.split(",")[0].trim() : "unknown"
+    if (!rateLimit(`location-update-${ip}`, 30, 60000)) {
+      return NextResponse.json({ error: "Too many requests" }, { status: 429 })
+    }
+
     const supabase = await getSupabaseServer()
 
     const {
@@ -24,7 +33,11 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: "Not authorized as driver" }, { status: 403 })
     }
 
-    const body = await request.json()
+    const body = await request.json().catch(() => null)
+    if (!body || !validateLocation(body)) {
+      return NextResponse.json({ error: "Invalid location data" }, { status: 400 })
+    }
+
     const { latitude, longitude, heading, battery_level } = body
 
     // Update airbear location
@@ -42,13 +55,13 @@ export async function POST(request: Request) {
       .single()
 
     if (error) {
-      console.error("[v0] Error updating location:", error)
-      return NextResponse.json({ error: error.message }, { status: 500 })
+      console.error("[Sentinel] Error updating location:", error)
+      return NextResponse.json({ error: "Internal Server Error" }, { status: 500 })
     }
 
     return NextResponse.json({ success: true, data })
   } catch (error: any) {
-    console.error("[v0] API error:", error)
-    return NextResponse.json({ error: error.message }, { status: 500 })
+    console.error("[Sentinel] API error:", error)
+    return NextResponse.json({ error: "Internal Server Error" }, { status: 500 })
   }
 }
