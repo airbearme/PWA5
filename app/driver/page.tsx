@@ -51,41 +51,40 @@ export default function DriverDashboardPage() {
     try {
       const supabase = getSupabaseClient();
 
-      const promises: Promise<unknown>[] = [
-        // Load pending rides
-        supabase
-          .from("rides")
-          .select("*")
-          .eq("status", "pending")
-          .order("requested_at", { ascending: true }),
+      // Bolt: Use explicit types and separate promises to avoid union type complexity in Promise.all
+      const ridesPromise = supabase
+        .from("rides")
+        .select("*")
+        .eq("status", "pending")
+        .order("requested_at", { ascending: true });
 
-        // Load active ride for this driver
-        supabase
-          .from("rides")
-          .select("*")
-          .eq("driver_id", user.id)
-          .in("status", ["accepted", "in_progress"])
-          .maybeSingle(), // Bolt: maybeSingle() prevents 406 error if no active ride
-      ];
+      const activeRidePromise = supabase
+        .from("rides")
+        .select("*")
+        .eq("driver_id", user.id)
+        .in("status", ["accepted", "in_progress"])
+        .maybeSingle();
 
-      // Only fetch spots once
-      if (!spotsFetchedRef.current) {
-        promises.push(supabase.from("spots").select("id, name"));
-      }
+      const spotsPromise = !spotsFetchedRef.current
+        ? supabase.from("spots").select("id, name")
+        : Promise.resolve({ data: null, error: null });
 
-      const results = await Promise.all(promises);
-      const [ridesResult, activeRideResult, spotsResult] = results as {
-        data: Ride[] | Ride | { id: string; name: string }[] | null;
-        error: Error | null;
-      }[];
+      const [ridesResult, activeRideResult, spotsResult] = await Promise.all([
+        ridesPromise,
+        activeRidePromise,
+        spotsPromise
+      ]);
 
       if (ridesResult.error) throw ridesResult.error;
-      setPendingRides(ridesResult.data || []);
-      setActiveRide(activeRideResult.data || null);
+      if (activeRideResult.error) throw activeRideResult.error;
 
-      if (spotsResult && spotsResult.data) {
+      // Type assertions for state setters to ensure type safety
+      setPendingRides((ridesResult.data as Ride[]) || []);
+      setActiveRide((activeRideResult.data as Ride) || null);
+
+      if (spotsResult.data) {
         const spotsMap: Record<string, { name: string }> = {};
-        spotsResult.data.forEach((spot: { id: string; name: string }) => {
+        (spotsResult.data as { id: string; name: string }[]).forEach((spot) => {
           spotsMap[spot.id] = { name: spot.name };
         });
         setSpots(spotsMap);
