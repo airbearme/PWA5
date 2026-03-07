@@ -1,14 +1,15 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback, useRef } from "react";
 import { useRouter } from "next/navigation";
+import Image from "next/image";
 import { useAuthContext } from "@/components/auth-provider";
 import { getSupabaseClient } from "@/lib/supabase/client";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { useToast } from "@/hooks/use-toast";
-import { Navigation, Battery, MapPin, Activity, Clock, CheckCircle, X } from "lucide-react";
+import { Navigation, MapPin, Activity, Clock } from "lucide-react";
 import Link from "next/link";
 
 interface Ride {
@@ -32,6 +33,7 @@ export default function DriverDashboardPage() {
   const [activeRide, setActiveRide] = useState<Ride | null>(null);
   const [loading, setLoading] = useState(true);
   const [spots, setSpots] = useState<Record<string, { name: string }>>({});
+  const spotsFetchedRef = useRef(false);
 
   useEffect(() => {
     if (!authLoading && !user) {
@@ -39,58 +41,70 @@ export default function DriverDashboardPage() {
     }
   }, [user, authLoading, router]);
 
-  useEffect(() => {
-    const loadData = async () => {
-      if (!user) return;
+  // ⚡ Bolt: Optimized data fetching
+  // - Wrapped in useCallback to allow use in event handlers
+  // - Parallelized fetches using Promise.all
+  // - Implemented useRef flag to fetch static 'spots' data only once
+  const loadData = useCallback(async () => {
+    if (!user) return;
 
-      try {
-        const supabase = getSupabaseClient();
+    try {
+      const supabase = getSupabaseClient();
 
-        // Load spots
-        const { data: spotsData } = await supabase
-          .from("spots")
-          .select("id, name");
-
-        if (spotsData) {
-          const spotsMap: Record<string, { name: string }> = {};
-          spotsData.forEach((spot) => {
-            spotsMap[spot.id] = { name: spot.name };
-          });
-          setSpots(spotsMap);
-        }
-
+      const promises: Promise<unknown>[] = [
         // Load pending rides
-        const { data: ridesData, error } = await supabase
+        supabase
           .from("rides")
           .select("*")
           .eq("status", "pending")
-          .order("requested_at", { ascending: true });
-
-        if (error) throw error;
-        setPendingRides(ridesData || []);
+          .order("requested_at", { ascending: true }),
 
         // Load active ride for this driver
-        const { data: activeRideData } = await supabase
+        supabase
           .from("rides")
           .select("*")
           .eq("driver_id", user.id)
           .in("status", ["accepted", "in_progress"])
-          .single();
+          .maybeSingle(), // Bolt: maybeSingle() prevents 406 error if no active ride
+      ];
 
-        setActiveRide(activeRideData || null);
-      } catch (error) {
-        console.error("Error loading driver data:", error);
-      } finally {
-        setLoading(false);
+      // Only fetch spots once
+      if (!spotsFetchedRef.current) {
+        promises.push(supabase.from("spots").select("id, name"));
       }
-    };
 
+      const results = await Promise.all(promises);
+      const [ridesResult, activeRideResult, spotsResult] = results as {
+        data: Ride[] | Ride | { id: string; name: string }[] | null;
+        error: Error | null;
+      }[];
+
+      if (ridesResult.error) throw ridesResult.error;
+      setPendingRides(ridesResult.data || []);
+      setActiveRide(activeRideResult.data || null);
+
+      if (spotsResult && spotsResult.data) {
+        const spotsMap: Record<string, { name: string }> = {};
+        spotsResult.data.forEach((spot: { id: string; name: string }) => {
+          spotsMap[spot.id] = { name: spot.name };
+        });
+        setSpots(spotsMap);
+        spotsFetchedRef.current = true;
+      }
+    } catch (error: unknown) {
+      console.error("Error loading driver data:", error);
+    } finally {
+      setLoading(false);
+    }
+  }, [user]);
+
+  useEffect(() => {
     loadData();
 
     // Refresh every 5 seconds
     const interval = setInterval(loadData, 5000);
     return () => clearInterval(interval);
-  }, [user]);
+  }, [loadData]);
 
   const handleAcceptRide = async (rideId: string) => {
     if (!user) return;
@@ -110,12 +124,12 @@ export default function DriverDashboardPage() {
         description: "You've accepted the ride. Navigate to pickup location.",
       });
 
-      // Reload data
-      window.location.reload();
-    } catch (error: any) {
+      // ⚡ Bolt: Instant UI update without full page reload
+      await loadData();
+    } catch (error: unknown) {
       toast({
         title: "Error",
-        description: error.message || "Failed to accept ride",
+        description: error instanceof Error ? error.message : "Failed to accept ride",
         variant: "destructive",
       });
     }
@@ -141,11 +155,12 @@ export default function DriverDashboardPage() {
         description: "Navigate to the destination.",
       });
 
-      window.location.reload();
-    } catch (error: any) {
+      // ⚡ Bolt: Instant UI update without full page reload
+      await loadData();
+    } catch (error: unknown) {
       toast({
         title: "Error",
-        description: error.message || "Failed to start ride",
+        description: error instanceof Error ? error.message : "Failed to start ride",
         variant: "destructive",
       });
     }
@@ -167,11 +182,12 @@ export default function DriverDashboardPage() {
         description: "Great job! The ride has been completed.",
       });
 
-      window.location.reload();
-    } catch (error: any) {
+      // ⚡ Bolt: Instant UI update without full page reload
+      await loadData();
+    } catch (error: unknown) {
       toast({
         title: "Error",
-        description: error.message || "Failed to complete ride",
+        description: error instanceof Error ? error.message : "Failed to complete ride",
         variant: "destructive",
       });
     }
@@ -182,11 +198,14 @@ export default function DriverDashboardPage() {
       <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-emerald-950 via-lime-950 to-amber-950">
         <div className="text-center">
           <div className="flex justify-center mb-6">
-            <div className="w-32 h-32 rounded-full border-4 border-emerald-400/50 dark:border-emerald-500/50 bg-gradient-to-br from-emerald-500/20 to-lime-500/20 backdrop-blur-sm shadow-2xl hover-lift animate-float overflow-hidden">
-              <img
+            {/* ⚡ Bolt: Optimized image loading with Next.js Image component */}
+            <div className="relative w-32 h-32 rounded-full border-4 border-emerald-400/50 dark:border-emerald-500/50 bg-gradient-to-br from-emerald-500/20 to-lime-500/20 backdrop-blur-sm shadow-2xl hover-lift animate-float overflow-hidden">
+              <Image
                 src="/airbear-mascot.png"
                 alt="AirBear Mascot"
-                className="w-full h-full object-cover rounded-full animate-pulse-glow"
+                fill
+                priority
+                className="object-cover animate-pulse-glow"
               />
             </div>
           </div>
@@ -208,11 +227,14 @@ export default function DriverDashboardPage() {
         {/* Header */}
         <div className="text-center mb-8">
           <div className="flex justify-center mb-4">
-            <div className="w-24 h-24 rounded-full border-4 border-emerald-400/50 dark:border-emerald-500/50 bg-gradient-to-br from-emerald-500/20 to-lime-500/20 backdrop-blur-sm shadow-2xl hover-lift animate-float overflow-hidden">
-              <img
+            {/* ⚡ Bolt: Optimized image loading with Next.js Image component */}
+            <div className="relative w-24 h-24 rounded-full border-4 border-emerald-400/50 dark:border-emerald-500/50 bg-gradient-to-br from-emerald-500/20 to-lime-500/20 backdrop-blur-sm shadow-2xl hover-lift animate-float overflow-hidden">
+              <Image
                 src="/airbear-mascot.png"
                 alt="AirBear Mascot"
-                className="w-full h-full object-cover rounded-full animate-pulse-glow"
+                fill
+                priority
+                className="object-cover animate-pulse-glow"
               />
             </div>
           </div>
